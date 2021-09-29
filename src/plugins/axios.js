@@ -8,7 +8,7 @@ import axios from "axios";
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 const env = process.env.NODE_ENV || 'development'
-let baseURL = 'http://localhost:4002/api/'
+let baseURL = 'https://fse-le-maisonier.herokuapp.com'
 if (env === 'production') {
     baseURL = 'http://146.59.151.26/api/'
 }
