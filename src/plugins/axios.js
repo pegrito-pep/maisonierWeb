@@ -10,7 +10,7 @@ import axios from "axios";
 const env = process.env.NODE_ENV || 'development'
 let baseURL = 'https://fse-le-maisonier.herokuapp.com'
 if (env === 'production') {
-    baseURL = 'http://146.59.151.26/api/'
+    baseURL = 'https://fse-le-maisonier.herokuapp.com'
 }
 else if (env === 'test') {
     
