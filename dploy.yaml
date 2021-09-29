@@ -1,0 +1,11 @@
+dev:
+    scheme: sftp
+    host: "146.59.151.26"
+    port: 22
+    user: debian
+    pass: eCHvBnB5ZKHK
+    check: false
+    branch: v2
+    path:
+        local: dist/
+        remote: /var/www/html

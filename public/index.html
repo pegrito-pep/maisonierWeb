@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Maisonier</title>
+
+    <!-- manifest meta -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="<%= BASE_URL %>manifest.json" />
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" href="<%= BASE_URL %>img/icons/180x180.png" sizes="180x180">
+
+    <!-- Google fonts-->
+    <!--<link href="http://fonts.googleapis.com/css?family=Montserrat:300,400,500,600,700,800" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">-->
+
+    <link rel="stylesheet" type="text/css" href="<%= BASE_URL %>lib/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="<%= BASE_URL %>lib/perfect-scrollbar.css" />
+    <link rel="stylesheet" type="text/css" href="<%= BASE_URL %>lib/jquery-confirm.css" />
+    <link rel="stylesheet" type="text/css" href="<%= BASE_URL %>lib/notifIt.min.css" />
+    <link rel="stylesheet" type="text/css" href="<%= BASE_URL %>lib/animate.min.css" />
+    <!--icon font-->
+    <link rel="stylesheet" type="text/css" href="<%= BASE_URL %>lib/fontawesome-5.15.1/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="<%= BASE_URL %>lib/icon-kit/dist/css/iconkit.min.css">
+    <link rel="stylesheet" type="text/css" href="<%= BASE_URL %>lib/ionicons/dist/css/ionicons.min.css">
+
+
+    <!--custom styles-->
+    <link rel="stylesheet" type="text/css" href="<%= BASE_URL %>css/theme.min.css">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+</head>
+
+<body class="fixed-nav">
+    <noscript>
+        <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+
+    <script src="<%= BASE_URL %>lib/lib-bundle-output.min.js"></script>
+    <script src="<%= BASE_URL %>js/application.js"></script>
+
+    <!-- Customized jquery file  -->
+    <script src="<%= BASE_URL %>js/script.js"></script>
+    <!-- PWA app service registration and works -->
+    <!-- <script src="<%= BASE_URL %>js/pwa-services.js"></script> -->
+</body>
+
+</html>
