@@ -163,6 +163,7 @@ export default {
         return App.error('La description doit contenir au moins 200 caractères')
       }
       if (this.action == "add") {
+        console.log("annonce",this.annonce)
         this.showOverlay = true;
           axios
             .post("annonces", this.annonce)

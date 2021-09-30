@@ -201,6 +201,7 @@ export default {
   },
   methods: {
     pushDepense(){
+      console.log("entrée ajout nouvelle dépense");
       this.getDepenses();
     },
     /**

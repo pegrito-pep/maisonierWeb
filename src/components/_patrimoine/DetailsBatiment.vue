@@ -103,6 +103,10 @@ export default {
    mounted() {
     },
     methods: {
+        pushDepense(newDepense) {
+            this.batiment.depenses.unshift(newDepense);
+            this.commandeDepense =false;
+        },
        
         /**
          * Retire un logement

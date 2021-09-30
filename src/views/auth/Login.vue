@@ -26,7 +26,7 @@
                             </div>
                             <div class="row">
                                 <div class="col text-right">
-                                    <b-link :to="{name: 'forgot-password'}">Mot de passe oublié ?</b-link>
+                                    <b-link :to="{name: 'forgot-password'}" v-b-hover="handleHoverForgot" :class="isHoveredForget ? 'text-evidence-forgot' : ''">Mot de passe oublié ?</b-link>
                                 </div>
                             </div>
                             <div class="sign-btn text-center">
@@ -34,7 +34,7 @@
                             </div>
                         </form>
                         <div class="register">
-                            <p>Pas de compte? <b-link :to="{name: 'register'}">Créer un compte maintenant</b-link></p>
+                            <p >Pas de compte? <b-link :to="{name: 'register'}" v-b-hover="handleHover" :class="isHovered ? 'text-evidence' : ''">Créer un compte maintenant</b-link></p>
                         </div>
                     </div>
                 </div>
@@ -50,8 +50,17 @@ export default {
         submitted: false,
         login: null, 
         mdp: null,
+        isHovered: false,
+        isHoveredForget:false
     }), 
     methods: {
+        //gestion du survol sur crée un compte maintenant
+         handleHover(hovered) {
+        this.isHovered = hovered
+      },
+      handleHoverForgot(hovered){
+          this.isHoveredForget = hovered
+      },
         sendForm() {
             this.submitted = true
 
@@ -67,3 +76,13 @@ export default {
     }
 }
 </script>
+<style>
+    .text-evidence{
+        background: green;
+        color:white!important;
+    }
+    .text-evidence-forgot{
+        background:red!important;
+        color:white!important;
+    }
+</style>
