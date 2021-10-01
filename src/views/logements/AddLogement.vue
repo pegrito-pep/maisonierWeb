@@ -632,6 +632,9 @@ export default {
         //ToggleButton
     },
     computed: {
+             nomBatiment(){
+                 return this.batiment.nomBatiment+"("+this.batiment.refBatiment+")"
+             },
              mapCoordinates() {
                 if(!this.map) {
                     return {
@@ -882,7 +885,10 @@ export default {
         },
         //recupération de tous les batiments
         async getAllBatiments() {
-           this.tousLesBatiments=await axios.get("batiments").then(response => response.result)
+            this.tousLesBatiments = (await axios.get('batiments').then(response => response.result || [])).map(elt => {
+                    elt.nomBatiment =  elt.nomBatiment+"("+elt.refBatiment+")"
+                    return elt
+            })
         }
 
     },

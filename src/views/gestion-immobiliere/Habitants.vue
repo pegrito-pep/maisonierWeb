@@ -16,7 +16,7 @@
                             </div>
                         </div>
                         <div class="float-md-right">
-                            <b-button variant="danger"  @click.prevent="addHabitant"  v-b-modal.modal-lg><i class="fa fa-plus-circle"></i> Créer un habitant</b-button>
+                            <b-button variant="danger"  @click.prevent="addHabitant"  v-b-modal.modal-lg ref="buttonAdd"><i class="fa fa-plus-circle"></i> Créer un habitant</b-button>
                         </div>
                     </div>
                 </div>
@@ -132,8 +132,24 @@ export default {
          this.getHabitants();
          this.commandeHabitant=false;
      });
+     this.autoAddTarget();
     },
     methods: {
+            /**
+         * Affiche le modal de création d'une cité directement au chargement de la page
+         * ceci est utilisé lorsqu'on est arrivé ici en provenant de la homepage
+         */
+        autoAddTarget() {
+            const target = this.$route.query.target || null;
+            if (target) {
+                this.$refs.buttonAdd.click();
+                window.history.replaceState(
+                    {},
+                    "",
+                    window.location.href.split("?")[0]
+                );
+            }
+        },
         sendData(){
             
         },
@@ -141,6 +157,7 @@ export default {
             this.commandeHabitant=false;
         },
         addHabitant(){
+            console.log("entrée")
             this.action="add";
             this.commandeHabitant=true;
         },

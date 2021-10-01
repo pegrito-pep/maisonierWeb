@@ -1,5 +1,5 @@
 <template>
-   <b-modal id="modal-lg" size="lg" title="Formulaire d'ajout d'un Locataire" ref="habitant-modal" :ok-disabled="true"  no-close-on-backdrop hide-header-close>
+   <b-modal id="modal-lg" size="lg" title="Formulaire d'ajout d'un Locataire" ref="habitantModal" :ok-disabled="true"  no-close-on-backdrop hide-header-close>
         <div>
             <b-overlay :show="showOverlay" rounded="sm">
                 <form-wizard  title='' subtitle='' nextButtonText='suivant' backButtonText='Précedent' finishButtonText='Enregistrer' aria-labelledby="demoModalLabel"  @on-complete="onComplete"
@@ -264,11 +264,10 @@ export default {
                 email: '', email2: '', code: '', titre: '', dateNaiss: '', lieuNaiss: ''
         
             }
-            this.$refs['habitant-modal'].hide();
+            this.$refs['habitantModal'].hide();
             setTimeout(() => {
                 this.$emit('closeModal');
             }, 500);
-            
         },
 
         //obtention des données d'un habitant à partir de son code utilisateur
@@ -330,7 +329,7 @@ export default {
             })
             .catch(error => {notif.error(error.message);});
              setTimeout(() => {
-                 this.$refs['habitant-modal'].hide()
+                 this.$refs['habitantModal'].hide()
                 this.showOverlay=false;
             }, 2000);
               

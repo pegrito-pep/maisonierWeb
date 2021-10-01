@@ -50,7 +50,7 @@
         </div>
 
         <!-- MODALE POUR AJOUTER/MODIFIER UN BATIMENT -->
-        <b-modal id="modal-batiment" size="sm" ok-only ok-title="Valider" @hidden="resetModal" @ok="submitModal">
+        <b-modal id="modal-batiment" size="sm" ok-only ok-title="Valider" @hidden="resetModal" @ok="submitModal" ref="modalBatiment">
             <template #modal-title>
                 <span v-if="modal.action == 'add'">Ajouter un batiment</span>
                 <span v-if="modal.action == 'edit'">Edition du batiment</span>
@@ -115,8 +115,6 @@ export default {
             }
         }
     },
-    beforeMount() {
-        },
     mounted() {
         this.getBatiments()
     },
@@ -132,9 +130,30 @@ export default {
                     return { value: elt.idCite, text: elt.nomCite }
                 })
                 this.autoDetailsTarget()
+                this.autoAddTarget()
             } catch (error) {
                 
             }
+        },
+         /**
+         * Affiche le modal de création d'une cité directement au chargement de la page
+         * ceci est utilisé lorsqu'on est arrivé ici en provenant de la homepage
+         */
+        autoAddTarget() {
+            const target = this.$route.query.target || null;
+            if (target) {
+                 this.showModal()
+                window.history.replaceState(
+                    {},
+                    "",
+                    window.location.href.split("?")[0]
+                );
+                
+            }
+        },
+        showModal(){
+            this.modal.action='add'
+            this.$refs.modalBatiment.show("modal-batiment");
         },
 
         /**

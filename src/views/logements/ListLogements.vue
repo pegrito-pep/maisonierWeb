@@ -333,6 +333,7 @@ export default {
       this.getHousing(false);
       this.commandeHousing = false;
     });
+    this.autoAddTarget();
   },
   methods: {
     /**
@@ -357,8 +358,24 @@ export default {
           await axios.get("cites").then(response => response.result || [])
         ).filter(elt => elt.batiments.length > 0);
       }
-      this.autoDetailsTarget();
+        this.autoDetailsTarget();
     },
+    /**
+         * Affiche le modal de création d'une cité directement au chargement de la page
+         * ceci est utilisé lorsqu'on est arrivé ici en provenant de la homepage
+         */
+        autoAddTarget() {
+            const target = this.$route.query.target || null;
+            if (target) {
+                 this.addLogement()
+                window.history.replaceState(
+                    {},
+                    "",
+                    window.location.href.split("?")[0]
+                );
+                
+            }
+        },
     /**
      * Affiche automatiquement les details d'un logement au chargement
      * ceci est utilise dans le cas où on a cliqué sur le batiment en etant sur le details d'une cité

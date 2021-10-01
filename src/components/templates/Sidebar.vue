@@ -14,10 +14,8 @@
         <div class="sidebar-content">
             <div class="nav-container">
                 <nav id="main-menu-navigation" class="navigation-main">
-                    <div class="nav-lavel">Navigation</div>
-                    <div class="nav-item">
-                        <a href="index.html"><i class="ik ik-bar-chart-2"></i><span>Dashboard</span></a>
-                    </div>
+                    <div class="nav-lavel">Accueil</div>
+                    <div class="nav-item"><b-link :to="{name: 'home'}"><i class="ik ik-monitor"></i><span>Accueil</span></b-link></div>
                     
                      <div class="nav-item"><b-link :to="{name: 'analyse'}"><i class="fas fa-analytics"></i><span>Analyse & Rentabilité</span></b-link></div>
                      <div class="nav-item"><b-link :to="{name: 'depenses'}"><i class="ik ik-menu"></i><span>Dépenses</span></b-link></div>

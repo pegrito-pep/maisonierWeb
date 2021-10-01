@@ -50,7 +50,7 @@
         </div>
 
         <!-- MODALE POUR AJOUTER/MODIFIER UNE CITE -->
-        <b-modal id="modal-cite" size="sm" @hidden="resetModal" @ok="submitModal">
+        <b-modal id="modal-cite" size="sm" @hidden="resetModal" @ok="submitModal" ref="modalCite">
             <template #modal-title>
                 <span v-if="modal.action == 'add'">Ajouter une cité</span>
                 <span v-if="modal.action == 'edit'">Edition de la cité</span>
@@ -124,7 +124,14 @@ export default {
     beforeMount() {
         this.getCities()
     },
+    mounted(){
+         this.autoAddTarget();
+    },
     methods: {
+        showModal(){
+            this.modal.action='add'
+            this.$refs.modalCite.show("modal-cite");
+        },
         /**
          * Selection de l'image illustrative de la cite
          */
@@ -146,6 +153,23 @@ export default {
                 this.cites = this.trueCites = cites
                 this.showOverlay = false
             })
+        },
+
+        /**
+         * Affiche le modal de création d'une cité directement au chargement de la page
+         * ceci est utilisé lorsqu'on est arrivé ici en provenant de la homepage
+         */
+        autoAddTarget() {
+            const target = this.$route.query.target || null;
+            if (target) {
+                 this.showModal()
+                window.history.replaceState(
+                    {},
+                    "",
+                    window.location.href.split("?")[0]
+                );
+                
+            }
         },
 
         /**
