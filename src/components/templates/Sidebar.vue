@@ -38,6 +38,9 @@
                     <div class="nav-item"><b-link :to="{name: 'occupations'}"><i class="fas fa-building"></i><span>Mes occupations</span></b-link></div>
                     <div class="nav-item"><b-link :to="{name: 'habitants'}"><i class="fas fa-users"></i><span>Mes habitants</span></b-link></div>
                     
+                    <div class="nav-lavel">Finances</div>
+                    <div class="nav-item"><b-link :to="{name: 'indexes'}"><i class="fas fa-clipboard-list"></i><span>Rélévés d'indexes</span></b-link></div>
+                    
                     <div class="nav-lavel">Configuration et Aide</div>
                     <div class="nav-item"><a href="javascript:void(0)"><i class="ik ik-monitor"></i><span>Documentation</span></a></div>
                     <div class="nav-item"><b-link :to="{name: 'articles'}"><i class="fas fa-newspaper"></i><span>Mes Articles et Rubriques</span></b-link></div>

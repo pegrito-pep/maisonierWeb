@@ -25,43 +25,40 @@
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
                         <span class="h4 d-inline-flex ml-2">Vous n'avez défini aucune occupation pour le moment</span>
                     </b-alert> 
-                    <b-row v-else class="layout-wrap">
-                        <!--<b-col v-for="(habitant, i) in habitants" :key="habitant.idHabitant || i" cols="6" class="animated flipInX mb-4">
-                            <habitant-component @makeUpdate="updateHabitant" @deleted="removeHabitant" :habitant="habitant" @showDetails="showDetails" />
-                            ok
-                        </b-col>-->
+                    <b-row v-else>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover table-bordered table-striped" id="sampleTable">
-                                <thead>
-                                    <tr>
-                                    <th>id</th>
-                                    <th>Avatar</th>
-                                    <th>Nom</th>
-                                    <th>E-Mail</th>
-                                    <th>N° Téléphone</th>
-                                    <th>Proféssion</th>
-                                    <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="occupation in occupations" :key="occupation.idOccupation">
-                                    <td>{{locataire.idLocataire}}</td>
-                                    <td><img src="/img/profile-picture.jpg" alt="avatar" width="30" class="rounded-circle"></td>
-                                   <!--<td><img :src="locataire.avatar" alt="avatar" width="30" class="rounded-circle"></td>--> 
-                                    <td>{{locataire.nomLocataire}}</td>
-                                    <td>{{locataire.email}}</td>
-                                    <td>{{locataire.tel}}</td>
-                                    <td>{{locataire.profession}}</td>
-                                    <td>
-                                        <a href="#!" v-b-tooltip.top="'Modifier'"><i class="ik ik-edit f-16 mr-15 text-green"></i></a>
-                                        <a href="#!" v-b-tooltip.top="'Supprimer'"><i class="ik ik-trash-2 f-16 mr-15 text-red"></i></a>
-                                        <a href="#!" v-b-tooltip.top="'Détails'" @click.prevent="showDetails"><i class="ik ik-eye f-16 text-blue"></i></a>
-                                    </td>
-                                    </tr>
-                                </tbody>
-                                </table>
-                            </div>
+                            <b-table-simple hover small responsive>
+                                <b-thead head-variant="light">
+                                    <b-tr>
+                                        <b-th>N°</b-th>
+                                        <b-th>Logement</b-th>
+                                        <b-th>Locataire</b-th>
+                                        <b-th>Loyer de base</b-th>
+                                        <b-th>Action</b-th>
+                                    </b-tr>
+                                </b-thead>
+                                <b-tbody>
+                                    <b-tr v-for="occupation in occupations" :key="occupation.idOccupation">
+                                        <b-td class="p-2">{{ occupation.idOccupation }}</b-td>
+                                        <b-td class="p-2">
+                                            <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.logement.refLogement }}</span>    
+                                            <span class="d-inline-block w-100 mt-1 text-muted">{{ occupation.logement.sousTypeLogement.libelleSousType  }}</span>    
+                                        </b-td>
+                                        <b-td class="p-2">
+                                            <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.locataire.titre + ' ' + occupation.locataire.nomLocataire + ' ' + occupation.locataire.prenomLocataire }}</span>    
+                                            <span class="d-inline-block w-100 mt-1 text-muted">{{ occupation.locataire.tel + ' / ' + occupation.locataire.email }}</span>    
+                                        </b-td>
+                                        <b-td class="p-2">
+                                            <span class="d-inline-block w-100 mb-1"><b>{{ occupation.loyerBase + ' F' }}</b> / <small>{{ occupation.modePaiement }}</small></span>    
+                                            <span class="d-inline-block w-100 mt-1">
+                                                <span class="text-success" v-if="occupation.dateFin == null">Bail en cours</span>
+                                                <span class="text-danger" v-else>Bail terminé</span>
+                                            </span>    
+                                        </b-td>
+                                        <b-td><b-button :to="{name: 'details-occupation', params: {id: occupation.idOccupation}}" v-b-tooltip="'Voir les details'"><i class="fa fa-eye"></i></b-button></b-td>
+                                    </b-tr>
+                                </b-tbody>
+                            </b-table-simple>
                         </div>
                     </b-row>
                     <paginator hr="top" :offset="offset" :total="occupations.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" />                   
@@ -126,12 +123,6 @@ export default {
     beforeMount() {
         this.getOccupations()
     },
-    mounted(){
-        this.$root.$on("new-occupation-added", () => {
-         this.getOccupations();
-         this.commandeOccupation=false;
-     });
-    },
     methods: {
         sendData(){
             
@@ -142,12 +133,13 @@ export default {
             this.commandeOccupation=true;
         },
         addedOccupation(){
-            console.log("occupation ajoutée")
+            this.commandeOccupation=false;
+            this.getOccupations()
         },
     //recupération de la liste des logements
      getOccupations() {
             axios.get('occupations').then(response => response.result || []).then(occupations => {
-                this.occupations = this.occupations = occupations
+                this.occupations = this.trueOccupations = occupations
                 this.showOverlay = false
             })
      },

@@ -92,6 +92,11 @@ const routes = [{
         component: () =>
             import ('@/views/gestion-immobiliere/Occupations.vue')
     },
+    {
+        path: '/occupations/:id',
+        name: 'details-occupation',
+        component: () => import('@/views/gestion-immobiliere/DetailsOccupations.vue')
+    },
     /**
      * configuration et aide 
      */
@@ -115,8 +120,17 @@ const routes = [{
         name: 'depenses',
         component: () =>
             import ('@/views/gestion-immobiliere/depenses/ListDepenses.vue')
-      }
+      },
 
+
+    /**
+     * Finances
+     */
+    {
+        path: '/indexes',
+        name: 'indexes',
+        component: () => import('@/views/finances/Indexes.vue')
+    }
 
 ]
 

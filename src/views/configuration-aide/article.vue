@@ -15,7 +15,7 @@
                             </div>
                         </div>
                         <div class="float-md-right">
-                            <b-button variant="danger" @click.prevent="() => {modal.action = 'add'; $bvModal.show('modal-cite')}"><i class="fa fa-plus-circle"></i> Nouveau article</b-button>
+                            <b-button variant="danger" @click.prevent="() => {modal.action = 'add'; $bvModal.show('modal-article')}"><i class="fa fa-plus-circle"></i> Créer un article</b-button>
                         </div>
                     </div>
                 </div>
@@ -23,13 +23,15 @@
                 <b-overlay :show="showOverlay" rounded="sm">
                     <b-alert variant="info" class="text-center" show v-if="!articles.length">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                        <span class="h4 d-inline-flex ml-2">Aucun articles trouvée</span>
+                        <span class="h4 d-inline-flex ml-2">Aucun article trouvé</span>
+                        <br>
+                        <b-button size="lg" class="my-2" variant="outline-info" :disabled="submitted" @click="generateArticles">Générer des articles automatiquement <b-spinner v-if="submitted" small /></b-button>
                         <p>Un article est une disposition d'un texte législatif qui a pour objet d'énoncer une règle de droit ou qui en indique les éléments 
                         ou les modalités d'application8. Un article de loi peut contenir une règle de droit absolue, impérative ou supplétive</p>
                     </b-alert> 
                     <b-row v-else class="layout-wrap">
                         <b-col v-for="(article, i) in items" :key="article.idArticle || i" xl="3" lg="4" cols="12" sm="6" class="animated flipInX mb-4">
-                            <app-article @makeUpdate="updateArticle" @deleted="removeCite" :article="article" @showDetails="showDetails" />
+                            <app-article @makeUpdate="updateArticle" @deleted="removeArticle" :article="article" @showDetails="showDetails" />
                         </b-col>
                     </b-row>
                     <paginator hr="top" :offset="offset" :total="articles.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" />                   
@@ -37,22 +39,25 @@
             </div>
       </div>
 
-          <!-- MODALE POUR AJOUTER/MODIFIER UN article -->
-        <b-modal id="modal-cite" size="sm" ok-only ok-title="Valider" @hidden="resetModal" @ok="submitModal">
-            <template #modal-title>
-                <span v-if="modal.action == 'add'">Ajouter un article</span>
-                <span v-if="modal.action == 'edit'">Edition de l'article</span>
-            </template>
-            <b-form-group label="Titre  de l'article">
-                <b-form-input v-model="modal.titreArticle" placeholder="Ex: OBJET-USAGE DES LIEUX" trim></b-form-input>
-            </b-form-group>
-            <b-form-group label="Numéro">
-                <b-form-input type="number" v-model="modal.numArticle" placeholder="Ex: 1" trim></b-form-input>
-            </b-form-group>
+          <!-- MODALE POUR AJOUTER/MODIFIER UN ARTICLE -->
+        <b-modal id="modal-article" size="sm" ok-only ok-title="Valider" @hidden="resetModal" @ok="submitModal">
+            <b-overlay :show="showOverlayModal" rounded="sm">
+                <template #modal-title>
+                    <span v-if="modal.action == 'add'">Ajouter un article</span>
+                    <span v-if="modal.action == 'edit'">Edition de l'article</span>
+                </template>
+                <b-form-group label="Titre  de l'article">
+                    <b-form-input v-model="modal.titreArticle" placeholder="Ex: OBJET-USAGE DES LIEUX" trim></b-form-input>
+                </b-form-group>
+                <b-form-group label="Numéro">
+                    <b-form-input v-model="modal.numArticle" placeholder="Ex: 1" trim></b-form-input>
+                </b-form-group>
+            </b-overlay>
         </b-modal>
 
 
-        <!-- MODALE POUR AFFICHER LES DETAILS D'UN Article -->
+
+        <!-- MODALE POUR AFFICHER LES DETAILS D'UN ARTICLE -->
         <div v-if="article" class="modal fade edit-layout-modal" id="editLayoutItem" tabindex="-1" role="dialog" aria-labelledby="editLayoutItemLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -61,7 +66,7 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body pt-2">
-                        <details-articles @batimentsChanged="changeBatiments" :article="article" />
+                        <details-article :article="article" />
                     </div>
                 </div>
             </div>
@@ -72,7 +77,7 @@
 
 <script>
 import AppArticle from '@/components/_configuration-aide/Article.vue'
-import DetailsArticles from '@/components/_configuration-aide/DetailsArticle.vue'
+import DetailsArticle from '@/components/_configuration-aide/DetailsArticle.vue'
 
 const php  = require ( 'phpjs' ) ; 
 
@@ -80,7 +85,7 @@ export default {
     name: 'Articles',
     components: {
         AppArticle,
-        DetailsArticles,
+        DetailsArticle,
     },
     computed: {
         /**
@@ -97,6 +102,7 @@ export default {
         articles: [],
         trueArticles: [],
         showOverlay: true,
+        showOverlayModal:false,
         article: null,
         currentPage: 1,
         perPage: 10,
@@ -132,7 +138,7 @@ export default {
         },
 
         /**
-         * Recupere les cites au backend
+         * Recupere les articles au backend
          */
         getArticles() {
             axios.get('articles').then(response => response.result || []).then(articles => {
@@ -142,7 +148,7 @@ export default {
         },
 
            /**
-         * Affiche les details d'une cite
+         * Affiche les details d'un article
          * 
          * @param {Object} article
          */
@@ -160,28 +166,11 @@ export default {
         },
 
         /**
-         * Raffraichi la liste des batiments de la cité active
+         * Retire un article
          * 
-         * @param {Batiment[]} batiments
+         * @param {Integer} idArticle
          */
-        changeBatiments(batiments) {
-            this.cites = this.cites.map(elt => {
-                if (elt.idCite != this.cite.idCite) {
-                    return elt
-                }
-                return {
-                    ...elt,
-                    batiments
-                }
-            })
-            this.cite.batiments = batiments
-        },
-        /**
-         * Retire une cite
-         * 
-         * @param {Integer} idCite
-         */
-        removeCite(idCite) {
+        removeArticle(idArticle) {
             this.articles = this.articles.filter(elt => elt.idArticle != idArticle)
             this.trueArticles = this.trueArticles.filter(elt => elt.idArticle != idArticle)
         },
@@ -189,14 +178,14 @@ export default {
         resetModal() {
             this.modal = {
                 action: '',
-                nom: '', ref: '', idCite: '',rubriques:[]
+                nom: '', ref: '',rubriques:[]
             }
         },
         /**
-         * Validation du formulaire d'ajout/modification de la cite
+         * Validation du formulaire d'ajout/modification d'un article
          */
         submitModal(bvModalEvt) {
-            console.log(this.modal)
+               this.showOverlayModal=true;
             let dataArticleToSend = {
                 titre:this.modal.titreArticle,
                 numero:this.modal.numArticle,
@@ -213,46 +202,44 @@ export default {
                     }
                     this.articles = this.addNewArticle(this.articles, response.result)
                     this.trueArticles = this.addNewArticle(this.trueArticles, response.result)
-                    this.$bvModal.hide('modal-cite')
+                    this.$bvModal.hide('modal-article')
                     return App.notifySuccess(response.message)
+                }).catch(error => {
+                    App.notifyError(error.message)
                 })
             }
             if (this.modal.action == 'edit') {
-                axios.put(`articles/${this.modal.idArticle}`, this.modal).then(response => {
+                let dataToEdit={
+                    titre:this.modal.titreArticle, numero: this.modal.numArticle
+                }
+                axios.put(`articles/${this.modal.idArticle}`, dataToEdit).then(response => {
                     if (!response.success) {
                         return App.alertError(response.message)
                     }
-                    this.articles = this.articles.map(elt => {
-                        if (elt.idArticle == this.modal.idArticle) {
-                            elt.nomCite = this.modal.nom
-                            elt.refCite = this.modal.ref
-                        }
-                        return elt
-                    })
-                    this.trueArticles = this.trueArticles.map(elt => {
-                        if (elt.idCite == this.modal.idCite) {
-                            elt.nomCite = this.modal.nom
-                            elt.refCite = this.modal.ref
-                        }
-                        return elt
-                    })
-                    this.$bvModal.hide('modal-cite')
+                    this.articles = this.renameArticle(this.articles, this.modal)
+                    this.trueArticles = this.renameArticle(this.trueArticles, this.modal)
+                    this.$bvModal.hide('modal-article')
                     return App.notifySuccess(response.message)
+                }).catch(error => {
+                    this.modal.submitted = false 
+                    return App.alertError(error.message)
                 })
             }
+
+            this.showOverlayModal=false;          
         },
         updateArticle(article) {
             this.modal = {
                 action: 'edit',
-                titreArticle: article.titreArticle, numArticle: article.numArticle, idCite: article.idArticle
+                titreArticle: article.titreArticle, numArticle: article.numArticle, idArticle: article.idArticle
             }
-            this.$bvModal.show('modal-cite')
+            this.$bvModal.show('modal-article')
         },
 
         addNewArticle(articles, article) {
             let exist = false
             for (let i = 0; i < articles.length; i++) {
-                if (articles[i].idCite == article.idArticle) {
+                if (articles[i].idArticle == article.idArticle) {
                     exist = true 
                     break
                 }
@@ -261,6 +248,18 @@ export default {
                 articles.push(article)
             }
             return articles
+        },
+         /**
+         * Modifie les info d'un article existant dans la liste des articles
+         */
+        renameArticle(articles, article) {
+            return articles.map(elt => {
+                if (elt.idArticle == article.idArticle) {
+                    elt.titreArticle = article.titreArticle
+                    elt.numArticle = article.numArticle
+                }
+                return elt
+            })
         }
     }
 }

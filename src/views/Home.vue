@@ -11,7 +11,10 @@
                         <span class="font-weight-bold">vos cités, vos batiments, vos logements, vos habitants,...</span>
                         <div class="row-fluid">
                             <vue-slider v-model="pourcentage" :disabled="disabled"></vue-slider>
-                            <p>Votre profil est prêt à <b>15%</b></p>
+                            <p>Votre profil est prêt à <b>15%</b>
+                            <b-tooltip target="button-complete-profil" placement="top" noninteractive variant="success">mon profil</b-tooltip>
+                            <button type="button" class="btn btn-primary diposition" id="button-complete-profil"  @click.prevent="gotToProfile">Compléter mon profil  <i class="fas fa-arrow-alt-circle-right"></i></button>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -41,7 +44,7 @@
                 <div class="row-fluid">
                     <div class="span12 p-t-10 p-b-10 p-l-10">
                         <h4 class="m-b-20 m-t-20 fontTitle">comment créer mon batiment ?</h4>
-                        <b-card img-src="/img/batiment.jpg" img-alt="Card image" img-right>
+                        <b-card img-src="/img/imgBatiment.jpg" img-alt="Card image" img-right>
                             <b-card-text class="text-form-bien">
                                 Nous entendons par batiment dans notre plateforme, une construction destinée à servir d'abri ou d'habitat et à protéger des biens et des personnes des conditions météorologiques extérieures.
                                 Pour créer un batiment, vous devez renseigner un nom, une reférence et de manière optionnelle la citè à laquelle appartient votre batiment.                                
@@ -58,14 +61,14 @@
                 <div class="row-fluid">
                     <div class="span12 p-t-10 p-b-10 p-l-10">
                         <h4 class="m-b-20 m-t-20 fontTitle">comment créer mon logement?</h4>
-                        <b-card img-src="/img/bgHousing.jpg" img-alt="Card image" img-right>
+                        <b-card img-src="/img/imgLogementHomepage.jpg" img-alt="Card image" img-right>
                             <b-card-text class="text-form-bien">
                                 Nous entendons par batiment dans notre plateforme, un local utilisé pour l'habitation. Il peut etre libre ou associé à un batiment.
                                 Pour créer votre logement, il vous sera démandé la reférence, le type de logement, un intervalle de prix(prix min et prix max),
                                 les coordonnées de ce dernier et ses caractéristiques(nombre de chambres, salons, cuisines, douches...)
                             </b-card-text>
-                            <b-tooltip target="button-new-logement" placement="top" noninteractive variant="success">nouveau logement</b-tooltip>
-                                <button type="button" class="btn btn-primary diposition" id="button-new-logement" @click.prevent="createLogement"><i class="fa fa-plus-circle"></i>Créer un logement</button>
+                            <b-tooltip target="button-new-logement" placement="top" noninteractive variant="success">Accéder aus logements</b-tooltip>
+                                <button type="button" class="btn btn-primary diposition" id="button-new-logement" @click.prevent="createLogement"><i class="fa fa-plus-circle"></i>Acceder aux logements</button>
                         </b-card>
                     </div>
                 </div>
@@ -82,8 +85,8 @@
                                 logements. Pour créer un habitant vous devez tout d'abord chosir le mode de création:est ce qu'il s'agit d'un utlisaeur entidaté ou alors
                                 d'un habitant disposant d'un code utilisateur.
                             </b-card-text>
-                            <b-tooltip target="button-new-habitant" placement="top" noninteractive variant="success">nouveau locataire</b-tooltip>
-                                <button type="button" class="btn btn-primary diposition" id="button-new-habitant"  @click.prevent="createHabitant"><i class="fa fa-plus-circle"></i>Créer un habitant</button>
+                            <b-tooltip target="button-new-habitant" placement="top" noninteractive variant="success">acceder aux habitants</b-tooltip>
+                                <button type="button" class="btn btn-primary diposition" id="button-new-habitant"  @click.prevent="createHabitant"><i class="fa fa-plus-circle"></i>Accéder aux habitants</button>
                         </b-card>
                     </div>
                 </div>
@@ -116,8 +119,10 @@ export default {
         },
         createHabitant(){
             this.$router.push({name: 'habitants', query: {target: "call-habitant"}}) 
+        },
+        gotToProfile(){
+            this.$router.push({name: 'profil', query: {target: "call-profile"}}) 
         }
-        
     }
 }
 </script>
@@ -140,5 +145,8 @@ export default {
  }
  .diposition{
     float:right;
+ }
+ .display-image{
+     max-height: 100%;
  }
 </style>

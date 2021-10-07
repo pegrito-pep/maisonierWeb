@@ -14,8 +14,13 @@
                                 </form>
                             </div>
                         </div>
-                        <div class="float-md-right">
+                        <!--<div class="float-md-right">
                             <b-button variant="danger" @click.prevent="() => {modal.action = 'add'; $bvModal.show('contrat-modal'),getArticle()}"><i class="fa fa-plus-circle"></i> Nouveau Modèle</b-button>
+                        </div>-->
+                        <div class="float-md-right">
+                            <b-button variant="danger" @click.prevent="callContratForm" v-b-modal.modal-xl>
+                                <i class="fa fa-plus-circle"></i> Ajouter un modèle de contrat
+                            </b-button>
                         </div>
                     </div>
                 </div>
@@ -35,119 +40,17 @@
                 </b-overlay>
             </div>
       </div>
-      <b-modal :header-bg-variant="headerBgVariant" hide-footer  :header-text-variant="headerTextVariant" id="contrat-modal" size="xl" title="Extra Large Modal">
-       <template #modal-title>
-                <span v-if="modal.action == 'add'">Ajouter un Modèle contrat</span>
-                <span v-if="modal.action == 'edit'">Edition d'un modèle de contrat</span>
-        </template>
-        <form-wizard @on-complete="onComplete">
-            <tab-content title="Details Contrat">
-                    <div class="row">
-                        <div class="col-sm-6">
-                                <div class="input-group input-group-warning">
-                                <span class="input-group-prepend"><label class="input-group-text"><i class="ik ik-file"></i></label></span>
-                                    <input type="text" v-model="modelContrat.title" class="form-control" placeholder="titre du contrat">
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="input-group input-group-success">
-                                    <span class="input-group-prepend"><label class="input-group-text"><i class="ik ik-shield"></i></label></span>
-                                        <input type="text" v-model="modelContrat.libele" class="form-control" placeholder="Libelle du contrat">
-                                </div>
-                            </div>
-                            </div>
-            </tab-content>
-            <tab-content title="Choisir les rubriques" icon="fas fa-user">
-                <div class="accordion" role="tablist">
-                    <b-card no-body class="mb-1" v-for="items in articles" :key="items.idArticle">
-                    <b-card-header header-tag="header" class="p-1" role="tab">
-                        <b-button block v-b-toggle.accordion-1 variant="info">{{items.titreArticle}}</b-button>
-                    </b-card-header>
-                    <b-collapse id="accordion-1" visible accordion="my-accordion" role="tabpanel">
-                        <b-card-body>
-                        <b-card-text>
-                            <div class="row layout-wrap" id="layout-wrap">
-                                            <div class="col-12 list-item" v-for="rubriques in items.Rubriques" :key="rubriques.idRubrique">
-                                                <div class="card d-flex flex-row mb-3">
-                                                    <a class="d-flex card-img" href="#editLayoutItem" data-toggle="modal" data-target="#editLayoutItem">
-                                                        <!-- <img src="../img/portfolio-1.jpg" alt="Donec sit amet est at sem iaculis aliquam." class="list-thumbnail responsive border-0"> -->
-                                                        <span class="badge badge-pill badge-primary position-absolute badge-top-left">New</span>
-                                                        <span class="badge badge-pill badge-secondary position-absolute badge-top-left-2">Trending</span>
-                                                    </a>
-                                                    <div class="d-flex flex-grow-1 min-width-zero card-content">
-                                                        <div class="card-body align-self-center d-flex flex-column flex-md-row justify-content-between min-width-zero align-items-md-center">
-                                                            <a class="list-item-heading mb-1 truncate w-180 w-xs-100" href="#editLayoutItem" data-toggle="modal" data-target="#editLayoutItem">
-                                                            {{rubriques.descRubrique}}
-                                                            </a>
-                                                            <div class="w-15 w-xs-100">
-                                                                <span v-if="rubriques.value == true" class="badge badge-pill badge-secondary">On Hold</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="list-actions">
-                                                            <a href="#editLayoutItem" data-toggle="modal" data-target="#editLayoutItem"><i class="ik ik-eye"></i></a>
-                                                            <a v-if="rubriques.value == true" href="layout-edit-item.html"><i class="ik ik-edit-2"></i></a>
-                                                        </div>
-                                                        <div class="custom-control custom-checkbox pl-1 align-self-center">
-                                                            <label class="custom-control custom-checkbox mb-0">
-                                                                <input type="checkbox" @change="Rubrique(rubriques)"  class="custom-control-input">
-                                                                <span class="custom-control-label"></span>
-                                                            </label>
-                                                        </div>
-                                                        
-                                                    </div>
-                                                </div>
-                                            </div>
-                            </div>
-                        </b-card-text>
-                        </b-card-body>
-                    </b-collapse>
-                    </b-card>
-                </div>
-            </tab-content>
-            <tab-content title="Last step">
-                <div class="card">
-                                <div class="card-header text-center"><h2 class="d-block w-100">{{modelContrat.title}}</h2></div>
-                                <div class="card-body">
-                                    <div class="row invoice-info">
-                                        <div class="col-sm-12 invoice-col">
-                                            Entre
-                                            <address>
-                                                <strong>ThemeKit,</strong><br>795 Folsom Ave, Suite 546 <br>San Francisco, CA 54656 <br>Phone: (123) 123-4567<br>Email: info@themekit.com
-                                            </address>
-                                        </div>
-                                        <div class="col-sm-12 invoice-col">
-                                            Et
-                                            <address>
-                                                <strong>John Doe</strong><br>795 Folsom Ave, Suite 600<br>San Francisco, CA 94107<br>Phone: (555) 123-7654<br>Email: john.doe@example.com
-                                            </address>
-                                        </div>
-                                        <div class="col-sm-12 invoice-col">
-                                            <h3>Il a été convenu ce qui suit:</h3><br>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-12" v-for=" items in selectArcticle" :key="items.title" >
-                                            <h5> {{items.title}} </h5>
-                                            <p v-for="item in items.rubriques" :key="item.idRubrique"> {{item.descRubrique}} </p>
-                                        </div>
-                                    </div>
-                                    <div class="row no-print">
-                                        <div class="col-12">
-                                            <button type="button" class="btn btn-primary pull-right" style="margin-right: 5px;"><i class="fa fa-download"></i> Generate PDF</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-            </tab-content>
-        </form-wizard>
-      </b-modal>
+    <contrat-form v-if="commandeContrat" @closeContratModal="onCloseSet" />
 </div>
 </template>
 
 <script>
+
 // Je renome le composant Cite en AppCite parcequ'il existe une balise <cite>. Du coup le composant n'allait pas etre prise en compte
-import AppContrat from '@/components/_configuration-aide/Contrat.vue'
+import AppContrat from '@/components/_configuration-aide/Contrat.vue';
+
+import ContratForm from "@/views/configuration-aide/contratForm.vue";
+
 
 const php  = require ( 'phpjs' ) ; 
 
@@ -155,6 +58,7 @@ export default {
     name: 'Contrats',
     components: {
         AppContrat,
+        ContratForm
     },
     computed: {
         /**
@@ -172,13 +76,8 @@ export default {
         trueContrats: [],
         articles:[],
         selectArcticle:[],
-        modelContrat:{
-          title:'',
-          libele:'',
-          rubriques:[]
-        },
-        headerBgVariant: 'dark',
-        headerTextVariant: 'light',
+
+
         showOverlay: true,
         contrat: null,
         currentPage: 1,
@@ -190,7 +89,9 @@ export default {
           modal: {
             action: '',
             nom: '', ref: '', idCite: ''
-        }
+        },
+        //données manipulées pour la gestion du form d'ajout d'un modèle de contrat
+        commandeContrat: false,
     }),
     watch: {
         search(value) {
@@ -205,18 +106,56 @@ export default {
     // created(){
     //     this.getArticle()
     // },
-    beforeMount() {
-        this.getContrats()
+    async beforeMount() {
+        await this.getContrats()
+        await this.getData()
+    },
+    mounted(){
+        this.$root.$on("new-modele-contrat-added", () => {
+        this.getContrats();
+        this.commandeContrat = false;
+    });
     },
     methods: {
-           /**
+            //methode de récupération des logements et des batiments
+        async getData(){
+            let batiments=[]; let logements=[];
+            try {
+                batiments=await axios.get("batiments").then(response =>response.result);
+                storage.set('batiments', batiments)
+            } catch (error) {
+                console.log(error)
+            }
+            try {
+                logements=await axios.get("logements").then(response => response.result);
+                storage.set('logements', logements)
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        /**
+         * appel du formulaire d'ajout/edit d'un modèle de contrat
+         */
+        callContratForm(){
+            this.commandeContrat = true;
+        },
+        /**
+            * reception de l'évènement émis de fermeture du modal d'ajout d'un logement
+            * ceci permet de re-initialiser le composant(formwizard) d'ajout d'un logement de manière appropriée
+        */
+        onCloseSet() {
+            this.commandeContrat = false;
+        },
+               /**
          * Recupere les modèle de contrats au backend
          */
-        getContrats() {
-            axios.get('modeles-contrats').then(response => response.result || []).then(contrats => {
-                this.contrats = this.trueContrats = contrats
-                this.showOverlay = false
-            })
+        async getContrats() {
+           try {
+                this.contrats=await axios.get("modeles-contrats").then(response =>response.result);
+            } catch (error) {
+                console.log(error)
+            }
+            this.showOverlay=false;
         },
         onComplete(){
             let data = {
@@ -275,13 +214,7 @@ export default {
         },
 
 
-        async getArticle(){
-          console.log('erreur')
-         await axios.get('articles').then(response => response.result || []).then(articles =>{ 
-            this.articles = articles
-            console.log(articles)
-          })
-        },
+
        /**
         * this function is for set up the different item on the for step 
        */
@@ -305,6 +238,24 @@ export default {
                 titreArticle: article.titreArticle, numArticle: article.numArticle, idCite: article.idArticle
             }
             this.$bvModal.show('modal-cite')
+        },
+
+
+
+        romanize (num) {
+            if (!+num) {
+                return false;
+            }
+            var	digits = String(+num).split(""),
+                key = ["","C","CC","CCC","CD","D","DC","DCC","DCCC","CM",
+                    "","X","XX","XXX","XL","L","LX","LXX","LXXX","XC",
+                    "","I","II","III","IV","V","VI","VII","VIII","IX"],
+                roman = "",
+                i = 3;
+            while (i--) {
+                roman = (key[+digits.pop() + (i * 10)] || "") + roman;
+            }
+            return Array(+digits.join("") + 1).join("M") + roman;
         },
 
     },

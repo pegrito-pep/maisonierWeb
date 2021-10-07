@@ -326,14 +326,16 @@ export default {
     }
   },
   beforeMount() {
-    this.getHousing();
+      setTimeout(() => {
+          this.getHousing();
+      }, 5000)
   },
   mounted() {
     this.$root.$on("new-logement-added", () => {
       this.getHousing(false);
       this.commandeHousing = false;
+        this.autoAddTarget();
     });
-    this.autoAddTarget();
   },
   methods: {
     /**
@@ -345,19 +347,14 @@ export default {
     },
     //recupération de la liste des logements
     async getHousing(begin) {
-      this.showOverlay = true;
-      this.logements = this.trueLogements = await axios
-        .get("logements")
-        .then(response => response.result || []);
-      this.showOverlay = false;
-      if (begin !== false) {
-        this.typesLogements = await axios
-          .get("types-logements?all=true")
-          .then(response => response.result || []);
-        this.cites = (
-          await axios.get("cites").then(response => response.result || [])
-        ).filter(elt => elt.batiments.length > 0);
-      }
+        this.showOverlay = true;
+        this.logements = this.trueLogements = await axios.get("logements").then(response => response.result || []);
+        this.showOverlay = false;
+      
+        if (begin !== false) {
+            this.typesLogements = await axios.get("types-logements?all=true").then(response => response.result || []);
+            this.cites = (await axios.get("cites").then(response => response.result || [])).filter(elt => elt.batiments.length > 0);
+        }
         this.autoDetailsTarget();
     },
     /**
@@ -452,8 +449,14 @@ export default {
     updateLogement(logement) {
       console.log("logement", logement);
     },
-    removeLogement(logement) {
-      console.log("logement", logement);
+    /**
+      * Retire un logement
+      * 
+      * @param {Integer} idLogement
+    */
+    removeLogement(idLogement) {
+      this.logements = this.logements.filter(elt => elt.idLogement != idLogement)
+      this.trueLogements = this.trueLogements.filter(elt => elt.idLogement != idLogement)
     },
 
     /**

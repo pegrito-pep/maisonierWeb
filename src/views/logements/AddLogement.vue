@@ -823,14 +823,6 @@ export default {
             }
             this.showOverlay=false;
         },
-        //recuperation de la liste des types de Logements
-        async getTypesLogements(){
-            this.typesLogement = await axios.get("types-logements?all=true").then(response => response.result);
-        },
-        //liste de tous les sosu-types de logements
-        async getSousTypesLogement(){
-            this.sousTypesLogements = await axios.get("soustypes-logements").then(response => response.result);
-        },
         uploadImageSuccess(formData, index, fileList) {
             this.photos=[];
            console.log("taille Totale", fileList.length-1,"formaData",formData);
@@ -919,10 +911,7 @@ export default {
             }
         }, 50)
        await this.getAllBatiments();
-       //await this.getAllCountries();
        await this.getLogementsData();
-      /*  await  this.getTypesLogements();
-       await this.getSousTypesLogement(); */
     }
 }
 </script>

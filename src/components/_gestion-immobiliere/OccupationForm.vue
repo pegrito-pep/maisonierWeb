@@ -1,154 +1,118 @@
 <template>
-  <b-modal
-    id="modal-lg"
-    size="lg"
-    ok-only
-    ok-title="Valider"
-    ref="occupation-modal"
-    @hidden="resetModal"
-    @ok="submitModal"
-    :title="action == 'add' ? 'Affecter une occupation' : 'Edition'"
-  >
-    <b-overlay :show="showOverlay" rounded="sm">
-      <b-row>
-        <b-col>
-            <b-form-group label="Loyer" description="Combien devra payer le résident" >
-                <b-form-input v-model="loyer" placeholder="Ex: 45000" trim></b-form-input>
-          </b-form-group>
-        </b-col>
-        <b-col>
-          <b-form-group
-            label="Mode de paiement"
-            description="Le résident devra t-il payer son loyer courant avant ou après l'avoir consommé"
-          >
-             <b-form-radio-group
-                  id="radio-slots"
-                  v-model="occupation.mode"
-                  :options="options"
-                  name="radio-options-slots"
-              >
-              </b-form-radio-group>
-          </b-form-group>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <b-form-group label="Comment s'effectuera la facturation en eau de ce résident">
-              <b-form-select
-                v-model="occupation.eau"
-                :options="optionscharges"
-                class="mb-1"
-              ></b-form-select>
-          </b-form-group>
-        </b-col>
-        <b-col>
-          <b-form-group label="Comment s'effectuera la facturation en électricité de ce résident">
-              <b-form-select
-                v-model="occupation.energie"
-                :options="optionscharges"
-                class="mb-1"
-              ></b-form-select>
-          </b-form-group>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <b-form-group
-            label="Prix unitaire de l'energie"
-            description="L'exemple suggéré suppose une consommation par forfait"
-          >
-            <b-form-input
-              v-model="occupation.puEnergie"
-              placeholder="Ex: 2500"
-              trim
-            ></b-form-input>
-          </b-form-group>
-        </b-col>
-        <b-col>
-          <b-form-group
-            label="Prix unitaire de l'eau"
-            description="l'exemple suggéré suppose une facturation par index du compteur"
-          >
-            <b-form-input
-              v-model="occupation.puEau"
-              placeholder="Ex: 150"
-              trim
-            ></b-form-input>
-          </b-form-group>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="5">
-          <b-form-group label="Quel est le logement concerné par l'occupation">
-            <div style="height: 10.5em">
-                <b-form-select
-                v-model="occupation.idLogement"
-                :options="logements"
-                class="mb-1"
-                @input="setSlide_logement"
-                value-field="idLogement"
-                text-field="refLogement"
-                disabled-field="notEnabled"
-              ></b-form-select>
-              <b-carousel :interval="0" controls v-model="selected_index_logement" ref="logementCarousel">
-                <b-carousel-slide
-                  style="height: 10.5em"
-                  class="fluid w-100 responsive border-0"
-                  v-for="(logement, i) in logements"
-                  :key="i"
-                   :img-src="empty(logement.photos) ? '/img/bgHousing.jpg' : logement.photos[0].image"
-                />
-              </b-carousel>
-            </div>
-          </b-form-group>
-        </b-col>
-        <b-col cols="7">
-          <b-form-group label="Qui est le résident pour lequel l'occupation est défini">
-            <div style="height: 10.5em">
-              <b-form-select
-                v-model="occupation.idLocataire"
-                :options="locataires"
-                class="mb-1"
-                @input="setSlide_locataire"
-                value-field="idLocataire"
-                text-field="nomLocataire"
-                disabled-field="notEnabled"
-              ></b-form-select>
-              <b-carousel :interval="0" controls v-model="selected_index_locataire" ref="locataireCarousel">
-                <b-carousel-slide
-                  style="height: 10.5em"
-                  class="fluid w-100 responsive border-0"
-                  v-for="(locataire, i) in locataires"
-                  :key="i"
-                  :img-src="locataire.avatar"
-                />
-              </b-carousel>
-            </div>
-          </b-form-group>
-        </b-col>
-      </b-row>
-    </b-overlay>
-  </b-modal>
+    <b-modal id="modal-lg" size="lg" ok-only ok-title="Valider" ref="occupation-modal" @hidden="resetModal" @ok="submitModal" :title="action == 'add' ? 'Affecter une occupation' : 'Edition'">
+        <b-overlay :show="showOverlay" rounded="sm">
+            <b-row>
+                <b-col>
+                    <b-form-group label="Loyer" description="Combien devra payer le résident" >
+                        <b-form-input v-model="loyer" placeholder="Ex: 45000" trim></b-form-input>
+                </b-form-group>
+                </b-col>
+                <b-col>
+                    <b-form-group label="Mode de paiement" description="Le résident devra t-il payer son loyer courant avant ou après l'avoir consommé">
+                        <b-form-radio-group v-model="occupation.mode" name="radio-options-slots" :options="[
+                            { text: 'Prépayé', value: 'prepayer' }, { text: 'Postpayé', value: 'postpayer' }
+                        ]"/>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <b-form-group label="Facturation d'eau" description="Comment s'effectuera la facturation en eau de ce résident">
+                        <b-form-select v-model="occupation.eau" class="mb-1" :options="[
+                            { value: 'index', text: 'Index' }, { value: 'forfait', text: 'Forfait' },
+                        ]" />
+                    </b-form-group>
+                </b-col>
+                <b-col>
+                    <b-form-group label="Prix unitaire de l'eau" description="L'exemple suggéré suppose une facturation par index du compteur">
+                        <b-form-input min="0" v-model="occupation.puEau" placeholder="Ex: 150" trim type="number" />
+                    </b-form-group>
+                </b-col>
+                <b-col>
+                    <b-form-group label="Index initial" description="Index du compteur d'eau à l'entrée du locataire">
+                        <b-form-input min="0" v-model="indexEau" placeholder="Ex: 095" trim type="number" />
+                    </b-form-group>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <b-form-group label="Facturation d'électricité" description="Comment s'effectuera la facturation en électricité de ce résident">
+                    <b-form-select class="mb-1" v-model="occupation.energie" :options="[
+                            { value: 'index', text: 'Index' }, { value: 'forfait', text: 'Forfait' },
+                        ]" />
+                    </b-form-group>
+                </b-col>
+                <b-col>
+                    <b-form-group label="Prix unitaire de l'energie" description="L'exemple suggéré suppose une consommation par forfait">
+                        <b-form-input min="0" v-model="occupation.puEnergie" placeholder="Ex: 2500" trim type="number" />
+                    </b-form-group>
+                </b-col>
+                <b-col>
+                    <b-form-group label="Index initial" description="Index du compteur d'energie à l'entrée du locataire">
+                        <b-form-input min="0" v-model="indexEnergie" placeholder="Ex: 095" trim type="number" />
+                    </b-form-group>
+                </b-col>
+            </b-row>
+            <b-row class="mb-4">
+                <b-col>
+                    <b-form-group label="Quel est le logement concerné par l'occupation">
+                        <div style="height: 10.5em">
+                            <v-select :options="logements" v-model="occupation.idLogement" :reduce="logement => logement.idLogement" label="refLogement"  @input="setSlide_logement" />
+                            <b-carousel :interval="0" controls v-model="selected_index_logement" ref="logementCarousel">
+                                <b-carousel-slide style="height: 10.5em" class="fluid w-100 responsive border-0" 
+                                    v-for="(logement, i) in logements" :key="i" :img-src="empty(logement.photos) ? '/img/bgHousing.jpg' : logement.photos[0].image"
+                                />
+                            </b-carousel>
+                        </div>
+                    </b-form-group>
+                </b-col>
+                <b-col>
+                    <b-form-group label="Qui est le résident pour lequel l'occupation est défini">
+                        <div style="height: 10.5em">
+                            <v-select :options="locataires" v-model="occupation.idLocataire" :reduce="locataire => locataire.idLocataire" label="nomLocataire"  @input="setSlide_locataire" />
+                            <b-carousel :interval="0" controls v-model="selected_index_locataire" ref="locataireCarousel">
+                                <b-carousel-slide style="height: 10.5em" class="fluid w-100 responsive border-0"
+                                    v-for="(locataire, i) in locataires" :key="i" :img-src="locataire.avatar"
+                                />
+                            </b-carousel>
+                        </div>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+            <b-row class="mt-4">
+                <b-col>
+                    <b-form-group label="Date de debut du bail">
+                        <date-picker v-model="occupation.debut" placeholder="Selectionnez une date" format="dddd, DD MMMM YYYY" valueType="YYYY-MM-DD" class="w-100" :clearable="false" />
+                    </b-form-group>
+                </b-col>
+                <b-col class="mt-4">
+                     <b-form-checkbox v-model="occupation.endLastBail" switch>
+                        <span class="fa-lg">Mettre fin au bail précédent</span>
+                    </b-form-checkbox>
+                </b-col>
+            </b-row>
+        </b-overlay>
+    </b-modal>
 </template>
+
 <script>
+import DatePicker from 'vue2-datepicker';
+import 'vue2-datepicker/index.css';
+import 'vue2-datepicker/locale/fr';
+
 import notif from "@/plugins/notif.js";
 const php = require("phpjs");
 
 export default {
   name: "occupation-form",
+    components: {
+        DatePicker
+    },
   data: () => ({
     duree: [null, null],
     selected_index_logement: -1,
     selected_index_locataire: -1,
     selected_value: "",
-    options: [
-          { text: 'Prépayé', value: 'prepayer' },
-          { text: 'Postpayé', value: 'postpayer' }
-    ],
-    optionscharges: [
-          { value: 'index', text: 'Index' },
-          { value: 'forfait', text: 'Forfait' },
-    ],
     occupation: {
       loyer: "",
       mode: "",
@@ -156,8 +120,12 @@ export default {
       eau: "",
       puEnergie: "",
       puEau: "",
-      idLogement:"",
-      debut:""
+      idLogement: "",
+      idLocataire: "",
+      debut:"",
+      indexEnergie: 0,
+      indexEau: 0,
+      endLastBail: false
     },
     showOverlay: false,
     sendForm: false,
@@ -166,16 +134,23 @@ export default {
   }),
   watch: {
     selected_index_logement(value) {
-      this.occupation.idLogement = this.logements[value].idLogement;
+        const logement = this.logements[value]
+
+        this.occupation.idLogement = logement.idLogement;
+        this.indexEnergie = (logement.lastIndexEnergie) ? logement.lastIndexEnergie.nouveau : 0
+        this.indexEau = (logement.lastIndexEau) ? logement.lastIndexEau.nouveau : 0
     },
      selected_index_locataire(value) {
       this.occupation.idLocataire = this.locataires[value].idLocataire;
     }
   },
     computed: {
+        logementSelected() {
+            return this.logements.find(elt => elt.idLogement == this.occupation.idLogement)
+        },
         loyer: {
             get() {
-                const logement = this.logements.filter(elt => elt.idLogement == this.occupation.idLogement)[0]
+                const logement = this.logementSelected
                 if (!logement) {
                     return 0;
                 }
@@ -184,6 +159,30 @@ export default {
             set(value) {
                 this.occupation.loyer = value
             }      
+        },
+        indexEnergie: {
+            get() {
+                const logement = this.logementSelected
+                if (logement && logement.lastIndexEnergie) {
+                    return logement.lastIndexEnergie.nouveau
+                }
+                return 0
+            },
+            set(value) {
+               this.occupation.indexEnergie = value
+            }
+        },
+        indexEau: {
+            get() {
+                const logement = this.logementSelected
+                if (logement && logement.lastIndexEau) {
+                    return logement.lastIndexEau.nouveau
+                }
+                return 0
+            },
+            set(value) {
+              this.occupation.indexEau = value
+            }
         }
     },
   props: ["action"],
@@ -191,16 +190,20 @@ export default {
     empty(val) {
         return php.empty(val)
     },
+
     /**
      * Set l'image du carousel lorsqu'on change le logement
      */
     setSlide_logement(value) {
-      for (let index = 0; index < this.logements.length; index++) {
-        if (this.logements[index].idLogement == value) {
-          this.$refs.logementCarousel.setSlide(index);
-          break;
+        for (let index = 0; index < this.logements.length; index++) {
+            const logement = this.logements[index]
+            if (logement.idLogement == value) {
+                this.$refs.logementCarousel.setSlide(index);
+                this.indexEnergie = (logement.lastIndexEnergie) ? logement.lastIndexEnergie.nouveau : 0
+                this.indexEau = (logement.lastIndexEau) ? logement.lastIndexEau.nouveau : 0
+                break;
+            }
         }
-      }
     },
     setSlide_locataire(value) {
       for (let index = 0; index < this.locataires.length; index++) {
@@ -221,59 +224,57 @@ export default {
         puEau: "",
         idLogement: "",
         idLocataire: "",
-        debut:""
+        debut:"",
+        indexEnergie: 0,
+        indexEau: 0,
+        endLastBail: false
       };
     },
 
     //validation formulaire d'ajout/modification d'una annonce
     submitModal(bvModalEvt) {
-         this.annonce.duree = this.duree.join(",");
-      bvModalEvt.preventDefault();
-      if (php.empty(this.annonce.titre) || php.empty(this.annonce.description)|| php.empty(this.annonce.duree)) {
-                return App.error('Un titre, une description et une durée sont obligatoires')
-      }
-      if (this.annonce.titre.length <20) {
-        return App.error('Le titre doit contenir au moins 20 caractères')
-      }
-      if (this.annonce.description.length<200) {
-        return App.error('La description doit contenir au moins 200 caractères')
-      }
-      if (this.action == "add") {
-        this.showOverlay = true;
-          axios
-            .post("annonces", this.annonce)
-            .then(response => {
-              notif.success(response.message);
-              this.$refs["annonce-modal"].hide();
-              this.$emit("annonceAdded");
-              return App.notifySuccess(response.message);
-            })
-            .catch(error => {
-              return App.alertError(error.message);
-            });
-            setTimeout(() => {
+        bvModalEvt.preventDefault();
+        
+        if (this.action == "add") {
+            this.showOverlay = true;
+
+            axios.post('occupations', this.occupation).then(response => {
+                this.$emit('occupationAdded')
                 this.showOverlay = false;
-            }, 500);
-            
-      }
+                return App.notifySuccess(response.message)
+            }).catch(error => {
+                this.showOverlay = false;
+                return  App.alertError(error.message)
+            })
+        }
     },
+
    async getInitialiseData(){
      //this.showOverlay = true
         try {
-           this.logements = await axios.get("logements").then(response => response.result || []);
+            this.logements = await axios.get("logements").then(response => response.result || []);
+            if (this.logements[0]) {
+                const logement = this.logements[0]
+                this.occupation.idLogement = logement.idLogement;
+
+                if (logement.lastIndexEnergie) {
+                    this.indexEnergie = logement.lastIndexEnergie.nouveau
+                }
+                if (logement.lastIndexEau) {
+                    this.indexEau = logement.lastIndexEau.nouveau
+                }
+                this.loyer = (logement.prixMin + logement.prixMax) / 2
+            }
         } catch (error) {
            notif.error(error.message);
         }
         try {
-           this.locataires = await axios.get("locataires").then(response => response.result || []);
+            this.locataires = await axios.get("locataires").then(response => response.result || []);
+            if (this.locataires[0]) {
+                this.occupation.idLocataire = this.locataires[0].idLocataire;
+            }
         } catch (error) {
            notif.error(error.message);
-        }
-        if (this.logements[0]) {
-            this.occupation.idLogement = this.logements[0].idLogement;
-        }
-        if (this.locataires[0]) {
-            this.occupation.idLogement = this.logements[0].idLogement;
         }
         //this.showOverlay = false
     },

@@ -7,16 +7,16 @@
         <div class="tab-content mt-3">
             <div class="tab-pane fade show active">
                 <div v-if="section == 'rubriques'">
-                    <b-alert variant="info" show v-if="!article.Rubriques.length">
+                    <b-alert variant="info" show v-if="!article.rubriques.length">
                         <i class="fa fa-exclamation-triangle fa-3x float-left"></i> 
                         <span class="h4 d-inline-flex ml-2">Aucune rubriques enregistré pour le moment</span>
                     </b-alert>   
                     <div v-else style="height: 75vh;">
-                        <paginator no-control hr="bottom" :total="article.Rubriques.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" />                   
+                        <paginator no-control hr="bottom" :total="article.rubriques.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" />                   
                         <div style="height: 90%; overflow-y: auto; overflow-x: hidden">
                             <b-row class="layout-wrap">
-                                <b-col v-for="(rubriques, i) in items" :key="rubriques.idRubrique || i" cols="6">
-                                    <rubriques @deleted="removeBatiment" :rubrique="rubriques" is-sub />
+                                <b-col v-for="(rubrique, i) in items" :key="rubrique.idRubrique || i" cols="6">
+                                    <rubriques @deleted="removeRubrique" :rubrique="rubrique" is-sub />
                                 </b-col>
                             </b-row>    
                         </div> 
@@ -40,34 +40,24 @@
                                 </b-form-group>-->
                                 </b-col>
                                 <b-col md="4" lg="4">
-                                   <!-- <b-form-group label="A t'elle une valeur ?" v-slot="{ ariaDescribedby }">
-                                        <b-form-radio-group
-                                            id="radio-slots"
-                                            v-model="rubrique.valeur"
-                                            :options="options"
-                                            :aria-describedby="ariaDescribedby"
-                                            name="radio-options-slots"
-                                        >
-                                        </b-form-radio-group>
-                                    </b-form-group>-->
-                               <b-form-group label="A t'elle une valeur ?">
-                                 <div class="form-radio">
-                                                    <form>
-                                                        <div class="radio radio-outline radio-inline">
-                                                            <label>
-                                                                <input type="radio"  name="valeur" checked="checked">
-                                                                <i class="helper"></i>Oui
-                                                            </label>
-                                                        </div>
-                                                        <div class="radio radio-outline radio-inline">
-                                                            <label>
-                                                                <input type="radio" name="valeur">
-                                                                <i class="helper"></i>Non
-                                                            </label>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                </b-form-group>
+                                    <b-form-group label="A t'elle une valeur ?">
+                                            <div class="form-radio">
+                                                <form>
+                                                    <div class="radio radio-outline radio-inline">
+                                                        <label>
+                                                            <input type="radio"  name="valeur" checked="checked">
+                                                            <i class="helper"></i>Oui
+                                                        </label>
+                                                    </div>
+                                                    <div class="radio radio-outline radio-inline">
+                                                        <label>
+                                                            <input type="radio" name="valeur">
+                                                            <i class="helper"></i>Non
+                                                        </label>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </b-form-group>
                                 </b-col>
                                 <b-col><b-form-group label="Action">
                                     <b-button data-repeater-delete variant="outline-danger"><i class="fa fa-times"></i></b-button>
@@ -104,7 +94,7 @@ export default {
          * Elements affichés avec prise en charge de la pagination
          */
         items() {
-            return php.array_slice(this.article.Rubriques, this.offset, this.perPage)
+            return php.array_slice(this.article.rubriques, this.offset, this.perPage)
         },
         offset() {
             return (this.currentPage * this.perPage) - this.perPage

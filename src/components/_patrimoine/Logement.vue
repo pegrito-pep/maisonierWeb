@@ -5,7 +5,7 @@
                 <b-carousel v-if="logement.photos.length>0" :interval="4000" controls indicators background="#ababab" img-width="1024" img-height="15em">
                      <b-carousel-slide style="height: 15em" class="responsive border-0" v-for="(photo, i) in logement.photos" :key="photo.idPhoto || i" :img-src="photo.image|| '/img/bgCity.jpg'" />
                 </b-carousel>
-                <img v-else src="/img/bgHousing.jpg" alt="" style="height: 15em" class="list-thumbnail responsive border-0">
+                <img v-else src="/img/imgLogementHomepage.jpg" alt="" style="height: 15em" class="list-thumbnail responsive border-0">
                 <span v-if="!logement.etatLogement" class="badge badge-pill badge-danger position-absolute badge-top-left">Libre</span>
                 <span v-else class="badge badge-pill badge-success position-absolute badge-top-left">Occupé</span>
             </a>
@@ -77,7 +77,7 @@ export default {
          * Suppression d'un logement
          */
         remove() {
-            App.confirm(`Voullez vous vraiment supprimer le logement " <b>${this.logement.nomLogement}</b> " ?`, { confirm: () => {
+            App.confirm(`Voullez vous vraiment supprimer le logement " <b>${this.logement.refLogement}</b> " ?`, { confirm: () => {
                 axios.delete(`logements/${this.logement.idLogement}`).then(response => {
                     if (!response.success) {
                         return App.notifyError(response.message)
