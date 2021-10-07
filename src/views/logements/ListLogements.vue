@@ -44,7 +44,7 @@
             </div>
 
             <div class="float-md-right">
-              <b-button variant="danger" @click.prevent="addLogement" v-b-modal.modal-lg>
+              <b-button variant="danger" v-b-modal.addLogement>
                 <i class="fa fa-plus-circle"></i> Nouveau Logement
               </b-button>
 
@@ -177,7 +177,12 @@
       </b-modal>
     </div>
 
-    <add-logement v-if="commandeHousing" @closeLogementModal="onCloseSet" />
+    <b-modal id="addLogement" size="lg" title="Formulaire d'ajout d'un logement" ok-title="Fermer" ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
+        <div>
+            <add-logement @logementAdded="addedLogement" />
+        </div>
+    </b-modal>
+
     <load-csv v-if="commandeLoadCsv" />
   </div>
 </template>
@@ -330,21 +335,15 @@ export default {
           this.getHousing();
       }, 5000)
   },
-  mounted() {
-    this.$root.$on("new-logement-added", () => {
-      this.getHousing(false);
-      this.commandeHousing = false;
-        this.autoAddTarget();
-    });
-  },
   methods: {
-    /**
-     * reception de l'évènement émis de fermeture du modal d'ajout d'un logement
-     * ceci permet de re-initialiser le composant(formwizard) d'ajout d'un logement de manière appropriée
-     */
-    onCloseSet() {
-      this.commandeHousing = false;
-    },
+        addedLogement() {
+            this.getHousing(false);
+            this.$bvModal.hide('addLogement')
+            this.autoAddTarget();
+
+        },
+
+
     //recupération de la liste des logements
     async getHousing(begin) {
         this.showOverlay = true;
@@ -440,23 +439,14 @@ export default {
       };
     },
 
-    addLogement() {
-      this.commandeHousing = true;
-    },
     loadCsv() {
       this.commandeLoadCsv = true;
     },
     updateLogement(logement) {
       console.log("logement", logement);
     },
-    /**
-      * Retire un logement
-      * 
-      * @param {Integer} idLogement
-    */
-    removeLogement(idLogement) {
-      this.logements = this.logements.filter(elt => elt.idLogement != idLogement)
-      this.trueLogements = this.trueLogements.filter(elt => elt.idLogement != idLogement)
+    removeLogement(logement) {
+      console.log("logement", logement);
     },
 
     /**

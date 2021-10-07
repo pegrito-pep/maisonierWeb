@@ -42,7 +42,10 @@
                                         <b-td class="p-2">{{ occupation.idOccupation }}</b-td>
                                         <b-td class="p-2">
                                             <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.logement.refLogement }}</span>    
-                                            <span class="d-inline-block w-100 mt-1 text-muted">{{ occupation.logement.sousTypeLogement.libelleSousType  }}</span>    
+                                            <span class="d-inline-block w-100 mt-1 text-muted">
+                                                {{ occupation.logement.sousTypeLogement.libelleSousType  }}
+                                                <span v-if="occupation.logement.batiment"> / Batiment : {{ occupation.logement.batiment.nomBatiment }}</span>
+                                            </span>    
                                         </b-td>
                                         <b-td class="p-2">
                                             <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.locataire.titre + ' ' + occupation.locataire.nomLocataire + ' ' + occupation.locataire.prenomLocataire }}</span>    

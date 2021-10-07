@@ -22,12 +22,10 @@
                             <dt class="mt-1 col-10 truncate" v-b-tooltip="'Plage de loyer'">{{ occupation.logement.prixMin + 'F' }} - {{ occupation.logement.prixMax + 'F' }}</dt>
                             <dd class="mt-1 col-1"><i class="fa fa-map-marker-alt"></i></dd>
                             <dt class="mt-1 col-10 truncate" v-b-tooltip="'Localisation'">{{ occupation.logement.adresse.ville + ' ' + occupation.logement.adresse.pays }}</dt>
-                            <div  v-if="occupation.logement.batiment">
-                                <dd class="mt-1 col-1"><i class="fa fa-building"></i></dd>
-                            <dt class="mt-1 col-10 truncate" v-b-tooltip="'Batiment'">{{ occupation.logement.batiment.nomBatiment }}</dt>
-                            <dd class="mt-1 col-1"><i class="fas fa-city"></i></dd>
-                            <dt class="mt-1 col-10 truncate" v-b-tooltip="'Cité'">{{ occupation.logement.batiment.cite.nomCite }}</dt>
-                            </div>
+                            <dd v-if="occupation.logement.batiment" class="mt-1 col-1"><i class="fa fa-building"></i></dd>
+                            <dt v-if="occupation.logement.batiment" class="mt-1 col-10 truncate" v-b-tooltip="'Batiment'">{{ occupation.logement.batiment.nomBatiment }}</dt>
+                            <dd v-if="occupation.logement.batiment" class="mt-1 col-1"><i class="fas fa-city"></i></dd>
+                            <dt v-if="occupation.logement.batiment" class="mt-1 col-10 truncate" v-b-tooltip="'Cité'">{{ occupation.logement.batiment.cite.nomCite }}</dt>
                         </dl>
                         <b-button :to="{name: 'logements', query: {target: occupation.logement.idLogement}}" size="sm" block variant="outline-secondary">Voir les details</b-button>
                     </div>
@@ -80,7 +78,7 @@
                                         <dd class="mt-1 col-4">Facturation d'energie</dd>
                                         <dt class="mt-1 col-8">{{ occupation.puEnergie + 'F' }} par {{ occupation.modeEnergie == 'index' ? 'kw' : 'mois' }}</dt>
                                         <dd class="mt-1 col-4">Facturation d'eau</dd>
-                                        <dt class="mt-1 col-8">{{ occupation.puEau + 'F' }} par {{ occupation.modeEau == 'index' ? 'kw' : 'mois' }}</dt>
+                                        <dt class="mt-1 col-8">{{ occupation.puEau + 'F' }} par <span v-if="occupation.modeEau == 'index'">m<sup>3</sup></span><span v-else>mois</span></dt>
                                         <dd class="mt-1 col-4">Date de debut du bail</dd>
                                         <dt class="mt-1 col-8">{{ $date(occupation.dateDeb).format('dddd, DD MMMM YYYY') }}</dt>
                                         <dd class="mt-1 col-4" v-if="occupation.dateFin">Date de fin du bail</dd>
@@ -179,7 +177,6 @@ export default {
     },
     beforeMount() {
         axios.get(`occupations/${this.$route.params.id}`).then(response => response.result || {}).then(occupation => {
-            console.log(occupation);
             this.occupation = occupation
         })
     },

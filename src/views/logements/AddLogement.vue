@@ -1,314 +1,306 @@
 <template>
-<b-modal id="modal-lg" size="lg" title="Formulaire d'ajout d'un logement" ref="logement-modal" :ok-disabled="true" no-close-on-backdrop hide-header-close>
-    <div>
-        <b-overlay :show="showOverlay" rounded="sm">
-            <form-wizard  title='' subtitle='' nextButtonText='suivant' backButtonText='Précedent' finishButtonText='Enregistrer' aria-labelledby="demoModalLabel"  @on-complete="onComplete"
-                            @on-loading="setLoading"
-                            @on-validate="handleValidation"
-                            shape="circle"
-                            color="#e74c3c">
+    <b-overlay :show="showOverlay" rounded="sm">
+        <form-wizard  title='' subtitle='' nextButtonText='suivant' backButtonText='Précedent' finishButtonText='Enregistrer' aria-labelledby="demoModalLabel"  @on-complete="onComplete"
+                        @on-loading="setLoading"
+                        @on-validate="handleValidation"
+                        shape="circle"
+                        color="#e74c3c">
 
-                <tab-content title="Informations sur le logement"
-                            icon="ik ik-home" 
-                            :before-change="validateAsync">
-                    <!--<b-row>-->
-                        <!--<b-col> 
-                            <div class="form-group">
-                                <label for="exampleInputUsername1">Reférence </label>
-                                <input type="text" class="form-control" id="reference" required placeholder="reférence du logement" v-model="logement.ref">
-                                <span v-if="!requiredRef" style="color:red;">Reference obligatoire</span>
-                            </div>
-                        </b-col>
-                        <b-col> 
-                            
-                        </b-col>-->
-                        <div>
-                            <b-form-group
-                            
-                            id="fieldset-horizontal"
-                            label-cols-sm="4"
-                            label-cols-lg="3"
-                            content-cols-sm
-                            content-cols-lg="9"
-                            :description="reference"
-                            label="Reférence du logement"
-                            label-for="input-horizontal"
-                            >
-                            <b-form-input :class="!requiredRef ? 'is-red' : ''" id="input-horizontal" v-model="logement.ref"></b-form-input>
-                            <span v-if="!requiredRef" style="color:red;">Ce champ est obligatoire</span>
-                            </b-form-group>
+            <tab-content title="Informations sur le logement"
+                        icon="ik ik-home" 
+                        :before-change="validateAsync">
+                <!--<b-row>-->
+                    <!--<b-col> 
+                        <div class="form-group">
+                            <label for="exampleInputUsername1">Reférence </label>
+                            <input type="text" class="form-control" id="reference" required placeholder="reférence du logement" v-model="logement.ref">
+                            <span v-if="!requiredRef" style="color:red;">Reference obligatoire</span>
                         </div>
-                    <!--</b-row>-->
-                    <b-row>
-                        <b-col> 
-                            <div class="form-group">
-                                <label>Type de logement </label>
-                                <b-form-select
-                                    v-model="idType"
-                                    :options="typesLogement"
-                                    class="mb-3"
-                                    value-field="idType"
-                                    v-on:change="changeType(`${idType}`)"
-                                    text-field="libelleType"
-                                    disabled-field="notEnabled"
-                                ></b-form-select>
-                            </div>
-                        </b-col>
-                        <b-col> 
-                            <div class="form-group">
-                                <label>Catégorie associée </label>
-                                <b-form-select
-                                    v-model="idSousType"
-                                    :options="sousTypes || []"
-                                    class="mb-3"
-                                    :class="!requiredSousType ? 'is-red' : ''"
-                                    value-field="idSousType"
-                                    text-field="libelleSousType"
-                                ></b-form-select>
-                                <span v-if="!requiredSousType" style="color:red;">Ce champ est obligatoire</span>
-                            </div>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col> 
-                            <div class="form-group">
-                                <b-form-textarea
-                                id="textarea"
-                                v-model="logement.description"
-                                placeholder="Ajouter une description à votre logement"
-                                size="sm"
-                                ></b-form-textarea>
-                            </div>
-                        </b-col>
-                    </b-row>
-                        <toggle-button v-model="showSelectBatiment"/>
-                            <span class="ml-2" style="font-size: 1.5em;">Votre logement est-il associé à un batiment ?</span>
-                            <transition enter-active-class="animated zoomIn">
-                                        <div class="form-group" v-if="showSelectBatiment">
-                                            <label>Batiment associé</label>
-                                            <b-form-select
-                                                v-model="idBatiment"
-                                                :options="tousLesBatiments"
-                                                class="mb-3"
-                                                value-field="idBatiment"
-                                                text-field="nomBatiment"
-                                                disabled-field="notEnabled"
-                                            ></b-form-select>
-                                        </div>
-                            </transition>
-                </tab-content>
-                <tab-content title="Informations sur le coût"
-                            icon="fas fa-money-check-alt"
-                            :before-change="validateSecond">
-                    <div class="form-group">
-                        <label for="exampleInputUsername1">Prix Minimal</label>
-                        <input type="number" step="1000" min="1000" class="form-control" id="prixMin" required placeholder="Prix Minimal Ex:18500" v-model="logement.prixMin">
-                            <span v-if="!requiredPrixMin" style="color:red;">Le prix minimal est obligatoire</span>
-                        </div>
-                    <div class="form-group">
-                        <label for="exampleInputUsername1">Prix Maximal</label>
-                        <input type="number" step="1000" min="1000" class="form-control" id="prixMax" required placeholder="Prix Maximal Ex:21000" v-model="logement.prixMax">
-                        <span v-if="!requiredPrixMax" style="color:red;">Le prix maximal est obligatoire</span>
-                        </div>
-                </tab-content>
-                <tab-content title="Photos du logement" icon="fas fa-image" :before-change="validateThird">
-                    <div
-                        id="my-strictly-unique-vue-upload-multiple-image"
-                        style="display: flex; justify-content: center;"
-                    >
-                        <vue-upload-multiple-image
-                        @upload-success="uploadImageSuccess"
-                        @before-remove="beforeRemove"
-                        @edit-image="editImage"
-                        :data-images="images"
-                        dragText="cliquer pour choisir des images"
-                        browseText="Vous pouvez choisir jusqu'à 5 images"
-                        idUpload="myIdUpload"
-                        editUpload="myIdEdit"
-                        ></vue-upload-multiple-image>
-                    </div>
-                </tab-content>
-                <tab-content title="Localisation du logement" icon="fa fa-map-marker" :before-change="validateFour">
-                    <div class="form-group">
-                        <label>Pays </label>
-                        <b-form-select
-                            v-model="logement.pays"
-                            :options="tousLesPays"
-                            class="mb-3"
-                            value-field="name"
-                            text-field="name"
-                        ></b-form-select>
-                        <span v-if="!requiredPays" style="color:red;">Vous devez selectionner un pays</span>
-                    </div>
-                    <div class="form-group">
-                        <label>Ville </label>
-                        <input type="text" class="form-control" id="ville" required placeholder="Ville Ex:Yaoundé" v-model="logement.ville">
-                        <span v-if="!requiredVille" style="color:red;">Ville obligatoire</span>
-                    </div>
-                    <div class="form-group">
-                        <label>Quartier </label>
-                        <input type="text" class="form-control" id="quartier" required placeholder="Quartier Ex:Nsam" v-model="logement.quartier">
-                        <span v-if="!requiredQuartier" style="color:red;">Quartier obligatoire</span>
-                    </div>
-                </tab-content>
-                <tab-content title="Coordonnées du logement" icon="ik ik-map-pin" :before-change="validateFive">
-                    
-                    <b-row>
-                        <b-col> 
-                            <div class="form-group">
-                                <label>Latitude </label>
-                                <input type="text" class="form-control" id="lat" v-model="mapCoordinates.lat">
-                            </div>
-                        </b-col>
-                        <b-col> 
-                            <div class="form-group">
-                                <label>Longitude </label>
-                                <input type="text" class="form-control" id="longitude" v-model="mapCoordinates.lng">
-                            </div>
-                        </b-col>
-                    </b-row>
+                    </b-col>
+                    <b-col> 
+                        
+                    </b-col>-->
                     <div>
-                        <h1>Coordonnées de ma position:</h1>
-                        <p>{{ myCoordinates.lat }} Latitude, {{ myCoordinates.lng }} Longitude</p>
+                        <b-form-group
+                        
+                        id="fieldset-horizontal"
+                        label-cols-sm="4"
+                        label-cols-lg="3"
+                        content-cols-sm
+                        content-cols-lg="9"
+                        :description="reference"
+                        label="Reférence du logement"
+                        label-for="input-horizontal"
+                        >
+                        <b-form-input :class="!requiredRef ? 'is-red' : ''" id="input-horizontal" v-model="logement.ref"></b-form-input>
+                        <span v-if="!requiredRef" style="color:red;">Ce champ est obligatoire</span>
+                        </b-form-group>
                     </div>
-                    <div>
-                        <GmapMap
-                            :center="myCoordinates"
-                            :zoom="zoom"
-                            style="width:640px; height:360px; margin: 32px auto;"
-                            ref="mapRef"
-                            @dragend="handleDrag"
-                        ></GmapMap>
+                <!--</b-row>-->
+                <b-row>
+                    <b-col> 
+                        <div class="form-group">
+                            <label>Type de logement </label>
+                            <b-form-select
+                                v-model="idType"
+                                :options="typesLogement"
+                                class="mb-3"
+                                value-field="idType"
+                                v-on:change="changeType(`${idType}`)"
+                                text-field="libelleType"
+                                disabled-field="notEnabled"
+                            ></b-form-select>
+                        </div>
+                    </b-col>
+                    <b-col> 
+                        <div class="form-group">
+                            <label>Catégorie associée </label>
+                            <b-form-select
+                                v-model="idSousType"
+                                :options="sousTypes || []"
+                                class="mb-3"
+                                :class="!requiredSousType ? 'is-red' : ''"
+                                value-field="idSousType"
+                                text-field="libelleSousType"
+                            ></b-form-select>
+                            <span v-if="!requiredSousType" style="color:red;">Ce champ est obligatoire</span>
+                        </div>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col> 
+                        <div class="form-group">
+                            <b-form-textarea
+                            id="textarea"
+                            v-model="logement.description"
+                            placeholder="Ajouter une description à votre logement"
+                            size="sm"
+                            ></b-form-textarea>
+                        </div>
+                    </b-col>
+                </b-row>
+                <b-form-checkbox :disabled="batiment != null" v-model="showSelectBatiment" switch class="mb-2">
+                    <span class="fa-lg">Votre logement est-il associé à un batiment ?</span>
+                </b-form-checkbox>
+                <transition enter-active-class="animated zoomIn">
+                    <b-form-group label="Batiment associé" v-if="showSelectBatiment">
+                        <v-select :disabled="batiment != null" :options="tousLesBatiments" v-model="idBatiment" :reduce="batiment => batiment.idBatiment" label="nomBatiment">
+                            <template #option="{ nomBatiment, refBatiment, cite }">
+                                {{ nomBatiment }}
+                                <br />
+                                <span class="text-muted">Reference: {{ refBatiment }}</span><br />
+                                <small class="text-muted" v-if="cite != null">Cité: {{ cite.nomCite }}</small>
+                                <hr class="m-0">
+                            </template>
+                        </v-select>
+                    </b-form-group>
+                </transition>
+            </tab-content>
+            <tab-content title="Informations sur le coût"
+                        icon="fas fa-money-check-alt"
+                        :before-change="validateSecond">
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Prix Minimal</label>
+                    <input type="number" step="1000" min="1000" class="form-control" id="prixMin" required placeholder="Prix Minimal Ex:18500" v-model="logement.prixMin">
+                        <span v-if="!requiredPrixMin" style="color:red;">Le prix minimal est obligatoire</span>
                     </div>
-                </tab-content>
-                <tab-content title="Caractéristiques approfondies du logement" icon="fa fa-list">
-            
+                <div class="form-group">
+                    <label for="exampleInputUsername1">Prix Maximal</label>
+                    <input type="number" step="1000" min="1000" class="form-control" id="prixMax" required placeholder="Prix Maximal Ex:21000" v-model="logement.prixMax">
+                    <span v-if="!requiredPrixMax" style="color:red;">Le prix maximal est obligatoire</span>
+                    </div>
+            </tab-content>
+            <tab-content title="Photos du logement" icon="fas fa-image" :before-change="validateThird">
+                <div
+                    id="my-strictly-unique-vue-upload-multiple-image"
+                    style="display: flex; justify-content: center;"
+                >
+                    <vue-upload-multiple-image
+                    @upload-success="uploadImageSuccess"
+                    @before-remove="beforeRemove"
+                    @edit-image="editImage"
+                    :data-images="images"
+                    dragText="cliquer pour choisir des images"
+                    browseText="Vous pouvez choisir jusqu'à 5 images"
+                    idUpload="myIdUpload"
+                    editUpload="myIdEdit"
+                    ></vue-upload-multiple-image>
+                </div>
+            </tab-content>
+            <tab-content title="Localisation du logement" icon="fa fa-map-marker" :before-change="validateFour">
+                <div class="form-group">
+                    <label>Pays </label>
+                    <b-form-select
+                        v-model="logement.pays"
+                        :options="tousLesPays"
+                        class="mb-3"
+                        value-field="name"
+                        text-field="name"
+                    ></b-form-select>
+                    <span v-if="!requiredPays" style="color:red;">Vous devez selectionner un pays</span>
+                </div>
+                <div class="form-group">
+                    <label>Ville </label>
+                    <input type="text" class="form-control" id="ville" required placeholder="Ville Ex:Yaoundé" v-model="logement.ville">
+                    <span v-if="!requiredVille" style="color:red;">Ville obligatoire</span>
+                </div>
+                <div class="form-group">
+                    <label>Quartier </label>
+                    <input type="text" class="form-control" id="quartier" required placeholder="Quartier Ex:Nsam" v-model="logement.quartier">
+                    <span v-if="!requiredQuartier" style="color:red;">Quartier obligatoire</span>
+                </div>
+            </tab-content>
+            <tab-content title="Coordonnées du logement" icon="ik ik-map-pin" :before-change="validateFive">
                 
                 <b-row>
                     <b-col> 
-                        <label>Nombre de chambre<span v-if="logement.nbchambre >1">(s)</span></label>
-                        <b-input-group>
-                            <b-input-group-prepend>
-                                <b-btn variant="outline-info" @click="logement.nbchambre--">-</b-btn>
-                            </b-input-group-prepend>
-                                <b-form-input type="number" min="0.00" v-model="logement.nbchambre"></b-form-input>
-                            <b-input-group-append>
-                                <b-btn variant="outline-secondary" @click="logement.nbchambre++">+</b-btn>
-                            </b-input-group-append>
-                        </b-input-group>
+                        <div class="form-group">
+                            <label>Latitude </label>
+                            <input type="text" class="form-control" id="lat" v-model="mapCoordinates.lat">
+                        </div>
                     </b-col>
                     <b-col> 
-                        <label>Nombre de cuisine<span v-if="logement.nbcuisine >1">(s)</span></label>
-                        <b-input-group>
-                            <b-input-group-prepend>
-                                <b-btn variant="outline-info" @click="logement.nbcuisine--">-</b-btn>
-                            </b-input-group-prepend>
-                                <b-form-input type="number" min="0.00" v-model="logement.nbcuisine"></b-form-input>
-                            <b-input-group-append>
-                                <b-btn variant="outline-secondary" @click="logement.nbcuisine++">+</b-btn>
-                            </b-input-group-append>
-                        </b-input-group>
-                    </b-col>
-                    <b-col> 
-                        <label>Nombre de Salon<span v-if="logement.nbsalon >1">(s)</span></label>
-                        <b-input-group>
-                            <b-input-group-prepend>
-                                <b-btn variant="outline-info" @click="logement.nbsalon--">-</b-btn>
-                            </b-input-group-prepend>
-                                <b-form-input type="number" min="0.00" v-model="logement.nbsalon"></b-form-input>
-                            <b-input-group-append>
-                                <b-btn variant="outline-secondary" @click="logement.nbsalon++">+</b-btn>
-                            </b-input-group-append>
-                        </b-input-group>
+                        <div class="form-group">
+                            <label>Longitude </label>
+                            <input type="text" class="form-control" id="longitude" v-model="mapCoordinates.lng">
+                        </div>
                     </b-col>
                 </b-row>
-                <b-row>
-                    <b-col> 
-                        <label>Nombre de douche<span v-if="logement.nbdouche >1">(s)</span></label>
-                        <b-input-group>
-                            <b-input-group-prepend>
-                                <b-btn variant="outline-info" @click="logement.nbdouche--">-</b-btn>
-                            </b-input-group-prepend>
-                                <b-form-input type="number" min="0.00" v-model="logement.nbdouche"></b-form-input>
-                            <b-input-group-append>
-                                <b-btn variant="outline-secondary" @click="logement.nbdouche++">+</b-btn>
-                            </b-input-group-append>
-                        </b-input-group>
-                    </b-col>
-                    <b-col> 
-                        <label>Nombre de parking<span v-if="logement.nbparking >1">(s)</span></label>
-                        <b-input-group>
-                            <b-input-group-prepend>
-                                <b-btn variant="outline-info" @click="logement.nbparking--">-</b-btn>
-                            </b-input-group-prepend>
-                                <b-form-input type="number" min="0.00" v-model="logement.nbparking"></b-form-input>
-                            <b-input-group-append>
-                                <b-btn variant="outline-secondary" @click="logement.nbparking++">+</b-btn>
-                            </b-input-group-append>
-                        </b-input-group>
-                    </b-col>
-                    <b-col> 
-                        <label>Nombre de Piscine<span v-if="logement.nbpiscine >1">(s)</span></label>
-                        <b-input-group>
-                            <b-input-group-prepend>
-                                <b-btn variant="outline-info" @click="logement.nbpiscine--">-</b-btn>
-                            </b-input-group-prepend>
-                                <b-form-input type="number" min="0.00" v-model="logement.nbpiscine"></b-form-input>
-                            <b-input-group-append>
-                                <b-btn variant="outline-secondary" @click="logement.nbpiscine++">+</b-btn>
-                            </b-input-group-append>
-                        </b-input-group>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col> 
-                        <label>Nombre de Garage<span v-if="logement.nbgarage >1">(s)</span></label>
-                        <b-input-group>
-                            <b-input-group-prepend>
-                                <b-btn variant="outline-info" @click="logement.nbgarage--">-</b-btn>
-                            </b-input-group-prepend>
-                                <b-form-input type="number" min="0.00" v-model="logement.nbgarage"></b-form-input>
-                            <b-input-group-append>
-                                <b-btn variant="outline-secondary" @click="logement.nbgarage++">+</b-btn>
-                            </b-input-group-append>
-                        </b-input-group>
-                    </b-col>
-                    <b-col> 
-                        <label>Nombre de Sona<span v-if="logement.nbsona >1">(s)</span></label>
-                        <b-input-group>
-                            <b-input-group-prepend>
-                                <b-btn variant="outline-info" @click="logement.nbsona--">-</b-btn>
-                            </b-input-group-prepend>
-                                <b-form-input type="number" min="0.00" v-model="logement.nbsona"></b-form-input>
-                            <b-input-group-append>
-                                <b-btn variant="outline-secondary" @click="logement.nbsona++">+</b-btn>
-                            </b-input-group-append>
-                        </b-input-group>
-                    </b-col>
-                </b-row>
-                </tab-content>
-                <div class="leloader" v-if="loadingWizard"></div>
-            </form-wizard>
-        </b-overlay>
-    </div>
-    <template #modal-footer>
-            <b-button size="sm" @click="resetModal">
-                Fermer
-            </b-button>
-    </template>
-</b-modal>
-     
+                <div>
+                    <h1>Coordonnées de ma position:</h1>
+                    <p>{{ myCoordinates.lat }} Latitude, {{ myCoordinates.lng }} Longitude</p>
+                </div>
+                <div>
+                    <GmapMap
+                        :center="myCoordinates"
+                        :zoom="zoom"
+                        style="width:100%; height:360px; margin: 32px auto;"
+                        ref="mapRef"
+                        @dragend="handleDrag"
+                    ></GmapMap>
+                </div>
+            </tab-content>
+            <tab-content title="Caractéristiques approfondies du logement" icon="fa fa-list">
+        
+            
+            <b-row>
+                <b-col> 
+                    <label>Nombre de chambre<span v-if="logement.nbchambre >1">(s)</span></label>
+                    <b-input-group>
+                        <b-input-group-prepend>
+                            <b-btn variant="outline-info" @click="logement.nbchambre--">-</b-btn>
+                        </b-input-group-prepend>
+                            <b-form-input type="number" min="0.00" v-model="logement.nbchambre"></b-form-input>
+                        <b-input-group-append>
+                            <b-btn variant="outline-secondary" @click="logement.nbchambre++">+</b-btn>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-col>
+                <b-col> 
+                    <label>Nombre de cuisine<span v-if="logement.nbcuisine >1">(s)</span></label>
+                    <b-input-group>
+                        <b-input-group-prepend>
+                            <b-btn variant="outline-info" @click="logement.nbcuisine--">-</b-btn>
+                        </b-input-group-prepend>
+                            <b-form-input type="number" min="0.00" v-model="logement.nbcuisine"></b-form-input>
+                        <b-input-group-append>
+                            <b-btn variant="outline-secondary" @click="logement.nbcuisine++">+</b-btn>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-col>
+                <b-col> 
+                    <label>Nombre de Salon<span v-if="logement.nbsalon >1">(s)</span></label>
+                    <b-input-group>
+                        <b-input-group-prepend>
+                            <b-btn variant="outline-info" @click="logement.nbsalon--">-</b-btn>
+                        </b-input-group-prepend>
+                            <b-form-input type="number" min="0.00" v-model="logement.nbsalon"></b-form-input>
+                        <b-input-group-append>
+                            <b-btn variant="outline-secondary" @click="logement.nbsalon++">+</b-btn>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col> 
+                    <label>Nombre de douche<span v-if="logement.nbdouche >1">(s)</span></label>
+                    <b-input-group>
+                        <b-input-group-prepend>
+                            <b-btn variant="outline-info" @click="logement.nbdouche--">-</b-btn>
+                        </b-input-group-prepend>
+                            <b-form-input type="number" min="0.00" v-model="logement.nbdouche"></b-form-input>
+                        <b-input-group-append>
+                            <b-btn variant="outline-secondary" @click="logement.nbdouche++">+</b-btn>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-col>
+                <b-col> 
+                    <label>Nombre de parking<span v-if="logement.nbparking >1">(s)</span></label>
+                    <b-input-group>
+                        <b-input-group-prepend>
+                            <b-btn variant="outline-info" @click="logement.nbparking--">-</b-btn>
+                        </b-input-group-prepend>
+                            <b-form-input type="number" min="0.00" v-model="logement.nbparking"></b-form-input>
+                        <b-input-group-append>
+                            <b-btn variant="outline-secondary" @click="logement.nbparking++">+</b-btn>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-col>
+                <b-col> 
+                    <label>Nombre de Piscine<span v-if="logement.nbpiscine >1">(s)</span></label>
+                    <b-input-group>
+                        <b-input-group-prepend>
+                            <b-btn variant="outline-info" @click="logement.nbpiscine--">-</b-btn>
+                        </b-input-group-prepend>
+                            <b-form-input type="number" min="0.00" v-model="logement.nbpiscine"></b-form-input>
+                        <b-input-group-append>
+                            <b-btn variant="outline-secondary" @click="logement.nbpiscine++">+</b-btn>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col> 
+                    <label>Nombre de Garage<span v-if="logement.nbgarage >1">(s)</span></label>
+                    <b-input-group>
+                        <b-input-group-prepend>
+                            <b-btn variant="outline-info" @click="logement.nbgarage--">-</b-btn>
+                        </b-input-group-prepend>
+                            <b-form-input type="number" min="0.00" v-model="logement.nbgarage"></b-form-input>
+                        <b-input-group-append>
+                            <b-btn variant="outline-secondary" @click="logement.nbgarage++">+</b-btn>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-col>
+                <b-col> 
+                    <label>Nombre de Sona<span v-if="logement.nbsona >1">(s)</span></label>
+                    <b-input-group>
+                        <b-input-group-prepend>
+                            <b-btn variant="outline-info" @click="logement.nbsona--">-</b-btn>
+                        </b-input-group-prepend>
+                            <b-form-input type="number" min="0.00" v-model="logement.nbsona"></b-form-input>
+                        <b-input-group-append>
+                            <b-btn variant="outline-secondary" @click="logement.nbsona++">+</b-btn>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-col>
+            </b-row>
+            </tab-content>
+            <div class="leloader" v-if="loadingWizard"></div>
+        </form-wizard>
+    </b-overlay> 
 </template>
 <script>
 import notif from "@/plugins/notif.js";
-import { ToggleButton } from 'vue-js-toggle-button'
- import Vue from 'vue'
-Vue.component('ToggleButton', ToggleButton)
 import VueUploadMultipleImage from "vue-upload-multiple-image";
 import {FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+
 export default {
     name: 'add-logement',
+    props: {
+        batiment: {type: Object}
+    },
     data:()=>({
         loadingWizard: false,
         showOverlay:true,
@@ -628,8 +620,7 @@ export default {
     components: {
         FormWizard,
         TabContent,
-        VueUploadMultipleImage,
-        //ToggleButton
+        VueUploadMultipleImage
     },
     computed: {
              nomBatiment(){
@@ -651,165 +642,162 @@ export default {
             }
     },
     methods:{
-            resetModal() {
-                this.logement = {
-                    ref: '', description: '', prixMin: '', prixMax: '',
-                    pays: '', ville: '', quartier: '', lat: '', lon: '', nbchambre: '',
-                    nbcuisine: '', nbsalon: '', nbdouche: '', nbparking: '', nbpiscine: '',
-                    nbgarage: '', nbsona: ''
-            
-                }
-                this.$refs['logement-modal'].hide();
-                setTimeout(() => {
-                    this.$emit('closeLogementModal');
-                }, 500);
+        resetModal() {
+            this.logement = {
+                ref: null, description: null, prixMin: null, prixMax: null,
+                pays: null, ville: null, quartier: null, lat: null, lon: null, nbchambre: null,
+                nbcuisine: null, nbsalon: null, nbdouche: null, nbparking: null, nbpiscine: null,
+                nbgarage: null, nbsona: null
+            }
+            this.idSousType=null;
+            this.idBatiment=null;
+            this.mapCoordinates = { lat: null, lng: null};
+            this.photos=[];
                 
-            },
-            setLoading: function(value) {
-                this.loadingWizard = value
-            },
-            handleValidation: function(isValid, tabIndex){
-                console.log('Tab: '+tabIndex+ ' valid: '+isValid)
-            },
-            validateAsync:function() {
-                return new Promise((resolve, reject) => {
-                    
-                   if(!this.logement.ref || !this.idSousType){
-                        this.check=false
-                        if(!this.logement.ref){
-                            this.reference=""
-                            this.requiredRef=false;}
-                        else{this.requiredRef=true;}
-                        if(!this.idSousType){this.requiredSousType=false;}
-                        else{this.requiredSousType=true;}
-                    }else{
-                        this.check=true
-                    }
-                setTimeout(() => {
-                    resolve(this.check)
-                }, 1000)
-                })
-            },
-             validateSecond:function() {
-                return new Promise((resolve, reject) => {
-                    
-                   if(!this.logement.prixMin || !this.logement.prixMax){
-                        this.check2=false
-                        if(!this.logement.prixMin){this.requiredPrixMin=false;}
-                        else {this.requiredPrixMin=true;}
-                        if(!this.logement.prixMax){this.requiredPrixMax=false;}
-                        else{this.requiredPrixMax=true;}
-                    }else{
-                        this.check2=true
-                    }
-                setTimeout(() => {
-                    resolve(this.check2)
-                }, 1000)
-                })
-            },
-             validateThird:function() {
-                return new Promise((resolve, reject) => {
-
-                        this.check3=true
-                    
-                setTimeout(() => {
-                    resolve(this.check3)
-                }, 1000)
-                })
-            },
-            validateFour:function(){
-                return new Promise((resolve, reject) => {
-                     if(!this.logement.pays || !this.logement.ville || !this.logement.quartier){
-                        this.check4=false
-                        if(!this.logement.pays){this.requiredPays=false;}
-                        else {this.requiredPays=true;}
-                        if(!this.logement.ville){this.requiredVille=false;}
-                        else{this.requiredVille=true;}
-                        if(!this.logement.quartier){this.requiredQuartier=false;}
-                        else{this.requiredQuartier=true;}
-                    }else{
-                        this.check4=true
-                    }
-                    setTimeout(() => {
-                        resolve(this.check4)
-                    }, 1000)
-                })
-
-            },
-            validateFive:function(){
-                return new Promise((resolve, reject) => {
-                    this.check3=true
-                    setTimeout(() => {resolve(this.check3)}, 1000)
-                })
-
-            },
-            onComplete(){
-                this.showOverlay=true;
-                let add={pays:this.logement.pays, ville:this.logement.ville, quartier:this.logement.quartier, lat:this.mapCoordinates.lat,lon:this.mapCoordinates.lng}
-                //envoi formulaire création logement 
-                let data={
-                    ref:this.logement.ref,
-                    description:this.logement.description,
-                    prixMin:this.logement.prixMin,
-                    prixMax:this.logement.prixMax,
-                    idSousType:this.idSousType,
-                    idBatiment:this.idBatiment,
-                    adresse:add,
-                    photos: this.photos,
-                    caracteristiques: [
-                    {
-                        libelle: "chambre",
-                        valeur: this.logement.nbchambre
-                    },
-                    {
-                        libelle: "salon",
-                        valeur: this.logement.nbsalon
-                    },
-                    {
-                        libelle: "cuisine",
-                        valeur: this.logement.nbcuisine
-                    },
-                    {
-                        libelle: "douche",
-                        valeur: this.logement.nbdouche
-                    },
-                    {
-                        libelle: "parking",
-                        valeur: this.logement.nbparking
-                    },
-                    {
-                        libelle: "piscine",
-                        valeur: this.logement.nbpiscine
-                    },
-                    {
-                        libelle: "sona",
-                        valeur: this.logement.nbsona
-                    },
-                    {
-                        libelle: "garage",
-                        valeur: this.logement.nbgarage
-                    }
-                    ]
-
+            setTimeout(() => {
+                this.$emit('closeLogementModal');
+            }, 500);
+            
+        },
+        setLoading: function(value) {
+            this.loadingWizard = value
+        },
+        handleValidation: function(isValid, tabIndex){
+            console.log('Tab: '+tabIndex+ ' valid: '+isValid)
+        },
+        validateAsync:function() {
+            return new Promise((resolve, reject) => {
+                
+                if(!this.logement.ref || !this.idSousType){
+                    this.check=false
+                    if(!this.logement.ref){
+                        this.reference=""
+                        this.requiredRef=false;}
+                    else{this.requiredRef=true;}
+                    if(!this.idSousType){this.requiredSousType=false;}
+                    else{this.requiredSousType=true;}
+                }else{
+                    this.check=true
                 }
-                console.log("données envoyées",data)
-                axios.post("logements",data).then(response =>{
-                   this.logement.ref=null;this.logement.description=null;
-                    this.logement.prixMin=null;this.logement.prixMax=null;this.idSousType=null;this.idBatiment=null;
-                    this.logement.pays=null;this.logement.ville=null;this.logement.quartier=null;this.mapCoordinates.lat=null;
-                    this.photos=[];
-                    this.mapCoordinates.lng=null;
-                    this.logement.nbchambre=null;this.logement.nbsalon=null;this.logement.nbcuisine=null;this.logement.nbdouche=null;
-                    this.logement.nbparking=null;this.logement.nbpiscine=null;this.logement.nbsona=null;this.logement.nbgarage=null;
-                    //this.$root.$emit("new-logement-added", response.result);
-                    this.$root.$emit("new-logement-added");
-                })
-                .catch(error => {notif.error(error.message);});
-                   setTimeout(() => {
-                        this.$refs['logement-modal'].hide()
-                        this.showOverlay=false;
-                    }, 1000);
-            },
+            setTimeout(() => {
+                resolve(this.check)
+            }, 1000)
+            })
+        },
+            validateSecond:function() {
+            return new Promise((resolve, reject) => {
+                
+                if(!this.logement.prixMin || !this.logement.prixMax){
+                    this.check2=false
+                    if(!this.logement.prixMin){this.requiredPrixMin=false;}
+                    else {this.requiredPrixMin=true;}
+                    if(!this.logement.prixMax){this.requiredPrixMax=false;}
+                    else{this.requiredPrixMax=true;}
+                }else{
+                    this.check2=true
+                }
+            setTimeout(() => {
+                resolve(this.check2)
+            }, 1000)
+            })
+        },
+            validateThird:function() {
+            return new Promise((resolve, reject) => {
+
+                    this.check3=true
+                
+            setTimeout(() => {
+                resolve(this.check3)
+            }, 1000)
+            })
+        },
+        validateFour:function(){
+            return new Promise((resolve, reject) => {
+                    if(!this.logement.pays || !this.logement.ville || !this.logement.quartier){
+                    this.check4=false
+                    if(!this.logement.pays){this.requiredPays=false;}
+                    else {this.requiredPays=true;}
+                    if(!this.logement.ville){this.requiredVille=false;}
+                    else{this.requiredVille=true;}
+                    if(!this.logement.quartier){this.requiredQuartier=false;}
+                    else{this.requiredQuartier=true;}
+                }else{
+                    this.check4=true
+                }
+                setTimeout(() => {
+                    resolve(this.check4)
+                }, 1000)
+            })
+
+        },
+        validateFive:function(){
+            return new Promise((resolve, reject) => {
+                this.check3=true
+                setTimeout(() => {resolve(this.check3)}, 1000)
+            })
+
+        },
+        onComplete(){
+            this.showOverlay=true;
+            let add={pays:this.logement.pays, ville:this.logement.ville, quartier:this.logement.quartier, lat:this.mapCoordinates.lat,lon:this.mapCoordinates.lng}
+            //envoi formulaire création logement 
+            let data={
+                ref:this.logement.ref,
+                description:this.logement.description,
+                prixMin:this.logement.prixMin,
+                prixMax:this.logement.prixMax,
+                idSousType:this.idSousType,
+                idBatiment:this.idBatiment,
+                adresse:add,
+                photos: this.photos,
+                caracteristiques: [
+                {
+                    libelle: "chambre",
+                    valeur: this.logement.nbchambre
+                },
+                {
+                    libelle: "salon",
+                    valeur: this.logement.nbsalon
+                },
+                {
+                    libelle: "cuisine",
+                    valeur: this.logement.nbcuisine
+                },
+                {
+                    libelle: "douche",
+                    valeur: this.logement.nbdouche
+                },
+                {
+                    libelle: "parking",
+                    valeur: this.logement.nbparking
+                },
+                {
+                    libelle: "piscine",
+                    valeur: this.logement.nbpiscine
+                },
+                {
+                    libelle: "sona",
+                    valeur: this.logement.nbsona
+                },
+                {
+                    libelle: "garage",
+                    valeur: this.logement.nbgarage
+                }
+                ]
+
+            }
+            axios.post("logements",data).then(response =>{
+                this.resetModal()
+                this.showOverlay=false;
+                this.$emit("logementAdded");
+                return App.notifySuccess(response.message)
+            })
+            .catch(error => {
+                this.showOverlay=false;
+                notif.error(error.message);
+            });
+        },
+        
         async getLogementsData(){
             try {
                  this.typesLogement = await axios.get("types-logements?all=true").then(response => response.result);
@@ -877,10 +865,7 @@ export default {
         },
         //recupération de tous les batiments
         async getAllBatiments() {
-            this.tousLesBatiments = (await axios.get('batiments').then(response => response.result || [])).map(elt => {
-                    elt.nomBatiment =  elt.nomBatiment+"("+elt.refBatiment+")"
-                    return elt
-            })
+            this.tousLesBatiments = await axios.get('batiments').then(response => response.result || [])
         }
 
     },
@@ -912,6 +897,11 @@ export default {
         }, 50)
        await this.getAllBatiments();
        await this.getLogementsData();
+
+       if (this.batiment) {
+           this.showSelectBatiment = true
+           this.idBatiment = this.batiment.idBatiment
+       }
     }
 }
 </script>

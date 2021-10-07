@@ -12,6 +12,7 @@
                     <h3 class="m-0">Statistiques générales</h3>
                     <p>This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
                 </div>
+
                 <div v-if="section == 'logements'">
                     <b-alert variant="info" show v-if="!batiment.logements.length">
                         <i class="fa fa-exclamation-triangle fa-3x float-left"></i> 
@@ -28,9 +29,11 @@
                         </div> 
                     </div>       
                 </div> 
+
                 <div v-show="section == 'add-logement'">
-                    
+                    <add-logement :batiment="batiment"  @logementAdded="addedLogement" />
                 </div>
+
                 <div v-if="section == 'depenses'">
                     <b-alert variant="info" show v-if="!batiment.depenses.length">
                         <i class="fa fa-exclamation-triangle fa-3x float-left"></i> 
@@ -64,6 +67,9 @@
 import Logement from '@/components/_patrimoine/Logement.vue'
 import Depense from "@/views/gestion-immobiliere/depenses/Depense.vue";
 import DepenseForm from "@/views/gestion-immobiliere/depenses/DepenseForm.vue";
+import AddLogement from "@/views/logements/AddLogement.vue";
+
+
 const php = require('phpjs')
 
 export default {
@@ -73,7 +79,8 @@ export default {
     components: {
         Logement,
         Depense,
-        DepenseForm
+        DepenseForm,
+        AddLogement
     },
     computed: {
         /**
@@ -103,6 +110,13 @@ export default {
    mounted() {
     },
     methods: {
+        addedLogement() {
+            axios.get(`batiments/${this.batiment.idBatiment}/logements`).then(response => response.result || []).then(logements => {
+                this.batiment.logements = logements
+                this.section = 'logements'
+            })
+        },
+
         pushDepense(newDepense) {
             this.batiment.depenses.unshift(newDepense);
             this.commandeDepense =false;
