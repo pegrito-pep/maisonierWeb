@@ -60,7 +60,7 @@ export default {
          * Suppression de l'article
          */
         remove() {
-            App.confirm(`Voullez vous vraiment supprimer l'article " <b>${this.contrat.libelleModele}</b> " ?`, { confirm: () => {
+            App.confirm(`Voullez vous vraiment supprimer le modèle " <b>${this.contrat.libelleModele}</b> " ?`, { confirm: () => {
                 axios.delete(`articles/${this.contrat.idModele}`).then(response => {
                     if (!response.success) {
                         return App.notifyError(response.message)

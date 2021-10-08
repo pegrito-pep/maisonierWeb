@@ -46,6 +46,15 @@
           @click.prevent="section = 'depenses'"
         >Dépenses liées au logement</a>
       </li>
+      <li class="nav-item">
+        <a
+          data-toggle="tab"
+          href="#"
+          class="nav-link"
+          :class="{'active' : section == 'add-depense'}"
+          @click.prevent="section = 'add-depense'"
+        >Attribuer une dépense à ce logement</a>
+      </li>
     </ul>
     <div class="tab-content mt-3">
       <div class="tab-pane fade show active">
@@ -234,20 +243,18 @@
                 </b-col>
               </b-row>
             </div>
-            <depense-form
+            <!--<depense-form
               @depenseAdded="pushDepense"
               v-if="commandeDepense"
               :action="action"
               :logement="logement"
               @closeDepenseModal="onCloseSet"
-            />
-          </div>
-          <div>
-            <b-button variant="danger" @click.prevent="defineDepense" v-b-modal.modal-lg>
-              <i class="fa fa-plus-circle"></i> Nouvelle dépense
-            </b-button>
+            />-->
           </div>
         </div>
+        <div v-show="section == 'add-depense'">
+          <depense-form :logement="logement"  @depenseAdded="addedDepense" :provenance="provenance"/>
+        </div>  
       </div>
     </div>
   </div>
@@ -284,7 +291,8 @@ export default {
     action: "",
     currentPage: 1,
     perPage: 10,
-    source: 2
+    source: 2,
+    provenance:"2"
   }),
   computed: {
     photos() {
@@ -311,10 +319,16 @@ export default {
     console.log(this.logement);
   },
   methods: {
-    pushDepense(newDepense) {
-      this.logement.depenses.unshift(newDepense);
-      this.commandeDepense = false;
-    },
+          /**
+         * réponse à l'évènement d'ajout d'une dépense
+         * dans le détail de la cité, la réponse consiste juste à mettre à jour la liste des dépenses d'un logement
+         */
+         addedDepense() {
+            axios.get(`logements/${this.logement.idLogement}/depenses`).then(response => response.result || []).then(depenses => {
+                this.logement.depenses = depenses
+                this.section = 'depenses'
+            })
+        },
     /**
      * Methodes relatives a la section des photos
      */

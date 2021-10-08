@@ -13,7 +13,7 @@
                             <b-link :to="{name: 'home'}"><b-img src="/img/logo-m0.png" style="width: 4em; height: 4em"/></b-link>
                             <!--<h3 class="text-center mt-2 mb-0">Confirmer votre email</h3>-->
                              
-                                <span class="defineFont">Veuillez consulter votre boite mail pour avoir votre code d'activation</span>
+                                <span class="defineFont">Veuillez consulter votre boîte mail pour avoir votre code d'activation</span>
                            
                         </div>
                         
@@ -27,7 +27,7 @@
                             </div>
                         </form>
                         <div class="register">
-                            <p>Pas de compte? <b-link :to="{name: 'register'}">Créer un compte maintenant</b-link></p>
+                            <p>Pas de compte? <b-link :to="{name: 'register'}"><span class="signup">Créer un compte maintenant</span></b-link></p>
                         </div>
                     </div>
                 </div>
@@ -59,13 +59,18 @@ export default {
 }
 </script>
 <style scoped>
-    @font-face {
-        font-family: "font-1";
-        src: url(/fonts/rampart-one-Font/RampartOne-Regular.ttf);
-    }
     .defineFont {
-        font-family: "font-1", sans-serif;
         font-size: 1.3em;
-        color: #050213FA;
+        color: #212121ef;
+        font-weight: 800;
+        text-align: center;
+        margin-top: 20px;
+    }
+    .signup{
+        color: #ee3a5b;
+    }
+    .signup:hover{
+        color: #ee3a5b;
+        font-weight: bold;
     }
 </style>

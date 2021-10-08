@@ -14,7 +14,7 @@
                             </div>
                         </div>
                         <div class="float-md-right">
-                            <b-button variant="danger" @click.prevent="() => {modal.action = 'add'; $bvModal.show('modal-batiment')}"><i class="fa fa-plus-circle"></i> Nouveau batiment</b-button>
+                            <b-button variant="danger" @click.prevent="() => {action = 'add'; $bvModal.show('modal-batiment')}"><i class="fa fa-plus-circle"></i> Nouveau batiment</b-button>
                         </div>
                     </div>
                 </div>
@@ -50,20 +50,12 @@
         </div>
 
         <!-- MODALE POUR AJOUTER/MODIFIER UN BATIMENT -->
-        <b-modal id="modal-batiment" size="sm" ok-only ok-title="Valider" @hidden="resetModal" @ok="submitModal" ref="modalBatiment">
+        <b-modal id="modal-batiment" size="lg" hide-footer ref="modalBatiment" @hidden="batiment = null">
             <template #modal-title>
-                <span v-if="modal.action == 'add'">Ajouter un batiment</span>
-                <span v-if="modal.action == 'edit'">Edition du batiment</span>
+                <span v-if="action == 'add'">Ajouter un batiment</span>
+                <span v-if="action == 'edit'">Edition du batiment</span>
             </template>
-            <b-form-group label="Cité">
-                 <b-form-select v-model="modal.idCite" :options="cites"></b-form-select>
-            </b-form-group>
-            <b-form-group label="Nom du batiment">
-                <b-form-input v-model="modal.nom" placeholder="Ex: Batiment A" trim></b-form-input>
-            </b-form-group>
-            <b-form-group label="Reference">
-                <b-form-input v-model="modal.ref" placeholder="Ex: B1" trim></b-form-input>
-            </b-form-group>
+            <form-batiment @batimentAdded="pushBatiment" @batimentUpdated="editBatiment" :action="action" :batiment="batiment" />
         </b-modal>
     </div>
 </template>
@@ -71,6 +63,7 @@
 <script>
 import DetailsBatiment from '@/components/_patrimoine/DetailsBatiment.vue'
 import Batiment from '@/components/_patrimoine/Batiment.vue';
+import FormBatiment from '../../components/_patrimoine/FormBatiment.vue';
 
 const php  = require ( 'phpjs' ) ; 
 
@@ -79,6 +72,7 @@ export default {
     components: {
         DetailsBatiment,
         Batiment,
+        FormBatiment,
     },
     computed: {
         /**
@@ -93,26 +87,18 @@ export default {
     },
     data: () => ({
         batiments: [],
-        cites: [],
         trueBatiments: [],
         showOverlay: true,
         batiment: null,
         currentPage: 1,
         perPage: 10,
         search: null,
-        modal: {
-            action: '',
-            nom: '', ref: '', idBatiment: '', idCite: ''
-        }
+        action: 'add'
     }),
     watch: {
         search(value) {
-            if (!php.empty(value)) {
-                this.batiments = this.trueBatiments.filter(elt => elt.nomBatiment.toLowerCase().includes(value.toLowerCase()))
-            }
-            else {
-                this.batiments = this.trueBatiments
-            }
+            value = value.toLowerCase()
+            this.batiments = !php.empty(value) ? this.trueBatiments.filter(elt => elt.nomBatiment.toLowerCase().includes(value)) : this.trueBatiments
         }
     },
     mounted() {
@@ -126,9 +112,7 @@ export default {
             try {
                 this.batiments = this.trueBatiments = await axios.get('batiments').then(response => response.result || [])
                 this.showOverlay = false
-                this.cites = (await axios.get('cites').then(response => response.result || [])).map(elt => {
-                    return { value: elt.idCite, text: elt.nomCite }
-                })
+               
                 this.autoDetailsTarget()
                 this.autoAddTarget()
             } catch (error) {
@@ -150,10 +134,6 @@ export default {
                 );
                 
             }
-        },
-        showModal(){
-            this.modal.action='add'
-            this.$refs.modalBatiment.show("modal-batiment");
         },
 
         /**
@@ -214,59 +194,30 @@ export default {
             this.batiments = this.batiments.filter(elt => elt.idBatiment != idBatiment)
             this.trueBatiments = this.trueBatiments.filter(elt => elt.idBatiment != idBatiment)
         },
-        /**
-         * retinitialise le formulaire d'ajout/modification du batiment
-         */
-        resetModal() {
-            this.modal = {
-                action: '',
-                nom: '', ref: '', idBatiment: '', idCite: ''
-            }
-        },
 
         /**
-         * Validation du formulaire d'ajout/modification du batiment
+         * Declanché lorsqu'on a ajouté un batiment
          */
-        submitModal(bvModalEvt) {
-            bvModalEvt.preventDefault()
-            if (php.empty(this.modal.nom) || php.empty(this.modal.ref)) {
-                return App.error('Veuillez remplir tous les champs du formulaire')
-            }
-            if (this.modal.action == 'add') {
-                axios.post('batiments', this.modal).then(response => {
-                    if (!response.success) {
-                        return App.alertError(response.message)
-                    }
-                    this.batiments = this.addNewBatiment(this.batiments, response.result)
-                    this.trueBatiments = this.addNewBatiment(this.trueBatiments, response.result)
-                    this.$bvModal.hide('modal-batiment')
-                    return App.notifySuccess(response.message)
-                }).catch(error => {
-                    App.notifyError(error.message)
-                })
-            }
-            if (this.modal.action == 'edit') {
-                axios.put(`batiments/${this.modal.idBatiment}`, this.modal).then(response => {
-                    if (!response.success) {
-                        return App.alertError(response.message)
-                    }
-                    this.batiments = this.renameBatiment(this.batiments, this.modal)
-                    this.trueBatiments = this.renameBatiment(this.trueBatiments, this.modal)
-                    this.$bvModal.hide('modal-batiment')
-                    return App.notifySuccess(response.message)
-                }).catch(error => {
-                    App.notifyError(error.message)
-                })
-            }
+        pushBatiment(batiment) {
+            this.batiments = this.addNewBatiment(this.batiments, batiment)
+            this.trueBatiments = this.addNewBatiment(this.trueBatiments, batiment)
+            this.$bvModal.hide('modal-batiment')
         },
+        /**
+         * Declanché lorsqu'on a edité un batiment
+         */
+        editBatiment(batiment) {
+            this.batiments = this.renameBatiment(this.batiments, batiment)
+            this.trueBatiments = this.renameBatiment(this.trueBatiments, batiment)    
+            this.$bvModal.hide('modal-batiment')
+        },
+
         /**
          * Lance l'edition d'un batiment
          */
         updateBatiment(batiment) {
-            this.modal = {
-                action: 'edit',
-                nom: batiment.nomBatiment, ref: batiment.refBatiment, idBatiment: batiment.idBatiment, idCite: batiment.idCite
-            }
+            this.action = 'edit'
+            this.batiment = batiment
             this.$bvModal.show('modal-batiment')
         },
         /**
@@ -293,6 +244,8 @@ export default {
                 if (elt.idBatiment == batiment.idBatiment) {
                     elt.nomBatiment = batiment.nom
                     elt.refBatiment = batiment.ref
+                    elt.image = batiment.photo
+                    elt.idCite = batiment.idCite
                 }
                 return elt
             })

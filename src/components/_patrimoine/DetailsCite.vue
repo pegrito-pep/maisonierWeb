@@ -5,6 +5,7 @@
             <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'stats'}" @click.prevent="section = 'stats'">Statistiques générales</a></li>
             <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'add-batiments'}" @click.prevent="section = 'add-batiments'">Ajouter des bâtiments</a></li>
             <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'depenses'}" @click.prevent="section = 'depenses'">Dépenses liées à la cité</a></li>
+             <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'add-depense'}" @click.prevent="section = 'add-depense'">Ajouter une dépense</a></li>
         </ul>
         <div class="tab-content mt-3">
             <div class="tab-pane fade show active">
@@ -29,25 +30,7 @@
                     </div>       
                 </div> 
                 <div v-show="section == 'add-batiments'">
-                    <div :id="repeaterId" style="height: 75vh;">
-                        <div class="d-flex flex-column justify-content-between" style="height: 90%; overflow-y: auto; overflow-x: hidden">
-                            <div data-repeater-list="group"><b-row data-repeater-item>
-                                <b-col cols="12" md="6" lg="6"><b-form-group label="Nom du batiment">
-                                    <b-form-input name="nom" placeholder="Ex: Batiment 1" trim></b-form-input>
-                                </b-form-group></b-col>
-                                <b-col md="4" lg="4"><b-form-group label="Reference">
-                                    <b-form-input name="ref" placeholder="Ex: B1" trim></b-form-input>
-                                </b-form-group></b-col>
-                                <b-col><b-form-group label="Action">
-                                    <b-button data-repeater-delete variant="outline-danger"><i class="fa fa-times"></i></b-button>
-                                </b-form-group></b-col>
-                            </b-row></div>
-                        </div>
-                        <div class="d-flex justify-content-end align-items-center mt-5">
-                            <b-button variant="outline-primary" data-repeater-create>Ajouter un élément</b-button>
-                            <b-button variant="danger" @click="addBatiments" class="ml-2" :disabled="submitted">Valider <b-spinner v-if="submitted" small /></b-button>
-                        </div>
-                    </div>
+                    <form-batiment :cite="cite" @batimentAdded="pushBatiment"  />
                 </div>
                 <div v-if="section == 'depenses'">
                     <b-alert variant="info" show v-if="!cite.depenses.length">
@@ -66,14 +49,11 @@
                                 </b-col>
                             </b-row>    
                         </div> 
-                        <depense-form @depenseAdded="pushDepense"  v-if="commandeDepense" :action="action" :cite="cite" @closeDepenseModal="onCloseSet" />   
-                    </div>
-                    <div>
-                        <b-button variant="danger" @click.prevent="defineDepense" v-b-modal.modal-lg>
-                            <i class="fa fa-plus-circle"></i> Nouvelle dépense
-                        </b-button> 
-                    </div>    
+                    </div>  
                 </div> 
+                 <div v-show="section == 'add-depense'">
+                    <depense-form :cite="cite"  @depenseAdded="addedDepense" :provenance="provenance"/>
+                </div>
             </div>
         </div>
     </div>
@@ -83,6 +63,7 @@
 import Batiment from '@/components/_patrimoine/Batiment.vue'
 import Depense from "@/views/gestion-immobiliere/depenses/Depense.vue";
 import DepenseForm from "@/views/gestion-immobiliere/depenses/DepenseForm.vue";
+import FormBatiment from './FormBatiment.vue';
 const php = require('phpjs')
 
 export default {
@@ -92,12 +73,10 @@ export default {
     components: {
         Batiment,
         Depense,
-        DepenseForm
+        DepenseForm,
+        FormBatiment
     },
     computed: {
-        repeaterId() {
-            return `repeat-added-batiment-form-${this.cite.idCite}`
-        },
         /**
          * Elements affichés avec prise en charge de la pagination
          */
@@ -118,9 +97,9 @@ export default {
         currentPage: 1,
         perPage: 10,
         source:1,
+        provenance:"2",
         
         //données manipulées pour l'ajout d'une dépense
-        commandeDepense:false,
         action:""
     }),
    mounted() {
@@ -128,40 +107,24 @@ export default {
         this.makeRepeater()
     },
     methods: {
-        pushDepense(newDepense) {
-            this.cite.depenses.unshift(newDepense);
-            this.commandeDepense =false;
-        },
-
-        makeRepeater() {
-            setTimeout(() => {
-                $(`#${this.repeaterId}`).repeater({
-                    isFirstItemUndeletable: true
-                })
-            }, 500);
-        },
-
-        addBatiments() {
-            let batiments = $(`#${this.repeaterId}`).repeaterVal().group
-            if (php.empty(batiments[0].nom) || php.empty(batiments[0].ref)) {
-                return App.error('Vous devez remplir au moins les informations du premier batiment')
-            }
-            this.submitted = true
-
-            axios.post('batiments', {batiments, idCite: this.cite.idCite}).then(response => {
-                this.submitted = false
-
-                if (!response.success) {
-                    return App.alertError(response.message)
-                }
-                this.cite.batiments.push(...response.result)
-                this.$emit('batimentsChanged', this.cite.batiments)
-                this.section = 'batiments'
-                if (!response.result.length) {
-                    return App.notif('Aucun batiment rajouté', {})
-                }
-                return App.notifySuccess(response.message)
+         /**
+         * réponse à l'évènement d'ajout d'une dépense
+         * dans le détail de la cité, la réponse consiste juste à mettre à jour la liste des dépenses de la cité
+         */
+         addedDepense() {
+            axios.get(`cites/${this.cite.idCite}/depenses`).then(response => response.result || []).then(depenses => {
+                this.cite.depenses = depenses
+                this.section = 'depenses'
             })
+        },
+
+        pushBatiment(batiments) {
+            this.cite.batiments.push(...batiments)
+            this.$emit('batimentsChanged', this.cite.batiments)
+            this.section = 'batiments'
+            if (!batiments.length) {
+                return App.notif('Aucun batiment rajouté', {})
+            }
         },
         /**
          * Retire un batiment

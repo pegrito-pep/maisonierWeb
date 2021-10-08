@@ -176,7 +176,7 @@
         </b-form-group>
       </b-modal>
     </div>
-
+    <!--MODAL POUR AJOUTER OU MODIFIER UN LOGEMENT-->
     <b-modal id="addLogement" ref="edit-modal" size="lg" :title="title" ok-title="Fermer" ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
         <div>
             <add-logement @logementAdded="addedLogement" :editLogement="logement" />

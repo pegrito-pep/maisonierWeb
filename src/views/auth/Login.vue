@@ -12,7 +12,7 @@
                     <div class="authentication-form mx-auto">
                         <div class="mt-n5 mb-4 d-flex justify-content-center align-items-center flex-column">
                             <b-link :to="{name: 'home'}"><b-img src="/img/logo-m0.png" style="width: 4em; height: 4em"/></b-link>
-                            <h3 class="text-center mt-2 mb-0">Se connecter</h3>
+                            <h3 class="text-center mt-2 mb-0 font-weight-bold">Se connecter</h3>
                         </div>
                         
                         <form action="" @submit.prevent="sendForm">
@@ -26,7 +26,7 @@
                             </div>
                             <div class="row">
                                 <div class="col text-right">
-                                    <b-link :to="{name: 'forgot-password'}" v-b-hover="handleHoverForgot" :class="isHoveredForget ? 'text-evidence-forgot' : ''">Mot de passe oublié ?</b-link>
+                                    <b-link :to="{name: 'forgot-password'}" v-b-hover="handleHoverForgot" class="forgotpwd">Mot de passe oublié ?</b-link>
                                 </div>
                             </div>
                             <div class="sign-btn text-center">
@@ -34,7 +34,7 @@
                             </div>
                         </form>
                         <div class="register">
-                            <p >Pas de compte? <b-link :to="{name: 'register'}" v-b-hover="handleHover" :class="isHovered ? 'text-evidence' : ''">Créer un compte maintenant</b-link></p>
+                            <p >Pas de compte? <b-link :to="{name: 'register'}" v-b-hover="handleHover" class="signup">Créer un compte maintenant</b-link></p>
                         </div>
                     </div>
                 </div>
@@ -77,12 +77,11 @@ export default {
 }
 </script>
 <style>
-    .text-evidence{
-        background: green;
-        color:white!important;
+    .signup, .forgotpwd, .signup:hover, .forgotpwd{
+        color: #ee3a5b;
     }
-    .text-evidence-forgot{
-        background:red!important;
-        color:white!important;
+    .signup:hover, .forgotpwd:hover{
+        color: #ee3a5b;
+        font-weight: bold;
     }
 </style>

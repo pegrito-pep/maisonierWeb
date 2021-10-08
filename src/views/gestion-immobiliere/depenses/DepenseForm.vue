@@ -1,18 +1,4 @@
 <template>
-  <b-modal
-    id="modal-lg"
-    size="lg"
-    ok-only
-    ok-title="Valider"
-    ref="depense-modal"
-    @hidden="resetModal"
-    @ok="submitModal"
-    :static="true"
-  >
-    <template #modal-title>
-      <span class="ml-4 text-form-annone">Définir une dépense</span>
-      <span class="ml-4 text-form-annone" v-if="action == 'edit'">Edition</span>
-    </template>
     <b-overlay :show="showOverlayP" rounded="sm">
       <b-row>
         <b-col>
@@ -23,6 +9,7 @@
             <b-form-input
               v-model="depense.montant"
               placeholder="Ex: 45000"
+              type="number"
               trim
             ></b-form-input>
           </b-form-group>
@@ -111,9 +98,10 @@
                         </transition>
                     </b-col>
             </b-row>
+             <hr>
+             <div class="float-right"><b-button @click.prevent="submitModal" variant="primary">Valider</b-button></div>
         </b-overlay>
-     </b-overlay>
-  </b-modal>
+    </b-overlay>
 </template>
 <script>
 import DatePicker from 'vue2-datepicker';
@@ -163,20 +151,15 @@ export default {
         cite: { type: Object},
         batiment: { type: Object},
         logement: { type: Object},
-        action: {type: String, required: true, default: "add"}
+        action: {type: String, required: true, default: "add"},
+        provenance: {type: String, required: true, default: "1"}
     },
   methods: {
       //methode de gestion du fichier accompagnant une dépense
       async onrecuLoad(e){
         const fileDepense=e;
         this.depense.photo=await this.getBase64(fileDepense)
-        console.log("base64 obtenu", this.depense.photo);
       },
-      async onFileCniProprietaireChange(e){
-        const fileCniProprio=e;
-        this.formData.photoCniProprietaire=await this.getBase64(fileCniProprio)
-        console.log("url", this.formData.photoCniProprietaire);
-    },
     /**
      * action à effectuer en fonction de l'entité sélectionné
      * par celui qui remplit le formulaire
@@ -224,11 +207,13 @@ export default {
         responsable: '',
         observation: ''
       };
-      this.showOverlayP=false;
-      this.showSelectCite=false; this.showSelectBatiment=false; this.showSelectLogement=false;
-      this.id=null;
-      this.commandeAction="";
-      this.$emit("resetdepenseForm");
+      if(this.provenance !='2'){
+        this.showSelectCite=false; this.showSelectBatiment=false; this.showSelectLogement=false;
+        this.id=null; this.commandeAction="";
+      }
+      setTimeout(() => {
+        this.$emit('closeDepenseModal');
+      }, 500);
     },
 
     //validation formulaire d'ajout/modification d'une dépense
@@ -252,35 +237,39 @@ export default {
          if(this.showSelectLogement){
               console.log("dépense",this.depense,"id",this.id.idLogement)
               axios.post('/logements/'+this.id.idLogement+'/depenses',this.depense).then(response =>{
-                  notif.success(response.message);
-                  this.$refs["depense-modal"].hide();
+                  this.resetModal();
+                   this.showOverlayP = false;
                   this.$emit("depenseAdded", response.result);
-                  this.showOverlayP = false;
+                  return App.notifySuccess(response.message)
+                 
               })
               .catch(error => {
+                this.showOverlayP = false;
                  notif.error(error.message);
             });
           }
            if(this.showSelectCite){
               axios.post('/cites/'+this.id.idCite+'/depenses',this.depense).then(response =>{
-                  notif.success(response.message);
-                  this.$refs["depense-modal"].hide();
+                  this.resetModal();
+                   this.showOverlayP = false;
                   this.$emit("depenseAdded", response.result);
-                  this.showOverlayP = false;
+                  return App.notifySuccess(response.message)
               })
               .catch(error => {
+                 this.showOverlayP = false;
                  notif.error(error.message);
             });
           }
           if(this.showSelectBatiment){
               axios.post('/batiments/'+this.id.idBatiment+'/depenses',this.depense).then(response =>{
-                  notif.success(response.message);
-                  this.$refs["depense-modal"].hide();
+                  this.resetModal();
+                   this.showOverlayP = false;
                   this.$emit("depenseAdded", response.result);
-                  this.showOverlayP = false;
+                  return App.notifySuccess(response.message)
               })
               .catch(error => {
-                 notif.error(error.message);
+                this.showOverlayP = false;
+                notif.error(error.message);
             });
           }
             
@@ -321,22 +310,3 @@ export default {
 
 };
 </script>
-<style scoped>
-@font-face {
-  font-family: "font-1";
-  src: url(/fonts/rampart-one-Font/RampartOne-Regular.ttf);
-}
-.text-form-annone {
-  font-family: "font-1", sans-serif;
-  font-size: 2.1em;
-  color: #0a0701fa;
-}
- .disabled {
-    pointer-events:none;
-    color: #bfcbd9;
-    cursor: not-allowed;
-    background-image: none;
-    background-color: #eef1f6;
-    border-color: #d1dbe5;   
- }
-</style>

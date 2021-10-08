@@ -2,7 +2,7 @@
     <div class="shadow list-item list-item-grid">
         <div class="card d-flex flex-row mb-3">
             <a class="d-flex card-img" @click.prevent="showDetails" href="#">
-                <img src="@/assets/img/logement.jpg" alt="" style="height: 10em" class="list-thumbnail responsive border-0">
+                <img :src="batiment.image || '/img/batiment.jpg'" alt="" style="height: 10em" class="list-thumbnail responsive border-0">
                 <span v-if="isNew" class="badge badge-pill badge-primary position-absolute badge-top-left">New</span>
             </a>
             <div class="d-flex flex-grow-1 min-width-zero card-content">

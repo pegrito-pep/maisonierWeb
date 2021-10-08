@@ -5,7 +5,7 @@
       title="Dépenses"
       description="Gestion de vos dépenses"
       icon="home"
-      :path="['Staitstiques', 'Mes Dépenses']"
+      :path="['Statistiques', 'Mes Dépenses']"
     />
     <div class="row">
       <div class="col-md-12">
@@ -16,15 +16,11 @@
                 <b-form-select v-model="filtre_categories" size="sm" style="box-shadow: none">
                   <b-form-select-option :value="null">Filtre de catégories</b-form-select-option>
                   <b-form-select-option-group
-                    v-for="(cite, i) in cites"
-                    :key="i"
-                    :label="cite.nomCite"
+            
                   >
                     <b-form-select-option
-                      v-for="(batiment, j) in cite.batiments"
-                      :key="j"
-                      :value="batiment.nomBatiment"
-                    >{{ batiment.nomBatiment }}</b-form-select-option>
+                  
+                    ></b-form-select-option>
                   </b-form-select-option-group>
                 </b-form-select>
               </div>
@@ -44,7 +40,7 @@
             </div>
 
             <div class="float-md-right">
-              <b-button variant="danger" @click.prevent="addDepense" v-b-modal.modal-lg>
+              <b-button variant="danger" v-b-modal.depenseForm>
                 <i class="fa fa-plus-circle"></i> Nouvelle dépense
               </b-button>
 
@@ -116,7 +112,16 @@
         </div>
       </div>
     </div>
-    <depense-form @depenseAdded="pushDepense" v-if="commandeDepense" :action="action" :cite="cite" :batiment="batiment" :logement="logement" @resetdepenseForm="onCloseSet" />
+    <!--MODAL POUR AJOUTER OU MODIFIER UNE DEPENSE-->
+    <b-modal id="depenseForm" size="lg" hide-footer no-close-on-backdrop>
+        <template #modal-title>
+          <span class="ml-4 text-form-annone">{{ title }}</span>
+        </template>
+        <div>
+            <depense-form @depenseAdded="pushDepense" :action="action" />
+        </div>
+    </b-modal>
+    <!--<depense-form @depenseAdded="pushDepense" :action="action" :cite="cite" :batiment="batiment" :logement="logement" @resetdepenseForm="onCloseSet" />-->
   </div>
 </template>
 <script>
@@ -134,32 +139,22 @@ export default {
   },
   data: () => ({
     //données liées au composant dépense
-    commandeDepense: false,
     cite:null,
     batiment:null,
     logement:null,
     source:0,
-
+    title:"Définir une dépense",
     search: null,
     showOverlay: true,
     currentPage: 1,
     perPage: 10,
-    action:'',
+    action:'add',
     depenses: [],
     trueDepenses: [],
     depense: null,
 
     typesLogements: [],
     filtre_categories: null,
-
-    cites: [],
-    clone: {
-      enabled: false,
-      submitted: false,
-      error: false,
-      nbr: null,
-      idBatiment: null
-    },
 
   }),
   computed: {
@@ -201,16 +196,10 @@ export default {
   },
   methods: {
     pushDepense(){
-      console.log("entrée ajout nouvelle dépense");
       this.getDepenses();
+      this.$bvModal.hide('depenseForm');
     },
-    /**
-     * reception de l'évènement émis de fermeture du modal d'ajout d'un logement
-     * ceci permet de re-initialiser le composant(formwizard) d'ajout d'un logement de manière appropriée
-     */
-    onCloseSet() {
-      this.commandeDepense = false;
-    },
+
     //recupération de la liste des logements
     async getDepenses(begin) {
       this.showOverlay = true;
@@ -244,12 +233,6 @@ export default {
         }
       }
     },
-
-
-    addDepense() {
-      this.action="add";
-      this.commandeDepense = true;
-    },
     updateDepense(depense) {
       console.log("depense", depense);
     },
@@ -278,3 +261,20 @@ export default {
   }
 };
 </script>
+<style scoped>
+.text-form-annone {
+    font-size: 1.3em;
+    color: #212121ef;
+    font-weight: 800;
+    text-align: center;
+    margin-top: 2px;
+}
+ .disabled {
+    pointer-events:none;
+    color: #bfcbd9;
+    cursor: not-allowed;
+    background-image: none;
+    background-color: #eef1f6;
+    border-color: #d1dbe5;   
+ }
+</style>

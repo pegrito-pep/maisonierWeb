@@ -5,6 +5,7 @@
             <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'stats'}" @click.prevent="section = 'stats'">Statistiques générales</a></li>
             <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'add-logement'}" @click.prevent="section = 'add-logement'">Ajouter un logement</a></li>
             <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'depenses'}" @click.prevent="section = 'depenses'">Dépenses liées au batiment</a></li>
+            <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'add-depense'}" @click.prevent="section = 'add-depense'">Ajouter une dépense</a></li>
         </ul>
         <div class="tab-content mt-3">
             <div class="tab-pane fade show active">
@@ -49,15 +50,12 @@
                                     <depense @deleted="removeDepense" :depense="depense" :source="source" is-sub />
                                 </b-col>
                             </b-row>    
-                        </div> 
-                        <depense-form @depenseAdded="pushDepense"  v-if="commandeDepense" :action="action" :batiment="batiment" @closeDepenseModal="onCloseSet" />   
+                        </div>  
                     </div>
-                    <div>
-                        <b-button variant="danger" @click.prevent="defineDepense" v-b-modal.modal-lg>
-                            <i class="fa fa-plus-circle"></i> Nouvelle dépense
-                        </b-button> 
-                    </div>    
                 </div> 
+                <div v-show="section == 'add-depense'">
+                        <depense-form :batiment="batiment"  @depenseAdded="addedDepense" :provenance="provenance"/>
+                </div>  
             </div>
         </div>
     </div>
@@ -105,11 +103,22 @@ export default {
         action: "",
         currentPage: 1,
         perPage: 10,
-        source: 3
+        source: 3,
+        provenance:"2"
     }),
    mounted() {
     },
     methods: {
+              /**
+         * réponse à l'évènement d'ajout d'une dépense
+         * dans le détail du batiment, la réponse consiste juste à mettre à jour la liste des dépenses du batiment
+         */
+         addedDepense() {
+            axios.get(`batiments/${this.batiment.idBatiment}/depenses`).then(response => response.result || []).then(depenses => {
+                this.batiment.depenses = depenses
+                this.section = 'depenses'
+            })
+        },
         addedLogement() {
             axios.get(`batiments/${this.batiment.idBatiment}/logements`).then(response => response.result || []).then(logements => {
                 this.batiment.logements = logements

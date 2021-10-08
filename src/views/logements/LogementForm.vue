@@ -29,39 +29,16 @@
                 <!--</b-row>-->
                 <b-row>
                     <b-col> 
-                        <!--<div class="form-group">
-                            <label>Type de logement </label>
-                            <b-form-select
-                                v-model="idType"
-                                :options="typesLogement"
-                                class="mb-3"
-                                value-field="idType"
-                                v-on:change="changeType(`${idType}`)"
-                                text-field="libelleType"
-                                disabled-field="notEnabled"
-                            ></b-form-select>
-                        </div>-->
                         <div class="form-group">
                             <label>Type de logement</label>
-                            <v-select label="libelleType" :options="typesLogement" v-model="idType" :class="!requiredSousType ? 'is-red' : ''"></v-select>
+                            <v-select label="libelleType" :options="typesLogement" v-model="type" :class="!requiredSousType ? 'is-red' : ''" @input="changeType"></v-select>
                         </div>
                     </b-col>
                     <b-col> 
-                        <!--div class="form-group">
+                        <div class="form-group">
                             <label>Catégorie associée </label>
-                            <b-form-select
-                                v-model="idSousType"
-                                :options="sousTypes || []"
-                                class="mb-3"
-                                :class="!requiredSousType ? 'is-red' : ''"
-                                value-field="idSousType"
-                                text-field="libelleSousType"
-                            ></b-form-select>
+                            <v-select label="libelleSousType" :options="sousTypes" v-model="sousType" :class="!requiredSousType ? 'is-red' : ''"></v-select>
                             <span v-if="!requiredSousType" style="color:red;">Ce champ est obligatoire</span>
-                        </div>-->
-                         <div class="form-group">
-                            <label>Catégorie associée </label>
-                            <v-select label="libelleSousType" :options="sousTypes" v-model="idSousType" :class="!requiredSousType ? 'is-red' : ''"></v-select>
                         </div>
                     </b-col>
                 </b-row>
@@ -347,8 +324,8 @@ export default {
         check4:false,
         check5:false,
         check6:false,
-        idType: null,
-        idSousType:null,
+        type: null,
+        sousType:null,
         typesLogement:[],
         sousTypesLogements:[],
         sousTypes:[],
@@ -622,9 +599,7 @@ export default {
         VueUploadMultipleImage
     },
     computed: {
-             nomBatiment(){
-                 return this.batiment.nomBatiment+"("+this.batiment.refBatiment+")"
-             },
+
              mapCoordinates() {
                 if(!this.map) {
                     return {
@@ -667,13 +642,13 @@ export default {
         validateAsync:function() {
             return new Promise((resolve, reject) => {
                 
-                if(!this.logement.ref || !this.idSousType){
+                if(!this.logement.ref || !this.sousType){
                     this.check=false
                     if(!this.logement.ref){
                         this.reference=""
                         this.requiredRef=false;}
                     else{this.requiredRef=true;}
-                    if(!this.idSousType){this.requiredSousType=false;}
+                    if(!this.sousType){this.requiredSousType=false;}
                     else{this.requiredSousType=true;}
                 }else{
                     this.check=true
@@ -745,7 +720,7 @@ export default {
                 description:this.logement.description,
                 prixMin:this.logement.prixMin,
                 prixMax:this.logement.prixMax,
-                idSousType:this.idSousType,
+                idSousType:this.sousType.idSousType,
                 idBatiment:this.idBatiment,
                 adresse:add,
                 photos: this.photos,
@@ -785,6 +760,7 @@ export default {
                 ]
 
             }
+            console.log("data",data)
             axios.post("logements",data).then(response =>{
                 this.resetModal()
                 this.showOverlay=false;
@@ -842,12 +818,15 @@ export default {
         },
         //chargement des catégories en focntion du type de logement sélectionné
         changeType(a) {
+            this.sousType=[];
+            console.log("type sélectionné ",this.type)
             let data = [];
             for (let i = 0; i < this.sousTypesLogements.length; i++) {
                 data.push(this.sousTypesLogements[i]);
             }
-            let result = data.filter(x => x.idType == a);
+            let result = data.filter(x => x.idType == this.type.idType);
             this.sousTypes = result;
+            console.log("sous-type",this.sousTypes)
         },
         handleDrag() {
                 // get center and zoom level, store in localstorage
@@ -909,15 +888,15 @@ export default {
            this.logement.quartier= this.editLogement.adresse.quartier;  this.logement.lat= this.editLogement.adresse.lat; 
            this.logement.lon= this.editLogement.adresse.lon;  this.photos=this.editLogement.photos; 
             //this.typesLogement.push(this.editLogement.sousTypeLogement.typeLogement); 
-            this.idType = this.editLogement.sousTypeLogement.typeLogement.idType;
+            this.type = this.editLogement.sousTypeLogement.typeLogement;
             //this.sousTypes.push(this.editLogement.sousTypeLogement); 
-            this.idSousType=this.editLogement.sousTypeLogement.idSousType
+            this.sousType=this.editLogement.sousTypeLogement
            this.logement.nbchambre= this.editLogement.adresse.lat; 
            if(this.editLogement.batiment!= null){
                this.showSelectBatiment=true
                this.idBatiment=this.editLogement.batiment.idBatiment
            }
-           console.log("logement à éditer:",this.editLogement.sousTypeLogement.idSousType)
+           console.log("logement à éditer:",this.editLogement.sousTypeLogement.typeLogement)
        }
     }
 }
