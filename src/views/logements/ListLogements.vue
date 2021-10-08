@@ -177,9 +177,9 @@
       </b-modal>
     </div>
 
-    <b-modal id="addLogement" size="lg" title="Formulaire d'ajout d'un logement" ok-title="Fermer" ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
+    <b-modal id="addLogement" ref="edit-modal" size="lg" :title="title" ok-title="Fermer" ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
         <div>
-            <add-logement @logementAdded="addedLogement" />
+            <add-logement @logementAdded="addedLogement" :editLogement="logement" />
         </div>
     </b-modal>
 
@@ -187,7 +187,7 @@
   </div>
 </template>
 <script>
-import AddLogement from "@/views/logements/AddLogement.vue";
+import AddLogement from "@/views/logements/LogementForm.vue";
 import LoadCsv from "@/views/logements/LoadCsv.vue";
 import Logement from "@/components/_patrimoine/Logement.vue";
 import DetailsLogement from "@/components/_patrimoine/DetailsLogement.vue";
@@ -278,7 +278,6 @@ export default {
     //propriétées, du fichier modèle
 
     commandeLoadCsv: false,
-    commandeHousing: false,
     search: null,
     showOverlay: true,
     currentPage: 1,
@@ -290,6 +289,7 @@ export default {
 
     typesLogements: [],
     filtre_categories: null,
+    title:"Ajouter un logement",
 
     cites: [],
     clone: {
@@ -444,6 +444,9 @@ export default {
     },
     updateLogement(logement) {
       console.log("logement", logement);
+      this.logement=logement
+      this.title="édition du logement "+this.logement.refLogement;
+      this.$refs['edit-modal'].show()
     },
     removeLogement(logement) {
       console.log("logement", logement);

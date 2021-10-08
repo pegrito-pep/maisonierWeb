@@ -4,7 +4,7 @@
             <div class="d-flex mb-3">
                 <a class="w-90 d-flex card-img" @click.prevent="showDetails" href="#">
                     <b-carousel :interval="4000" controls indicators>
-                        <b-carousel-slide style="height: 15em" class="fluid w-100 responsive border-0" v-for="(photo,i) in annonce.photos" :key="i" :img-src="photo"/>
+                        <b-carousel-slide style="height: 24em" class="fluid w-100 responsive border-0" v-for="(photo,i) in annonce.photos" :key="i" :img-src="photo"/>
                     </b-carousel>
                     <b-badge pill class="position-absolute badge-top-left" :variant="annonce.publish ? 'success' : 'danger'">{{ annonce.publish ? 'Déja publiée' : 'Pas encore publiée' }}</b-badge>
                     <b-badge pill class="position-absolute badge-top-left-2" variant="secondary" v-b-tooltip.bottom="dateCreation"><i class="fa fa-clock"></i> {{ $date(annonce.createdAt).format("DD.MM.YYYY") }} </b-badge>

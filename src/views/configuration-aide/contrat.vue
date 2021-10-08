@@ -18,7 +18,7 @@
                             <b-button variant="danger" @click.prevent="() => {modal.action = 'add'; $bvModal.show('contrat-modal'),getArticle()}"><i class="fa fa-plus-circle"></i> Nouveau Modèle</b-button>
                         </div>-->
                         <div class="float-md-right">
-                            <b-button variant="danger" @click.prevent="callContratForm" v-b-modal.modal-xl>
+                            <b-button variant="danger" @click.prevent="callContratForm" v-b-modal.modal-contrat-form>
                                 <i class="fa fa-plus-circle"></i> Ajouter un modèle de contrat
                             </b-button>
                         </div>
@@ -33,21 +33,25 @@
                     </b-alert> 
                     <b-row v-else class="layout-wrap">
                         <b-col v-for="(contrat, i) in items" :key="contrat.idContrat || i" xl="3" lg="4" cols="12" sm="6" class="animated flipInX mb-4">
-                            <app-contrat @makeUpdate="updateArticle"  :contrat="contrat" @showDetails="showDetails" />
+                            <contrat @makeUpdate="updateArticle"  :contrat="contrat" @showDetails="showDetails" />
                         </b-col>
                     </b-row>
                     <paginator hr="top" :offset="offset" :total="contrats.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" />                   
                 </b-overlay>
             </div>
       </div>
-    <contrat-form v-if="commandeContrat" @closeContratModal="onCloseSet" />
+      <b-modal id="modal-contrat-form" size="xl" :header-bg-variant="headerBgVariant" ref="contrat-modal"  :header-text-variant="headerTextVariant" title="Ajouter un Modèle de contrat" ok-title="Fermer"  ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
+            <div>
+                <contrat-form @newModeleContratAdded="addedContrat"/>
+            </div>
+     </b-modal>
 </div>
 </template>
 
 <script>
 
 // Je renome le composant Cite en AppCite parcequ'il existe une balise <cite>. Du coup le composant n'allait pas etre prise en compte
-import AppContrat from '@/components/_configuration-aide/Contrat.vue';
+import Contrat from '@/components/_configuration-aide/Contrat.vue';
 
 import ContratForm from "@/views/configuration-aide/contratForm.vue";
 
@@ -57,7 +61,7 @@ const php  = require ( 'phpjs' ) ;
 export default {
     name: 'Contrats',
     components: {
-        AppContrat,
+        Contrat,
         ContratForm
     },
     computed: {
@@ -83,6 +87,8 @@ export default {
         currentPage: 1,
         itemTextShow:'',
         text:'lqdmfdqf',
+        headerBgVariant: 'dark',
+        headerTextVariant: 'light',
         ListItem:[],
         perPage: 10,
         search: null,
@@ -90,8 +96,6 @@ export default {
             action: '',
             nom: '', ref: '', idCite: ''
         },
-        //données manipulées pour la gestion du form d'ajout d'un modèle de contrat
-        commandeContrat: false,
     }),
     watch: {
         search(value) {
@@ -111,12 +115,14 @@ export default {
         await this.getData()
     },
     mounted(){
-        this.$root.$on("new-modele-contrat-added", () => {
-        this.getContrats();
-        this.commandeContrat = false;
-    });
+       
     },
     methods: {
+            //recupération du dernier modèle de contrat ajouté
+            addedContrat(){
+                this.getContrats();
+                this.$bvModal.hide('modal-contrat-form')
+            },
             //methode de récupération des logements et des batiments
         async getData(){
             let batiments=[]; let logements=[];

@@ -1,11 +1,5 @@
 <template>
-    <b-modal id="modal-xl" size="xl" :header-bg-variant="headerBgVariant" ref="contrat-modal"  :header-text-variant="headerTextVariant" title="Ajouter un Modèle de contrat"   :ok-disabled="true" no-close-on-backdrop hide-header-close>
-       <div>
         <b-overlay :show="showOverlay" rounded="sm">
-            <template #modal-title>
-                    <span v-if="action == 'add'">Ajouter un Modèle contrat</span>
-                    <span v-if="action == 'edit'">Edition d'un modèle de contrat</span>
-            </template>
             <form-wizard   title='' subtitle='' nextButtonText='suivant' backButtonText='Précedent' finishButtonText='Enregistrer' aria-labelledby="demoModalLabel"  @on-complete="onComplete"
                             @on-loading="setLoading"
                             shape="circle"
@@ -143,27 +137,21 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row no-print">
+                            <!--<div class="row no-print">
                                 <div class="col-12">
                                     <button type="button" class="btn btn-primary pull-right" style="margin-right: 5px;"><i class="fa fa-download"></i> Generate PDF</button>
                                 </div>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                 </tab-content>
                 <div class="leloader" v-if="loadingWizard"></div>
             </form-wizard>
         </b-overlay>
-    </div>
-    <template #modal-footer>
-            <b-button size="sm" @click="resetModal">
-                Fermer
-            </b-button>
-    </template>
-    </b-modal>
 </template>
 <script>
 const php  = require ( 'phpjs' ) ; 
+import notif from "@/plugins/notif.js";
 export default {
     name: 'contratForm',
     components: {
@@ -175,8 +163,7 @@ export default {
     data: () => ({
         loadingWizard: false,
         showOverlay:true,
-        headerBgVariant: 'dark',
-        headerTextVariant: 'light',
+
         action:'add',
         modelContrat:{
           title:'',
@@ -230,12 +217,12 @@ export default {
         validateSecond:function() {
             return new Promise((resolve, reject) => {
                 
-                if(this.selectArcticle.length<2){
+                /*if(this.selectArcticle.length<2){
                    //this.check2=false
                     return App.error('vous devez sélectionner au moins deux rubriques')
                 }else{
                     this.check2=true;
-                }
+                }*/
                 setTimeout(() => {
                     resolve(this.check)
                 }, 1000)
@@ -253,13 +240,13 @@ export default {
             this.showOverlay=false;
         },
         /**
-            * Recupere les modèle de contrats au backend
+            * reinitialiser le form d'ajout d'un modèle e contrat
          */
         resetModal() {
                 this.modelContrat = {
                     title: '', libele: '', rubriques: null
                 }
-                this.$refs['contrat-modal'].hide();
+                this.logement=null; this.batiment=null;
                 setTimeout(() => {
                     this.$emit('closeContratModal');
                 }, 500);
@@ -276,32 +263,43 @@ export default {
             })
         },
         onComplete(){
-            console.log("batiment", this.batiment," logement :", this.logement)
             this.showOverlay=true;
             let data = {
                 libelle: this.modelContrat.libele,
                 titre: this.modelContrat.title,
                 rubriques: [],
-                idBatiment:this.batiment.idBatiment, 
-                idLogement:this.logement.idLogement
+                idBatiment:'', 
+                idLogement:''
             }
             this.selectArcticle.forEach(elt => {
                 data.rubriques = php.array_merge(data.rubriques, elt.rubriques.map(e => e.idRubrique))
             })
-            console.log(data)
-            axios.post("modeles-contrats",data).then(response => {
-                if(response.success){
-                    this.$root.$emit("new-modele-contrat-added");
-                   // this.getContrats()
-                }
-            }).catch(error => {
-                console.log(error.response)
+            if(this.batiment != null){
+                data.idBatiment = this.batiment.idBatiment
+            }
+             if(this.logement != null){
+                data.idLogement = this.logement.idLogement
+            }
+              axios.post("modeles-contrats",data).then(response =>{
+                this.resetModal()
+                this.showOverlay=false;
+                this.$emit("newModeleContratAdded");
+                return App.notifySuccess(response.message)
             })
-            setTimeout(() => {
+            .catch(error => {
+                this.showOverlay=false;
+                notif.error(error.message);
+            });
+            /*setTimeout(() => {
                 this.$refs['contrat-modal'].hide()
                 this.showOverlay=false;
-            }, 1000);
+            }, 1000);*/
         },
+
+
+
+
+
         Rubrique(item){
             console.log(item)
             let selectionner = this.articles.filter(y => y.idArticle === item.idArticle)[0]

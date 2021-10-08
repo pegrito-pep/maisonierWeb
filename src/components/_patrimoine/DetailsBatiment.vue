@@ -67,7 +67,7 @@
 import Logement from '@/components/_patrimoine/Logement.vue'
 import Depense from "@/views/gestion-immobiliere/depenses/Depense.vue";
 import DepenseForm from "@/views/gestion-immobiliere/depenses/DepenseForm.vue";
-import AddLogement from "@/views/logements/AddLogement.vue";
+import AddLogement from "@/views/logements/LogementForm.vue";
 
 
 const php = require('phpjs')
