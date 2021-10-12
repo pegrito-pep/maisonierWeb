@@ -275,7 +275,8 @@ export default {
     name: 'add-logement',
     props: {
         batiment: {type: Object},
-        editLogement: {type: Object}
+        editLogement: {type: Object},
+        action:{type: String}
     },
     data:()=>({
         loadingWizard: false,
@@ -623,6 +624,14 @@ export default {
                 nbcuisine: null, nbsalon: null, nbdouche: null, nbparking: null, nbpiscine: null,
                 nbgarage: null, nbsona: null
             }
+            if(this.editLogement){
+                this.editLogement = {
+                refLogement: null, descLogement: null, prixMin: null, prixMax: null,
+                pays: null, ville: null, quartier: null, lat: null, lon: null, nbchambre: null,
+                nbcuisine: null, nbsalon: null, nbdouche: null, nbparking: null, nbpiscine: null,
+                nbgarage: null, nbsona: null
+            }
+            }
             this.idSousType=null;
             this.idBatiment=null;
             this.mapCoordinates = { lat: null, lng: null};
@@ -761,16 +770,40 @@ export default {
 
             }
             console.log("data",data)
-            axios.post("logements",data).then(response =>{
-                this.resetModal()
-                this.showOverlay=false;
-                this.$emit("logementAdded");
-                return App.notifySuccess(response.message)
-            })
-            .catch(error => {
-                this.showOverlay=false;
-                notif.error(error.message);
-            });
+            if(this.action=='add'){
+                axios.post("logements",data).then(response =>{
+                    this.resetModal()
+                    this.showOverlay=false;
+                    this.$emit("logementAdded");
+                    return App.notifySuccess(response.message)
+                })
+                .catch(error => {
+                    this.showOverlay=false;
+                    notif.error(error.message);
+                });
+            }
+            if(this.action=='edit'){
+                axios.put(`logements/${ this.editLogement.idLogement}`,data).then(response =>{
+                    /*this.resetModal()
+                    this.showOverlay=false;
+                    this.$emit("logementAdded");
+                    return App.notifySuccess(response.message)*/
+                    if (!response.success) {
+                        return App.alertError(response.message)
+                    }
+                    this.resetModal()
+                    this.showOverlay=false;
+                    this.editLogement=null;
+                    this.$emit("editSuccessfull", response.result);
+                    return App.notifySuccess(response.message)
+                     
+                })
+                .catch(error => {
+                    this.showOverlay=false;
+                    notif.error(error.message);
+                });
+            }
+            
         },
         
         async getLogementsData(){
@@ -844,6 +877,14 @@ export default {
         //recupération de tous les batiments
         async getAllBatiments() {
             this.tousLesBatiments = await axios.get('batiments').then(response => response.result || [])
+        },
+        getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = (error) => reject(error);
+            });
         }
 
     },
@@ -896,7 +937,41 @@ export default {
                this.showSelectBatiment=true
                this.idBatiment=this.editLogement.batiment.idBatiment
            }
-           console.log("logement à éditer:",this.editLogement.sousTypeLogement.typeLogement)
+           for(let i=0; i<=this.editLogement.caracteristiques.length; i++){
+               if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique =='chambre'){
+                   this.logement.nbchambre=this.editLogement.caracteristiques[i].valeur
+               }
+               if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique =='salon'){
+                   this.logement.nbsalon=this.editLogement.caracteristiques[i].valeur
+               }
+               if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique =='cuisine'){
+                   this.logement.nbcuisine=this.editLogement.caracteristiques[i].valeur
+               }
+               if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique =='douche'){
+                   this.logement.nbdouche=this.editLogement.caracteristiques[i].valeur
+               }
+               if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique =='parking'){
+                   this.logement.nbparking=this.editLogement.caracteristiques[i].valeur
+               }
+               if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique =='piscine'){
+                   this.logement.nbpiscine=this.editLogement.caracteristiques[i].valeur
+               }
+               if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique =='sona'){
+                   this.logement.nbsona=this.editLogement.caracteristiques[i].valeur
+               }
+               if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique =='garage'){
+                   this.logement.nbgarage=this.editLogement.caracteristiques[i].valeur
+               }
+               
+           }
+          /* if(this.editLogement.photos.length>0){
+               let inter
+               for (let i=0; i<=this.editLogement.photos.length;i++){
+                   inter=await this.getBase64(this.editLogement.photos[i].image)
+                   this.photos.push(inter)
+               }
+           }*/
+           console.log("taille photos:",this.photos)
        }
     }
 }

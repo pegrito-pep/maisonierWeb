@@ -44,7 +44,7 @@
             </div>
 
             <div class="float-md-right">
-              <b-button variant="danger" v-b-modal.addLogement>
+              <b-button variant="danger" v-b-modal.logementForm>
                 <i class="fa fa-plus-circle"></i> Nouveau Logement
               </b-button>
 
@@ -177,9 +177,9 @@
       </b-modal>
     </div>
     <!--MODAL POUR AJOUTER OU MODIFIER UN LOGEMENT-->
-    <b-modal id="addLogement" ref="edit-modal" size="lg" :title="title" ok-title="Fermer" ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
+    <b-modal id="logementForm" ref="edit-modal" size="lg" :title="title" ok-title="Fermer" ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
         <div>
-            <add-logement @logementAdded="addedLogement" :editLogement="logement" />
+            <add-logement @logementAdded="addedLogement" @editSuccessfull="editSuccessfull" :editLogement="logement" :action='action'/>
         </div>
     </b-modal>
 
@@ -290,7 +290,7 @@ export default {
     typesLogements: [],
     filtre_categories: null,
     title:"Ajouter un logement",
-
+    action:'add',
     cites: [],
     clone: {
       enabled: false,
@@ -335,13 +335,33 @@ export default {
           this.getHousing();
       }, 5000)
   },
+  mounted(){
+    /*this.$root.$on('logement-modifie', (logement) => {
+          this.logements = this.renameLogements(this.logements, logement);
+          this.trueLogements = this.renameLogements(this.trueLogements, logement);
+     }) */
+  },
   methods: {
+        //traitement de l'évènement émis d'ajout d'un logement
         addedLogement() {
             this.getHousing(false);
-            this.$bvModal.hide('addLogement')
+            this.$bvModal.hide('logementForm')
             this.autoAddTarget();
 
         },
+        editSuccessfull(logement){
+          console.log(" 11 result", logement)
+          this.action='add'
+          this.title="Ajouter un logement"
+          this.$bvModal.hide('logementForm')
+          this.logement=null
+          this.getHousing(false);
+          /*this.showOverlay=true;
+          this.logements = this.renameLogements(this.logements, logement);
+          this.trueLogements = this.renameLogements(this.trueLogements, logement);
+          this.showOverlay=false;*/
+        },
+      
 
 
     //recupération de la liste des logements
@@ -446,6 +466,7 @@ export default {
       console.log("logement", logement);
       this.logement=logement
       this.title="édition du logement "+this.logement.refLogement;
+      this.action='edit'
       this.$refs['edit-modal'].show()
     },
     removeLogement(logement) {
