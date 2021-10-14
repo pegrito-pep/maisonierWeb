@@ -84,7 +84,7 @@ const routes = [{
         path: '/habitants',
         name: 'habitants',
         component: () =>
-            import ('@/views/gestion-immobiliere/Habitants.vue')
+            import ('@/views/gestion-immobiliere/habitants/Habitants.vue')
     },
     {
         path: '/occupations',

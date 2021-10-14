@@ -1,5 +1,4 @@
 <template>
-    <b-modal id="modal-lg" size="lg" ok-only ok-title="Valider" ref="occupation-modal" @hidden="resetModal" @ok="submitModal" :title="action == 'add' ? 'Affecter une occupation' : 'Edition'">
         <b-overlay :show="showOverlay" rounded="sm">
             <b-row>
                 <b-col>
@@ -69,10 +68,16 @@
                 <b-col>
                     <b-form-group label="Qui est le résident pour lequel l'occupation est défini">
                         <div style="height: 10.5em">
-                            <v-select :options="locataires" v-model="occupation.idLocataire" :reduce="locataire => locataire.idLocataire" label="nomLocataire"  @input="setSlide_locataire" />
-                            <b-carousel :interval="0" controls v-model="selected_index_locataire" ref="locataireCarousel">
+                            <!--<v-select :options="locataires" v-model="occupation.idLocataire" :reduce="locataire => locataire.idLocataire" label="nomLocataire"  @input="setSlide_locataire"  :class="{ disabled: disabled == true }" />-->
+                            <v-select :options="locataires" v-model="stateLocataire" label="nomLocataire"  @input="setSlide_locataire"  :class="{ disabled: disabled == true }" />
+                            <b-carousel :interval="0" controls v-model="selected_index_locataire" ref="locataireCarousel" v-if="provenance =='1'">
                                 <b-carousel-slide style="height: 10.5em" class="fluid w-100 responsive border-0"
                                     v-for="(locataire, i) in locataires" :key="i" :img-src="locataire.avatar"
+                                />
+                            </b-carousel>
+                            <b-carousel :interval="0" controls v-model="selected_index_locataire" ref="locataireCarousel" v-if="provenance =='2'">
+                                <b-carousel-slide style="height: 10.5em" class="fluid w-100 responsive border-0"
+                                  :img-src="locataire.avatar"
                                 />
                             </b-carousel>
                         </div>
@@ -91,8 +96,10 @@
                     </b-form-checkbox>
                 </b-col>
             </b-row>
+            <hr>
+             <div class="float-right"><b-button @click.prevent="submitModal" variant="primary">Valider</b-button></div>
         </b-overlay>
-    </b-modal>
+
 </template>
 
 <script>
@@ -107,6 +114,11 @@ export default {
   name: "occupation-form",
     components: {
         DatePicker
+    },
+    props: {
+        locataire: { type: Object},
+        provenance: {type: Number, required: true, default: "1"},
+        action: {type: String, required: true, default: "add"}
     },
   data: () => ({
     duree: [null, null],
@@ -130,7 +142,13 @@ export default {
     showOverlay: false,
     sendForm: false,
     logements: [],
-    locataires: []
+    locataires: [],
+    /*données manipulées du fait de l'appel du fait
+    *de l'appel du formulaire de création d'un occupation 
+    *à différents endroits
+    */
+   disabled:false,
+   stateLocataire:null
   }),
   watch: {
     selected_index_logement(value) {
@@ -185,7 +203,6 @@ export default {
             }
         }
     },
-  props: ["action"],
   methods: {
     empty(val) {
         return php.empty(val)
@@ -223,12 +240,15 @@ export default {
         puEnergie: "",
         puEau: "",
         idLogement: "",
-        idLocataire: "",
         debut:"",
         indexEnergie: 0,
         indexEau: 0,
         endLastBail: false
       };
+      if(this.provenance !=2){
+        this.occupation.idLocataire=''
+        this.occupation.idLogement=''
+      }
     },
 
     //validation formulaire d'ajout/modification d'una annonce
@@ -236,10 +256,13 @@ export default {
         bvModalEvt.preventDefault();
         
         if (this.action == "add") {
+            this.occupation.idLocataire=this.stateLocataire.idLocataire
+            console.log('occupation',this.occupation)
             this.showOverlay = true;
 
             axios.post('occupations', this.occupation).then(response => {
                 this.$emit('occupationAdded')
+                this.resetModal();
                 this.showOverlay = false;
                 return App.notifySuccess(response.message)
             }).catch(error => {
@@ -268,20 +291,28 @@ export default {
         } catch (error) {
            notif.error(error.message);
         }
-        try {
+        if(this.provenance!=2){
+            try {
             this.locataires = await axios.get("locataires").then(response => response.result || []);
             if (this.locataires[0]) {
                 this.occupation.idLocataire = this.locataires[0].idLocataire;
             }
-        } catch (error) {
-           notif.error(error.message);
+            } catch (error) {
+            notif.error(error.message);
+            }
         }
+        
         //this.showOverlay = false
     },
   
   },
   async mounted() {
     await this.getInitialiseData();
+    if(this.locataire !=null){
+        this.provenance=2
+        this.disabled=true;
+      this.stateLocataire=this.locataire;
+    }
   }
 };
 </script>
@@ -294,5 +325,14 @@ export default {
   font-family: "font-1", sans-serif;
   font-size: 2.1em;
   color: #0a0701fa;
+  
 }
+ .disabled {
+    pointer-events:none;
+    color: #bfcbd9;
+    cursor: not-allowed;
+    background-image: none;
+    background-color: #eef1f6;
+    border-color: #d1dbe5;   
+ }
 </style>

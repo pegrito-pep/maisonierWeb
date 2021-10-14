@@ -121,7 +121,6 @@
             <depense-form @depenseAdded="pushDepense" :action="action" />
         </div>
     </b-modal>
-    <!--<depense-form @depenseAdded="pushDepense" :action="action" :cite="cite" :batiment="batiment" :logement="logement" @resetdepenseForm="onCloseSet" />-->
   </div>
 </template>
 <script>
@@ -269,12 +268,5 @@ export default {
     text-align: center;
     margin-top: 2px;
 }
- .disabled {
-    pointer-events:none;
-    color: #bfcbd9;
-    cursor: not-allowed;
-    background-image: none;
-    background-color: #eef1f6;
-    border-color: #d1dbe5;   
- }
+
 </style>

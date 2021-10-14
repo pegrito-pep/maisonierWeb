@@ -29,43 +29,56 @@
                         <span class="h4 d-inline-flex ml-2">Vous n'avez défini aucun logement pour le moment</span>
                     </b-alert> 
                     <b-row v-else>
-                        <div class="card-body">
-                            <b-table-simple hover small responsive>
-                                <b-thead head-variant="light">
-                                    <b-tr>
-                                        <b-th rowspan="2" class="text-center" style="vertical-align: middle">Logement</b-th>
-                                        <b-th colspan="2" class="text-center" style="vertical-align: middle">Indexe</b-th>
-                                        <b-th colspan="2" class="text-center" style="vertical-align: middle">Avance</b-th>
-                                    </b-tr>
-                                    <b-tr>
-                                        <th class="text-center">Eau</th>
-                                        <th class="text-center">Energie</th>
-                                        <th class="text-center">Eau</th>
-                                        <th class="text-center">Energie</th>
-                                    </b-tr>
-                                </b-thead>
-                                <b-tbody>
-                                    <b-tr v-for="logement in items" :key="logement.idLogement">
-                                        <b-td class="p-2">
-                                            <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ logement.refLogement }}</span>    
-                                            <span class="d-inline-block w-100 mt-1 text-muted">{{ logement.sousTypeLogement.libelleSousType  }}</span>    
-                                        </b-td>
-                                        <b-td><b-input-group append="m3">
-                                            <b-form-input type="number" min="0" v-model="logement.indexeMois.eau[0]" />
-                                        </b-input-group></b-td>
-                                        <b-td><b-input-group append="Kw">
-                                            <b-form-input type="number" min="0" v-model="logement.indexeMois.energie[0]" />
-                                        </b-input-group></b-td>
-                                        <b-td><b-input-group append="F">
-                                            <b-form-input type="number" min="0" v-model="logement.indexeMois.eau[1]" />
-                                        </b-input-group></b-td>
-                                        <b-td><b-input-group append="F">
-                                            <b-form-input type="number" min="0" v-model="logement.indexeMois.energie[1]" />
-                                        </b-input-group></b-td>
-                                    </b-tr>
-                                </b-tbody>
-                            </b-table-simple>
-                        </div>
+                        <b-col cols="3" v-for="logement in items" :key="logement.idLogement"> 
+                            <b-card :title="logement.refLogement" :sub-title="logement.sousTypeLogement.libelleSousType">
+                                <hr>
+                                <b-form-group label="Indexe eau">
+                                    <b-input-group>
+                                        <b-form-input size="sm" type="number" min="0" v-model="logement.indexeMois.eau" />
+                                        <b-input-group-append>
+                                            <b-button size="sm" variant="outline-danger" :id="'popover-eau-'+logement.idLogement"><i class="fa fa-list"></i></b-button>
+                                        </b-input-group-append>
+                                    </b-input-group>
+                                </b-form-group>
+                                <b-form-group label="Indexe lumière">
+                                    <b-input-group>
+                                        <b-form-input type="number" min="0" v-model="logement.indexeMois.energie" />
+                                        <b-input-group-append>
+                                            <b-button variant="outline-danger" :id="'popover-energie-'+logement.idLogement"><i class="fa fa-list"></i></b-button>
+                                        </b-input-group-append>
+                                    </b-input-group>
+                                </b-form-group>
+
+                                <b-popover title="Indexes précedents" :target="'popover-eau-'+logement.idLogement" triggers="click blur" placement="auto">
+                                    <div style="overflow-y:auto; overflow-x: hidden; max-height: 15em">
+                                        <div v-for="(indexe, i) in logement.iEau" :key="i" class="text-muted mb-1">
+                                            <h6 class="border-bottom small">{{ $dayjs(indexe.periode).format('MMMM YYYY') }}</h6>
+                                            <b-row>
+                                                <b-col class="truncate">N: <b>{{ indexe.nouveau }}</b> m<sup>3</sup></b-col>
+                                                <b-col class="truncate">A: <b>{{ indexe.ancien }}</b> m<sup>3</sup></b-col>
+                                            </b-row>
+                                        </div>
+                                    </div>
+                                    <div class="jumbotron pt-10 pb-1 px-2 mb-0 mt-2">
+                                        <b-form-group label="Mois passé"><b-form-input size="sm" min="0" type="number" v-model="logement.indexePassee.eau" /></b-form-group>
+                                    </div>
+                                </b-popover>
+                                <b-popover title="Indexes précedents" :target="'popover-energie-'+logement.idLogement" triggers="click blur" placement="auto">
+                                    <div style="overflow-y:auto; overflow-x: hidden; max-height: 15em">
+                                        <div v-for="(indexe, i) in logement.iEnergie" :key="i" class="text-muted mb-1">
+                                            <h6 class="border-bottom small">{{ $dayjs(indexe.periode).format('MMMM YYYY') }}</h6>
+                                            <b-row>
+                                                <b-col class="truncate">N: <b>{{ indexe.nouveau }}</b> kw</b-col>
+                                                <b-col class="truncate">A: <b>{{ indexe.ancien }}</b> kw</b-col>
+                                            </b-row>
+                                        </div>
+                                    </div>
+                                    <div class="jumbotron pt-10 pb-1 px-2 mb-0 mt-2">
+                                        <b-form-group label="Mois passé"><b-form-input size="sm" min="0" type="number" v-model="logement.indexePassee.energie" /></b-form-group>
+                                    </div>
+                                </b-popover>
+                            </b-card>
+                        </b-col>
                     </b-row>
                     <hr>
                     <div class="d-flex justify-content-between align-items-start">
@@ -94,6 +107,7 @@ export default {
     trueLogements:[],
 
 
+    popoverShow: false,
     periode: {annee: null, mois: null}
 
   }),
@@ -147,6 +161,10 @@ export default {
         this.getLogements()
     },
     methods: {
+        onClose() {
+            this.popoverShow = false
+        },
+
         //recupération de la liste des logements
         getLogements() {
             axios.get('logements').then(response => response.result || []).then(logements => {
@@ -169,11 +187,11 @@ export default {
             let data = { periode, indexes: [] }
 
             this.trueLogements.forEach(elt => {
-                if (null != elt.indexeMois.eau[0] || null != elt.indexeMois.energie[0]) {
+                if (null != elt.indexeMois.eau || null != elt.indexeMois.energie) {
                     data.indexes.push({
                         idLogement: elt.idLogement,
-                        eau: elt.indexeMois.eau,
-                        energie: elt.indexeMois.energie
+                        eau: [elt.indexeMois.eau, elt.indexePassee.eau],
+                        energie: [elt.indexeMois.energie, elt.indexePassee.energie]
                     })
                 }
             })
@@ -201,21 +219,31 @@ export default {
             this.logements = this.setIndexesPeriode(periodeCourante, this.logements)
         },
         setIndexesPeriode(periode, logements) {
+            let periodePassee = this.$dayjs(periode).subtract(1, 'month').format('YYYY-MM')+'-01'
+
             return logements.map(elt => {
-                let indexesCourants = elt.indexes.filter(e => periode == e.periode),
+                let indexesCourants = elt.indexes.filter(e => this.$dayjs(periode).diff(e.periode, 'month') == 0),
                     iEau = indexesCourants.find(e => e.typeIndexe == 'eau'),
                     iEnergie = indexesCourants.find(e => e.typeIndexe == 'energie')
-                    
-                if (php.empty(iEau)) {
-                    iEau = elt.lastIndexEau || null
-                }
-                if (php.empty(iEnergie)) {
-                    iEnergie = elt.lastIndexEnergie || null
-                }
+                  
                 elt.indexeMois = {
-                    eau: [php.empty(iEau) ? null : iEau.nouveau, php.empty(iEau) ? null : iEau.avance],
-                    energie: [php.empty(iEnergie) ? null: iEnergie.nouveau, php.empty(iEnergie) ? null : iEnergie.avance],
+                    eau: php.empty(iEau) ? null : iEau.nouveau,
+                    energie: php.empty(iEnergie) ? null: iEnergie.nouveau
                 }
+
+                indexesCourants = elt.indexes.filter(e => this.$dayjs(periodePassee).diff(e.periode, 'month') == 0)
+                iEau = indexesCourants.find(e => e.typeIndexe == 'eau')
+                iEnergie = indexesCourants.find(e => e.typeIndexe == 'energie')
+                    
+                elt.indexePassee = {
+                    eau: php.empty(iEau) ? null : iEau.nouveau,
+                    energie: php.empty(iEnergie) ? null: iEnergie.nouveau
+                }
+
+                indexesCourants = elt.indexes.filter(e => (this.$dayjs(periodePassee).diff(e.periode, 'month') > 0 && e.nouveau > 0))
+                elt.iEau = indexesCourants.filter(e => e.typeIndexe == 'eau')
+                elt.iEnergie = indexesCourants.filter(e => e.typeIndexe == 'energie')
+
                 return elt
             })
         }

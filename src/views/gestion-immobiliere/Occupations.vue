@@ -15,7 +15,7 @@
                             </div>
                         </div>
                         <div class="float-md-right">
-                            <b-button variant="danger"  @click.prevent="addOccupation"  v-b-modal.modal-lg><i class="fa fa-plus-circle"></i> Définir une occupation</b-button>
+                            <b-button variant="danger" v-b-modal.occupationForm><i class="fa fa-plus-circle"></i> Définir une occupation</b-button>
                         </div>
                     </div>
                 </div>
@@ -83,8 +83,15 @@
             </div>
         </div>
      
-  
-       <occupation-form v-if="commandeOccupation" action="add" @occupationAdded="addedOccupation" />
+        <!--MODAL POUR AJOUTER OU MODIFIER UNE OCCUPATION-->
+        <b-modal id="occupationForm" size="lg" hide-footer no-close-on-backdrop>
+            <template #modal-title>
+            <span class="ml-4 text-form-occupation">{{ title }}</span>
+            </template>
+            <div>
+                <occupation-form @occupationAdded="addedOccupation" :action="action" :provenance="provenance"/>
+            </div>
+        </b-modal>
   </div>
 </template>
 <script>
@@ -100,15 +107,16 @@ export default {
   //  DetailsOccupation,
   },
   data: () => ({
+     title:"Affecter une occupation",
      action:"add",
-     commandeOccupation:false,
      search: null,
      showOverlay: true,
      currentPage: 1,
      perPage: 4,
      occupation: null,
      occupations:[],
-     trueOccupations:[]
+     trueOccupations:[],
+     provenance:1
 
   }),
   computed: {
@@ -130,14 +138,9 @@ export default {
         sendData(){
             
         },
-
-        addOccupation(){
-            this.action="add";
-            this.commandeOccupation=true;
-        },
         addedOccupation(){
-            this.commandeOccupation=false;
             this.getOccupations()
+            this.$bvModal.hide('occupationForm');
         },
     //recupération de la liste des logements
      getOccupations() {
@@ -145,9 +148,6 @@ export default {
                 this.occupations = this.trueOccupations = occupations
                 this.showOverlay = false
             })
-     },
-     addHabitant(){
-         this.commandeOccupation=true;
      },
      updateOccupation(occupation) {
            console.log("occupation",occupation)
@@ -175,3 +175,12 @@ export default {
 
 };
 </script>
+<style scoped>
+    .text-form-occupation {
+        font-size: 1.3em;
+        color: #212121ef;
+        font-weight: 800;
+        text-align: center;
+        margin-top: 2px;
+    }
+</style>
