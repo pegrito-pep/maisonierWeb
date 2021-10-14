@@ -15,15 +15,11 @@
                                <div>
                                 <b-dropdown id="dropdown-1" text="gestion du compte" class="m-md-2">
                                     <b-dropdown-item>
-                                        
                                         <!--<b-button @click.prevent="callRechargeForm(locataire)" size="sm" block variant="outline-success"><i class="fa fa-credit-card"></i>Recharge</b-button>-->
-                                        <b-button @click.prevent="callRechargeForm(locataire)" size="sm" block variant="outline-success"><i class="fa fa-credit-card"></i>Recharge</b-button>
-                        
+                                        <b-button v-b-modal.modal_recharge size="sm" block variant="outline-success"><i class="fa fa-credit-card"></i>Recharge</b-button>
                                     </b-dropdown-item>
                                     <b-dropdown-item>
-                                        
-                                        <b-button to="#" size="sm" block variant="outline-secondary"><i class="fas fa-money-bill-alt"></i>Transfert</b-button>
-                                        
+                                        <b-button v-b-modal.modal_transfert size="sm" block variant="outline-secondary"><i class="fas fa-money-bill-alt"></i>Transfert</b-button>
                                         </b-dropdown-item>
                                     <b-dropdown-item>
                                         <b-button to="#" size="sm" block variant="outline-danger"><i class="fas fa-times-circle"></i>Annulation</b-button>
@@ -109,13 +105,15 @@
                     </div>
                 </div>-->
                 <!--DEBUT FORMULAIRE DE RECHARGE DU COMPTE PRINCIPAL>-->
-                    <b-modal
+                   
+
+                     <b-modal
                         hide-footer
                         :static="true"
-                        id="modal-recharge"
+                        id="modal_recharge"
                         ref="modal-recharge"
                         v-model="recharge.enabled"
-                        :title="'Recharger compte de '+locataire.nomLocataire"
+                        :title="'Recharger du compte de '+locataire.nomLocataire"
                         @hidden="resetRechargeForm"
                     >
                         <template #modal-footer="{ ok }">
@@ -151,32 +149,47 @@
                         <hr>
                         <div class="float-right"><b-button @click.prevent="validateRecharge" variant="primary">Valider<b-spinner v-if="recharge.submitted" small></b-spinner></b-button></div>
                     </b-modal>
+           
                 <!--FIN FORMULAIRE DE RECHARGE DU COMPTE PRINCIPAL>-->
-                <!--DEBUT FORMULAIRE DE TRANSFERT INTERCOMPTES>-->
+                <!--DEBUT FORMULAIRE DE TRANSFERT INTERCOMPTES-->
+               
                     <b-modal
                         hide-footer
                         :static="true"
-                        id="modal-center"
+                        id="modal_transfert"
                         ref="modal-transfert"
-                        v-model="recharge.enabled"
+                        v-model="transfert.enabled"
                         title="Transfert intercomptes"
                         @hidden="resetTransfertForm"
                     >
-                        <b-form-group description="Entrez le montant de la recharge" label="Montant à créditer">
+                        <b-row>
+                            <b-col> 
+                                <div class="form-group">
+                                    <label>compte débiteur</label>
+                                    <v-select label="text" :options="touslesComptes" v-model="transfert.compteDebiteur" :class="!requiredCompteDebiteur ? 'is-red' : ''" @input="filterAccountList"></v-select>
+                                    <span v-if="!requiredCompteCrediteur" style="color:red;">Ce champ est obligatoire</span>
+                                </div>
+                            </b-col>
+                            <b-col> 
+                                <div class="form-group">
+                                    <label>Compte crédité</label>
+                                    <v-select label="text" :options="comptesfiltres" v-model="transfert.compteCredite" :class="!requiredCompteCrediteur ? 'is-red' : ''"></v-select>
+                                    <span v-if="!requiredCompteCrediteur" style="color:red;">Ce champ est obligatoire</span>
+                                </div>
+                            </b-col>
+                        </b-row>
+                          <b-form-group description="Entrez le montant à transférer" label="Montant à transferer">
                         <b-form-input
-                            v-model="recharge.montant"
+                            v-model="transfert.montant"
                             type="number"
                             :min="1000"
-                            :class="{'is-invalid' : recharge.error}"
+                            :class="{'is-invalid' : transfert.error}"
                         />
                         </b-form-group>
-                            <b-form-checkbox v-model="recharge.pay" switch>
-                                <span class="fa-lg">Paiement automatique ?</span>
-                            </b-form-checkbox>
-                          
                         <hr>
-                        <div class="float-right"><b-button @click.prevent="validateRecharge" variant="primary">Valider<b-spinner v-if="recharge.submitted" small></b-spinner></b-button></div>
+                        <div class="float-right"><b-button @click.prevent="validateTransfert" variant="primary">Valider<b-spinner v-if="recharge.submitted" small></b-spinner></b-button></div>
                     </b-modal>
+                    
                 <!--FIN FORMULAIRE DE TRANSFRERT INTERCOMPTES>-->
             </div> 
         </div>
@@ -334,17 +347,16 @@
 <script>
 
 import OccupationForm from "@/components/_gestion-immobiliere/OccupationForm.vue";
-import DropdownMenu from '@mmmrks/vue-dropdown-menu'
 const php = require('phpjs')
 export default {
     components: {
-        OccupationForm,
-        DropdownMenu
+        OccupationForm
     },
     props: {
         locataire: {type: Object, required: true}
     },
     data: () => ({
+        action:0,
         section: 'occupations',
         /**
          * Données manipuler par la section occupations
@@ -372,15 +384,37 @@ export default {
          * du compte du locataire
         */
         showModal: true,
-        idOccupation:''
+        idOccupation:'',
+        /**données manipulées pour effectuer un Transfert
+         * intercomptes
+         */
+        transfert: {
+            enabled: false,
+            submitted: false,
+            compteDebiteur: '',
+            compteCredite: '',
+            montant: null,
+        },
+        touslesComptes:[
+             { text: 'loyer', value: 'compteLoyer' },
+             { text: 'électricité', value: 'compteEnergie' },
+             { text: 'eau', value: 'compteEau' }
+        ],
+        requiredCompteCrediteur:true,
+        requiredCompteDebiteur:true
     }),
     computed: {
-        
         itemsOccupations(){
              return php.array_slice(this.locataire.occupations || [], this.offset, this.perPage)
         },
         offset() {
             return (this.currentPage * this.perPage) - this.perPage
+        },
+        comptesfiltres(){
+            return this.touslesComptes.map(elt =>{
+                if(elt.value!=this.transfert.compteDebiteur)
+                return
+            })
         }
     },
     mounted() {
@@ -414,7 +448,7 @@ export default {
          * Ouvre le formulaire de recharge du compte d'un locataire
          */
         callRechargeForm(locataire) {
-            console.log("locataire", locataire)
+            console.log("locataire 1", locataire)
             this.recharge.enabled = true;
             this.locataire = locataire;
             this.$refs['modal-recharge'].show()
@@ -456,11 +490,66 @@ export default {
             };
         },
         /**
-         * 
+         * ouvre le formulaire de transfert inter-comptes
          */
-        showActions(){
-            console.log("entrée ici")
-        }
+        callTranfertForm(locataire){
+            console.log("locataire 2", locataire)
+            this.transfert.enabled = true;
+            this.locataire = locataire;
+            this.$refs['modal-tranfert'].show()
+        },
+        /**methode permettant d'ecouter le compte débiteur sélectionné
+         * ceci afin de filtrer la liste des comptes à envoyer
+         * dans le v-select de selection du compte à crediter
+         */
+        filterAccountList(a) {
+            this.comptesfiltres=[];
+            let data = this.touslesComptes;
+            /*for (let i = 0; i < this.sousTypesLogements.length; i++) {
+                data.push(this.sousTypesLogements[i]);
+            }*/
+            let result = data.filter(x => x.value != this.transfert.compteDebiteur);
+            this.comptesfiltres = result;
+            console.log("sous-type",this.comptesfiltres)
+        },
+        /**
+         * valide le transfert -intercomptes pour un locataire donné
+         */
+        validateTransfert(bvModalEvt) {
+            bvModalEvt.preventDefault();
+            this.transfert.error = false;
+
+            if (php.empty(this.transfert.montant) || php.empty(this.transfert.compteDebiteur) || php.empty(this.transfert.compteCredite)) {
+                this.transfert.error = true;
+                return;
+            }
+            this.transfert.submitted = true;
+
+            axios
+                .post(`locataires/${this.locataire.idLocataire}/transfert`, this.transfert)
+                .then(response => {
+                    //this.getHousing(false);
+                    this.resetTransfertForm();
+                    return App.notifySuccess(response.message);
+                })
+                .catch(error => {
+                    this.transfert.submitted = false;
+                    return App.alertError(error.message);
+                });
+        },
+        /**
+         * Reinitialise le formulaire de transfert inter-comptes
+         */
+        resetTransfertForm() {
+            this.transfert = {
+                enabled: false,
+                submitted: false,
+                error: false,
+                compteDebiteur: null,
+                compteCredite:null,
+                montant: null
+            };
+        },
 
     }
 }

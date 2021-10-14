@@ -1,6 +1,6 @@
 <template>
     <b-overlay :show="showOverlay" rounded="sm">
-        <form-wizard  title='' subtitle='' nextButtonText='suivant' backButtonText='Précedent' finishButtonText='Enregistrer' aria-labelledby="demoModalLabel"  @on-complete="onComplete"
+        <form-wizard ref="logementForm"  title='' subtitle='' nextButtonText='suivant' backButtonText='Précedent' finishButtonText='Enregistrer' aria-labelledby="demoModalLabel"  @on-complete="onComplete"
                         @on-loading="setLoading"
                         @on-validate="handleValidation"
                         shape="circle"
@@ -971,7 +971,7 @@ export default {
                    this.photos.push(inter)
                }
            }*/
-           console.log("taille photos:",this.photos)
+           this.$refs['logementForm'].activateAll();
        }
     }
 }

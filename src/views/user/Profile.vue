@@ -15,7 +15,7 @@
                              Bien vouloir cliquer sur le bouton pour certifier vos infomations</b-tooltip>
                             <div class="row text-center justify-content-md-center">
                                 <div class="col-4" id="nombre-locataires" v-b-tooltip.top="'Le nombre de mes locataires'"><a href="javascript:void(0)" class="link"><i class="ik ik-user"></i> <font class="font-medium">254</font></a></div>
-                                <div class="col-4" id="nombre-logements-libres"><a href="javascript:void(0)" class="link"><i class="ik ik-image"></i> <font class="font-medium">02</font></a></div>
+                                <div class="col-4" id="nombre-logements-libres"><a href="javascript:void(0)" class="link"><i class="fas fa-home"></i><font class="font-medium">02</font></a></div>
                                 <b-tooltip target="nombre-logements-libres" placement="bottom" noninteractive variant="danger">Le nombre de mes logements libres et sans annonce publié</b-tooltip>
                             </div>
                         </div>
