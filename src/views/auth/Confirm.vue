@@ -2,11 +2,54 @@
      <div class="auth-wrapper">
         <div class="container-fluid h-100">
             <b-row class="flex-row h-100 bg-white">
-                <div class="col-xl-8 col-lg-6 col-md-5 p-0 d-md-block d-lg-block d-sm-none d-none">
-                    <div class="lavalite-bg" style="background-image: url('/img/banner.png')">
-                        <div class="lavalite-overlay"></div>
-                    </div>
-                </div>
+                <b-col xl="8" lg="6" md="5" class="d-md-block d-lg-block d-none p-0">
+                <b-carousel :interval="8000" controls indicators background="#ababab">
+                    <b-carousel-slide class="responsive border-0">
+                    <template #img>
+                        <div class="titre-overlay">
+                        <h1 class="titre"><blockquote class="">N’attendez pas pour acheter l’immobilier, achetez l’immobilier et attendez.</blockquote></h1>
+                        <p class="description">
+                            L’immobilier ne peut pas être perdu ou volé, et il ne peut pas être emporté. Acheté avec bon sens, payé en totalité et géré avec raison, il est le placement le plus sûr du monde.
+                        </p>
+                        </div>
+                        <img class="w-100 image" src="/img/cites.jpeg" />
+                    </template>
+                    </b-carousel-slide>
+                    <b-carousel-slide class="responsive border-0">
+                    <template #img>
+                        <div class="titre-overlay">
+                        <h1 class="titre">Propriété moderne avec vue sur ...</h1>
+                        <p class="description">
+                            Grande propriété de style moderne avec vue imprenable sur la ville au sept collines.
+                        </p>
+                        </div>
+                        <img class="w-100 image" src="/img/villa1.jpg" />
+                    </template>
+                    </b-carousel-slide>
+                    <b-carousel-slide class="responsive border-0">
+                    <template #img>
+                        <div class="titre-overlay">
+                        <h1 class="titre">Appartement moderne près de Yaoundé</h1>
+                        <p class="description">
+                            Appartement constitué d'un espace nuit comprenant 3 chambres et un espace cuisine
+                        </p>
+                        </div>
+                        <img class="w-100 image" src="/img/appartement.jpg" />
+                    </template>
+                    </b-carousel-slide>
+                    <b-carousel-slide class="responsive border-0">
+                    <template #img>
+                        <div class="titre-overlay">
+                        <h1 class="titre">Chambre moderne à Yaoundé</h1>
+                        <p class="description">
+                            Idéalement situé sur le rempart ouest de la ville de Yaoundé
+                        </p>
+                        </div>
+                        <img class="w-100 image" src="/img/chambre2.jpg" />
+                    </template>
+                    </b-carousel-slide>
+                </b-carousel>
+        </b-col>
                 <div class="col-xl-4 col-lg-6 col-md-7 my-auto p-0">
                     <div class="authentication-form mx-auto">
                         <div class="mt-n5 mb-4 d-flex justify-content-center align-items-center flex-column">
@@ -73,4 +116,44 @@ export default {
         color: #ee3a5b;
         font-weight: bold;
     }
+
+    .maisonier{
+      color: #009;
+      font-weight: 900;
+      font-size: 40px;
+    }
+
+    .titre-overlay {
+    position: absolute;
+    opacity: 1;
+    padding: 0;
+    margin: 0;
+    top: 20%;
+    left: 10%;
+    z-index: 9;
+    max-width: 40rem;
+    }
+
+    .titre {
+    font-size: 50px;
+    font-family: "Times New Roman", Times, serif;
+    font-weight: 900;
+    color: #fff;
+    }
+    .titre::first-letter{
+      color: #ee3a5b;
+      font-size: 80px;
+      border-bottom: 10px solid #ee3a5b;
+    }
+
+    .description {
+    font-size: 26px;
+    font-family: serif;
+    font-weight: 600;
+    color: #fff;
+    }
+    .image {
+    height: 100vh;
+    }
+    
 </style>

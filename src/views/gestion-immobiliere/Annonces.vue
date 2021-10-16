@@ -24,7 +24,7 @@
                 <b-overlay :show="showOverlay" rounded="sm">
                     <b-alert variant="info" class="text-center" show v-if="!annonces.length">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                        <span class="h4 d-inline-flex ml-2">Aucune annonce trouvée</span>
+                        <span class="h4 d-inline-flex ml-2">Aucune annonce crée pour le moment</span>
                     </b-alert> 
                     <b-row v-else class="layout-wrap">
                         <b-col v-for="(annonce, i) in items" :key="annonce.idAnnonce || i" cols="6" class="animated flipInX mb-4">

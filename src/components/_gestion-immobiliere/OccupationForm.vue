@@ -23,11 +23,11 @@
                     </b-form-group>
                 </b-col>
                 <b-col>
-                    <b-form-group label="Prix unitaire de l'eau" description="L'exemple suggéré suppose une facturation par index du compteur">
+                    <b-form-group :label="occupation.eau == 'forfait' ? 'Taux forfataire' : 'Prix unitaire de l\'eau'" description="L'exemple suggéré suppose une facturation par index du compteur">
                         <b-form-input min="0" v-model="occupation.puEau" placeholder="Ex: 150" trim type="number" />
                     </b-form-group>
                 </b-col>
-                <b-col>
+                <b-col v-if="occupation.eau == 'index'">
                     <b-form-group label="Index initial" description="Index du compteur d'eau à l'entrée du locataire">
                         <b-form-input min="0" v-model="indexEau" placeholder="Ex: 095" trim type="number" />
                     </b-form-group>
@@ -42,11 +42,11 @@
                     </b-form-group>
                 </b-col>
                 <b-col>
-                    <b-form-group label="Prix unitaire de l'energie" description="L'exemple suggéré suppose une consommation par forfait">
+                    <b-form-group :label="occupation.energie == 'forfait' ? 'Taux forfataire' : 'Prix unitaire de l\'energie'" description="L'exemple suggéré suppose une consommation par forfait">
                         <b-form-input min="0" v-model="occupation.puEnergie" placeholder="Ex: 2500" trim type="number" />
                     </b-form-group>
                 </b-col>
-                <b-col>
+                <b-col v-if="occupation.energie == 'index'">
                     <b-form-group label="Index initial" description="Index du compteur d'energie à l'entrée du locataire">
                         <b-form-input min="0" v-model="indexEnergie" placeholder="Ex: 095" trim type="number" />
                     </b-form-group>
@@ -68,8 +68,8 @@
                 <b-col>
                     <b-form-group label="Qui est le résident pour lequel l'occupation est défini">
                         <div style="height: 10.5em">
-                            <!--<v-select :options="locataires" v-model="occupation.idLocataire" :reduce="locataire => locataire.idLocataire" label="nomLocataire"  @input="setSlide_locataire"  :class="{ disabled: disabled == true }" />-->
-                            <v-select :options="locataires" v-model="stateLocataire" label="nomLocataire"  @input="setSlide_locataire"  :class="{ disabled: disabled == true }" />
+                            <v-select :options="locataires" v-model="occupation.idLocataire" :reduce="locataire => locataire.idLocataire" label="nomLocataire"  @input="setSlide_locataire" :disabled="disabled" />
+                            <!--<v-select :options="locataires" v-model="occupation.idLocataire" label="nomLocataire"  @input="setSlide_locataire"  :class="{ disabled: disabled == true }" />-->
                             <b-carousel :interval="0" controls v-model="selected_index_locataire" ref="locataireCarousel" v-if="provenance =='1'">
                                 <b-carousel-slide style="height: 10.5em" class="fluid w-100 responsive border-0"
                                     v-for="(locataire, i) in locataires" :key="i" :img-src="locataire.avatar"
@@ -128,8 +128,8 @@ export default {
     occupation: {
       loyer: "",
       mode: "",
-      energie: "",
-      eau: "",
+      energie: "index",
+      eau: "index",
       puEnergie: "",
       puEau: "",
       idLogement: "",
@@ -235,8 +235,8 @@ export default {
       this.occupation = {
         loyer: "",
         mode: "",
-        energie: "",
-        eau: "",
+        energie: "index",
+        eau: "index",
         puEnergie: "",
         puEau: "",
         idLogement: "",
@@ -256,8 +256,6 @@ export default {
         bvModalEvt.preventDefault();
         
         if (this.action == "add") {
-            this.occupation.idLocataire=this.stateLocataire.idLocataire
-            console.log('occupation',this.occupation)
             this.showOverlay = true;
 
             axios.post('occupations', this.occupation).then(response => {
@@ -312,6 +310,7 @@ export default {
         this.provenance=2
         this.disabled=true;
       this.stateLocataire=this.locataire;
+      this.occupation.idLocataire = this.locataire.idLocataire
     }
   }
 };

@@ -15,12 +15,12 @@
             <div class="nav-container">
                 <nav id="main-menu-navigation" class="navigation-main">
                     <div class="nav-lavel">Accueil</div>
-                    <div class="nav-item"><b-link :to="{name: 'home'}"><i class="ik ik-monitor"></i><span>Accueil</span></b-link></div>
+                    <div class="nav-item"><b-link :to="{name: 'home'}"><i style="color:whitesmoke;font-size:.9rem;" class="ik ik-monitor"></i><span>Accueil</span></b-link></div>
                     
-                     <div class="nav-item"><b-link :to="{name: 'analyse'}"><i class="fas fa-analytics"></i><span>Analyse & Rentabilité</span></b-link></div>
-                     <div class="nav-item"><b-link :to="{name: 'depenses'}"><i class="ik ik-menu"></i><span>Dépenses</span></b-link></div>
+                    <div class="nav-lavel">Analyse &amp; rentabilité</div>
+                     <div class="nav-item"><b-link :to="{name: 'depenses'}"><i style="color:whitesmoke;font-size:.9rem;" class="ik ik-menu"></i><span>Dépenses</span></b-link></div>
                     <!--<div class="nav-item has-sub">
-                        <a href="javascript:void(0)"><i class="ik ik-layers"></i><span>Widgets</span> <span class="badge badge-danger">150+</span></a>
+                        <a href="javascript:void(0)"><ifont-size:.9rem; class="ik ik-layers"></ifont-size:.9rem;><span>Widgets</span> <span class="badge badge-danger">150+</span></a>
                         <div class="submenu-content">
                             <a href="pages/widgets.html" class="menu-item">Basic</a>
                             <a href="pages/widget-statistic.html" class="menu-item">Statistic</a>
@@ -29,22 +29,23 @@
                         </div>
                     </div>-->
                     <div class="nav-lavel">Patrimoine immobilier</div>
-                    <div class="nav-item"><b-link :to="{name: 'cites'}"><i class="fas fa-city"></i><span>Mes cités</span></b-link></div>
-                    <div class="nav-item"><b-link :to="{name: 'batiments'}"><i class="fa fa-building"></i><span>Mes batiments</span></b-link></div>
-                    <div class="nav-item"><b-link :to="{name: 'logements'}"><i class="fas fa-home"></i><span>Mes logements</span></b-link></div>
+                    <div class="nav-item"><b-link :to="{name: 'cites'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-city"></i><span>Mes cités</span></b-link></div>
+                    <div class="nav-item"><b-link :to="{name: 'batiments'}"><i style="color:whitesmoke;font-size:.9rem;" class="fa fa-building"></i><span>Mes batiments</span></b-link></div>
+                    <div class="nav-item"><b-link :to="{name: 'logements'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-home"></i><span>Mes logements</span></b-link></div>
                     
                     <div class="nav-lavel">Gestion immobilière</div>
-                    <div class="nav-item"><b-link :to="{name: 'annonces'}"><i class="fas fa-ad"></i><span>Mes annonces</span></b-link></div>
-                    <div class="nav-item"><b-link :to="{name: 'occupations'}"><i class="fas fa-building"></i><span>Mes occupations</span></b-link></div>
-                    <div class="nav-item"><b-link :to="{name: 'habitants'}"><i class="fas fa-users"></i><span>Mes habitants</span></b-link></div>
+                    <div class="nav-item"><b-link :to="{name: 'annonces'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-ad"></i><span>Mes annonces</span></b-link></div>
+                    <div class="nav-item"><b-link :to="{name: 'occupations'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-building"></i><span>Mes occupations</span></b-link></div>
+                    <div class="nav-item"><b-link :to="{name: 'habitants'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-users"></i><span>Mes habitants</span></b-link></div>
                     
                     <div class="nav-lavel">Finances</div>
-                    <div class="nav-item"><b-link :to="{name: 'indexes'}"><i class="fas fa-clipboard-list"></i><span>Rélévés d'indexes</span></b-link></div>
-                    
+                    <div class="nav-item"><b-link :to="{name: 'indexes'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-clipboard-list"></i><span>Rélévés d'indexes</span></b-link></div>
+                    <div class="nav-item"><b-link :to="{name: 'loyers'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-list"></i><span>Loyers</span></b-link></div>
+                            
                     <div class="nav-lavel">Configuration et Aide</div>
-                    <div class="nav-item"><a href="javascript:void(0)"><i class="ik ik-monitor"></i><span>Documentation</span></a></div>
-                    <div class="nav-item"><b-link :to="{name: 'articles'}"><i class="fas fa-newspaper"></i><span>Mes Articles et Rubriques</span></b-link></div>
-                    <div class="nav-item"><b-link :to="{name: 'contrat'}"><i class="fas fa-file-signature"></i><span>Mes Modèles Contrats</span></b-link></div>
+                    <div class="nav-item"><a href="javascript:void(0)"><i style="color:whitesmoke;font-size:.9rem;" class="ik ik-monitor"></i><span>Documentation</span></a></div>
+                    <div class="nav-item"><b-link :to="{name: 'articles'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-newspaper"></i><span>Mes Articles et Rubriques</span></b-link></div>
+                    <div class="nav-item"><b-link :to="{name: 'contrat'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-file-signature"></i><span>Mes Modèles Contrats</span></b-link></div>
                     
                 </nav>
             </div>
@@ -54,6 +55,6 @@
 
 <script>
 export default {
-    name: 'Sidebar'
+    name: 'Sidebar',
 }
 </script>

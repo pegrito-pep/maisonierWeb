@@ -22,7 +22,7 @@
                 <b-overlay :show="showOverlay" rounded="sm">
                     <b-alert variant="info" class="text-center" show v-if="!cites.length">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                        <span class="h4 d-inline-flex ml-2">Aucune cité trouvée</span>
+                        <span class="h4 d-inline-flex ml-2">Aucune cité enregistrée pour le moment</span>
                     </b-alert> 
                     <b-row v-else class="layout-wrap">
                         <b-col v-for="(cite, i) in items" :key="cite.idCite || i" xl="3" lg="4" cols="12" sm="6" class="animated flipInX mb-4">
@@ -65,10 +65,7 @@
                 <b-form-input v-model="modal.ref" placeholder="Ex: CP3" trim></b-form-input>
             </b-form-group>
             <b-form-group label="Photo">
-                <div class="photo-cite d-flex justify-content-center align-items-center border rounded-circle mx-auto" :style="'background-image: url('+modal.photo+');'" >
-                    <b-button variant="light" @click.prevent="$refs.photoCite.click()" class="btn-icon"><i class="fa fa-camera-retro fa-lg text-muted"></i></b-button>
-                    <input type="file" class="d-none" ref="photoCite" @change="onFileSelected">
-                </div>
+                <img-inputer v-model="modal.photo" :img-src="$getBase64(modal.photo, false)" placeholder="Ajouter la photo de la cité" theme="light" size="xl" bottom-text="déposez le fichier ici ou cliquez pour modifier" icon="img"  />
             </b-form-group>
         </b-modal>
     </div>
@@ -132,12 +129,12 @@ export default {
             this.modal.action='add'
             this.$refs.modalCite.show("modal-cite");
         },
+
         /**
          * Selection de l'image illustrative de la cite
          */
-        onFileSelected(event) {
-            let file = event.target.files[0],
-                    reader = new FileReader(),
+        onFileSelected(file) {
+            let reader = new FileReader(),
                     modal = this.modal
                 reader.onload = function() {
                     modal.photo = this.result
@@ -226,15 +223,18 @@ export default {
         /**
          * Validation du formulaire d'ajout/modification de la cite
          */
-        submitModal(bvModalEvt) {
+        async submitModal(bvModalEvt) {
             bvModalEvt.preventDefault()
             if (php.empty(this.modal.nom) || php.empty(this.modal.ref)) {
                 return App.error('Veuillez remplir tous les champs du formulaire')
             }
             this.modal.submitted = true
+            const data = Object.assign({}, this.modal, {
+                photo: await this.$getBase64(this.modal.photo)
+            })
 
             if (this.modal.action == 'add') {
-                axios.post('cites', this.modal).then(response => {
+                axios.post('cites', data).then(response => {
                     this.modal.submitted = false
 
                     if (!response.success) {
@@ -250,14 +250,14 @@ export default {
                 })
             }
             if (this.modal.action == 'edit') {
-                axios.put(`cites/${this.modal.idCite}`, this.modal).then(response => {
+                axios.put(`cites/${this.modal.idCite}`, data).then(response => {
                     this.modal.submitted = false
 
                     if (!response.success) {
                         return App.alertError(response.message)
                     }
-                    this.cites = this.renameCite(this.cites, this.modal)
-                    this.trueCites = this.renameCite(this.trueCites, this.modal)
+                    this.cites = this.renameCite(this.cites, data)
+                    this.trueCites = this.renameCite(this.trueCites, data)
                     this.$bvModal.hide('modal-cite')
                     return App.notifySuccess(response.message)
                 }).catch(error => {
@@ -303,14 +303,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-.photo-cite {
-    width: 8.5em;
-    height: 8.5em;
-    background-size: cover;
-}
-.photo-cite button {
-    cursor: pointer;
-}
-</style>

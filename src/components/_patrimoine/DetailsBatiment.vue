@@ -32,7 +32,7 @@
                 </div> 
 
                 <div v-show="section == 'add-logement'">
-                    <add-logement :batiment="batiment"  @logementAdded="addedLogement" />
+                    <add-logement :batiment="batiment"  @logementAdded="addedLogement" :action='action'/>
                 </div>
 
                 <div v-if="section == 'depenses'">
@@ -104,7 +104,8 @@ export default {
         currentPage: 1,
         perPage: 10,
         source: 3,
-        provenance:"2"
+        provenance:"2",
+        action:'add'
     }),
    mounted() {
     },

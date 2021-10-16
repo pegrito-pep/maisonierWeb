@@ -23,11 +23,11 @@
                 <b-overlay :show="showOverlay" rounded="sm">
                     <b-alert variant="info" class="text-center" show v-if="!articles.length">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                        <span class="h4 d-inline-flex ml-2">Aucun article trouvé</span>
+                        <span class="h4 d-inline-flex ml-2">Aucun article crée pour le moment</span>
                         <br>
                         <b-button size="lg" class="my-2" variant="outline-info" :disabled="submitted" @click="generateArticles">Générer des articles automatiquement <b-spinner v-if="submitted" small /></b-button>
                         <p>Un article est une disposition d'un texte législatif qui a pour objet d'énoncer une règle de droit ou qui en indique les éléments 
-                        ou les modalités d'application8. Un article de loi peut contenir une règle de droit absolue, impérative ou supplétive</p>
+                        ou les modalités d'application. Un article de loi peut contenir une règle de droit absolue, impérative ou supplétive</p>
                     </b-alert> 
                     <b-row v-else class="layout-wrap">
                         <b-col v-for="(article, i) in items" :key="article.idArticle || i" xl="3" lg="4" cols="12" sm="6" class="animated flipInX mb-4">

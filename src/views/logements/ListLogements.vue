@@ -74,7 +74,7 @@
           <b-alert variant="info" class="text-center" show v-if="!logements.length">
             <i class="fa fa-exclamation-triangle fa-3x"></i>
             <br />
-            <span class="h4 d-inline-flex ml-2">Aucun logement trouvé</span>
+            <span class="h4 d-inline-flex ml-2">Aucun enregistré pour le moment</span>
           </b-alert>
           <b-row v-else class="layout-wrap">
             <b-col
@@ -177,9 +177,9 @@
       </b-modal>
     </div>
     <!--MODAL POUR AJOUTER OU MODIFIER UN LOGEMENT-->
-    <b-modal id="logementForm" ref="edit-modal" size="lg" :title="title" ok-title="Fermer" ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
+    <b-modal id="logementForm" ref="logement-form" size="lg" :title="title" ok-title="Fermer" ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
         <div>
-            <add-logement @logementAdded="addedLogement" @editSuccessfull="editSuccessfull" :editLogement="logement" :action='action'/>
+            <add-logement @logementAdded="addedLogement" @editSuccessfull="editSuccessfull" :editLogement="logement" :action='action' @closeLogementModal="resetLogementFormProps"/>
         </div>
     </b-modal>
 
@@ -207,7 +207,7 @@ export default {
   data: () => ({
     //début données liées à l'import de plusieurs logements
 
-    licenseKey: "6e98069e-296c-40d9-bb03-989e03fa4d02",
+    licenseKey: "6e79e3c9-a02b-44ba-b761-9f18a885e464",
     settings: {
       disableManualInput: true,
       type: "logement",
@@ -342,6 +342,15 @@ export default {
      }) */
   },
   methods: {
+        /**
+         * Methode permettant de reinitialiser les props du modal
+         */
+        resetLogementFormProps(){
+          this.action='add'
+          this.title="Ajouter un logement"
+          this.$bvModal.hide('logementForm')
+          this.logement=null
+        },
         //traitement de l'évènement émis d'ajout d'un logement
         addedLogement() {
             this.getHousing(false);
@@ -374,6 +383,7 @@ export default {
             this.typesLogements = await axios.get("types-logements?all=true").then(response => response.result || []);
             this.cites = (await axios.get("cites").then(response => response.result || [])).filter(elt => elt.batiments.length > 0);
         }
+        this.autoAddTarget();
         this.autoDetailsTarget();
     },
     /**
@@ -383,7 +393,7 @@ export default {
         autoAddTarget() {
             const target = this.$route.query.target || null;
             if (target) {
-                 this.addLogement()
+                 this.$refs['logement-form'].show();
                 window.history.replaceState(
                     {},
                     "",
@@ -463,11 +473,11 @@ export default {
       this.commandeLoadCsv = true;
     },
     updateLogement(logement) {
+      this.action='edit'
       console.log("logement", logement);
       this.logement=logement
       this.title="édition du logement "+this.logement.refLogement;
-      this.action='edit'
-      this.$refs['edit-modal'].show()
+      this.$refs['logement-form'].show()
     },
     removeLogement(logement) {
       console.log("logement", logement);

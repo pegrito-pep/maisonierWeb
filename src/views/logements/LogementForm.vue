@@ -261,6 +261,10 @@
                 </b-col>
             </b-row>
             </tab-content>
+            <div v-if="action == 'edit'&& indexForm!=5">
+                <hr>
+                <div class="center"><b-button @click.prevent="onComplete" variant="primary">Valider</b-button></div>
+            </div>
             <div class="leloader" v-if="loadingWizard"></div>
         </form-wizard>
     </b-overlay> 
@@ -592,7 +596,9 @@ export default {
   "ZW": "Zimbabwe"
 },
         //tousLesPays:[],
-        showSelectBatiment:false
+        showSelectBatiment:false,
+        //cette propriété est utilisée pour controler la bouton de vaidatation lors de l'edit
+        indexForm:0
     }),
     components: {
         FormWizard,
@@ -636,10 +642,9 @@ export default {
             this.idBatiment=null;
             this.mapCoordinates = { lat: null, lng: null};
             this.photos=[];
-                
-            setTimeout(() => {
-                this.$emit('closeLogementModal');
-            }, 500);
+            this.action='add'
+            this.$emit('closeLogementModal');
+     
             
         },
         setLoading: function(value) {
@@ -647,6 +652,8 @@ export default {
         },
         handleValidation: function(isValid, tabIndex){
             console.log('Tab: '+tabIndex+ ' valid: '+isValid)
+            this.indexForm=this.indexForm+1;
+            console.log('indexFom: ',this.indexForm)
         },
         validateAsync:function() {
             return new Promise((resolve, reject) => {

@@ -130,6 +130,11 @@ const routes = [{
         path: '/indexes',
         name: 'indexes',
         component: () => import('@/views/finances/Indexes.vue')
+    },
+    {
+        path: '/loyers',
+        name: 'loyers',
+        component: () => import('@/views/finances/Loyers.vue')
     }
 
 ]

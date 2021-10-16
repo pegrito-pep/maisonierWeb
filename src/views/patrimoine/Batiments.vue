@@ -22,7 +22,8 @@
                 <b-overlay :show="showOverlay" rounded="sm">
                     <b-alert variant="info" class="text-center" show v-if="!batiments.length">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                        <span class="h4 d-inline-flex ml-2">Aucun batiment trouvé</span>
+                        <span class="h4 d-inline-flex ml-2" v-if="source == 1">Aucun batiment enregistré pour le moment</span>
+                        <span class="h4 d-inline-flex ml-2" v-if="source == 2">Aucun batiment trouvé</span>
                     </b-alert> 
                     <b-row v-else class="layout-wrap">
                         <b-col v-for="(batiment, i) in items" :key="batiment.idBatiment || i" xl="3" lg="4" cols="12" sm="6" class="animated flipInX mb-4">
@@ -93,11 +94,13 @@ export default {
         currentPage: 1,
         perPage: 10,
         search: null,
-        action: 'add'
+        action: 'add',
+        source:1
     }),
     watch: {
         search(value) {
             value = value.toLowerCase()
+            this.source=2
             this.batiments = !php.empty(value) ? this.trueBatiments.filter(elt => elt.nomBatiment.toLowerCase().includes(value)) : this.trueBatiments
         }
     },
@@ -126,7 +129,7 @@ export default {
         autoAddTarget() {
             const target = this.$route.query.target || null;
             if (target) {
-                 this.showModal()
+                 this.$refs['modalBatiment'].show()
                 window.history.replaceState(
                     {},
                     "",

@@ -94,7 +94,7 @@
                         <b-container class="my-3">
                             <ul class="nav nav-tabs">
                                 <li class="nav-item"><a class="nav-link" :class="{'active' : tab_indexe == 'eau'}" @click.prevent="tab_indexe = 'eau'" data-toggle="pill" href="#">Indexes d'eau</a></li>
-                                <li class="nav-item"><a class="nav-link" :class="{'active' : tab_indexe == 'energie'}" @click.prevent="tab_indexe = 'energie'" data-toggle="pill" href="#">Indexes d'energie</a></li>
+                                <li class="nav-item"><a class="nav-link" :class="{'active' : tab_indexe == 'energie'}" @click.prevent="tab_indexe = 'energie'" data-toggle="pill" href="#">Indexes d'électricité</a></li>
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane fade show active mt-1">

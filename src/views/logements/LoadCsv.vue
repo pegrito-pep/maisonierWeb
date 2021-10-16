@@ -68,11 +68,11 @@ export default {
     computed: {
          dataForExcel() {
              return [
-                {"ref": "","description":"","prixMin":"","prixMax":"",
+                {"ref": '',"description":'',"prixMin":'',"prixMax":'',
                 "SousTypeLogement": this.idSousType,
                 "batiment":this.idBatiment,
-                "pays":"",
-                "ville":"","quartier":"","lat":"","lon":"","nombreChambres":"","nombreCuisines":"","nombreDouches":"","nombreSalons":"", "nombreParkings":""},
+                "pays":'',
+                "ville":'',"quartier":'',"lat":'',"lon":'',"nombreChambres":'',"nombreCuisines":'',"nombreDouches":'',"nombreSalons":'', "nombreParkings":''},
                 ]
          },
     },

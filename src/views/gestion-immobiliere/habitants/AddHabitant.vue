@@ -6,7 +6,7 @@
                 @on-loading="setLoading"
                 shape="circle"
                 color="#e74c3c">
-                <tab-content title="Etat civil"
+                <tab-content title="Données personnelles"
                     icon="fa fa-user" 
                     :before-change="validateAsync">
                     <b-row>
@@ -287,7 +287,7 @@ export default {
                     this.alreadyset=true;
                 }else{
                     console.log("user inexistant")
-                     App.confirm(`Utilisateur Inexistant`);
+                    App.confirm(`Utilisateur Inexistant`);
                 }
             })
              this.showOverlay=false

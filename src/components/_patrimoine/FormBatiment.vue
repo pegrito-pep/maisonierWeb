@@ -11,19 +11,13 @@
                             <b-form-input name="ref" v-model="ref" placeholder="Ex: B1" trim></b-form-input>
                         </b-form-group>
                         <b-form-group v-if="cite == null" label="Photo">
-                            <div class="photo-cite d-flex justify-content-center align-items-center border rounded-circle mx-auto" :style="'background-image: url('+photo.batiment+');'" >
-                                <b-button variant="light" @click.prevent="$refs.photoBatiment.click()" class="btn-icon"><i class="fa fa-camera-retro fa-lg text-muted"></i></b-button>
-                                <input type="file" class="d-none" name="photoBatiment" ref="photoBatiment" @change="onFileSelected">
-                            </div>
+                            <img-inputer v-model="photo.batiment" :img-src="$getBase64(photo.batiment, false)" placeholder="Ajouter la photo du batiment" theme="light" size="xl" bottom-text="déposez le fichier ici ou cliquez pour modifier" icon="img" />
                         </b-form-group>
                     </b-col> 
 
                     <b-col>
                         <b-form-group v-if="cite != null" label="Photo">
-                            <div class="photo-cite d-flex justify-content-center align-items-center border rounded-circle mx-auto" :style="'background-image: url('+photo.batiment+');'" >
-                                <b-button variant="light" @click.prevent="$refs.photoBatiment.click()" class="btn-icon"><i class="fa fa-camera-retro fa-lg text-muted"></i></b-button>
-                                <input type="file" class="d-none" name="photoBatiment" ref="photoBatiment" @change="onFileSelected">
-                            </div>
+                             <img-inputer name="test" placeholder="Ajouter la photo du batiment" theme="light" size="xl" bottom-text="déposez le fichier ici ou cliquez pour modifier" icon="img" />
                         </b-form-group>
                         <div v-else>
                             <b-form-group label="Cité">
@@ -49,10 +43,7 @@
                                     </b-form-group></b-col>
                                 </b-row>
                                 <b-form-group label="Photo">
-                                    <div class="photo-cite d-flex justify-content-center align-items-center border rounded-circle mx-auto" :style="'background-image: url('+photo.cite+');'" >
-                                        <b-button variant="light" @click.prevent="$refs.photoCite.click()" class="btn-icon"><i class="fa fa-camera-retro fa-lg text-muted"></i></b-button>
-                                        <input type="file" class="d-none" name="photoCite" ref="photoCite" @change="onFileSelected">
-                                    </div>
+                                    <img-inputer v-model="photo.cite" :img-src="$getBase64(photo.cite, false)" placeholder="Ajouter la photo de la cité" theme="light" size="xl" bottom-text="déposez le fichier ici ou cliquez pour modifier" icon="img" />
                                 </b-form-group>
                             </div>
                         </div>
@@ -159,25 +150,6 @@ export default {
                 }
             }
         },
-        /**
-         * Selection de l'image illustrative de la cite
-         */
-        onFileSelected({target}) {
-            let file = target.files[0],
-                reader = new FileReader(),
-                name = target.name,
-                photo = this.photo
-
-            reader.onload = function() {
-                if (name == 'photoCite') {
-                    photo.cite = this.result
-                }
-                else {
-                    photo.batiment = this.result
-                }
-            }
-            reader.readAsDataURL(file)
-        },
 
         /**
          * Validation du formulaire d'ajout/modification du batiment
@@ -197,14 +169,14 @@ export default {
                 nom: this.nom, 
                 idCite: this.idCite, 
                 ref: this.ref, 
-                photo: this.photo.batiment,
+                photo: await this.$getBase64(this.photo.batiment),
                 batiments: []
             }
 
             if (this.action == 'add') {
                 if (data.idCite == -1) {
                     try {
-                        let response = await axios.post('cites', {nom: this.nomCite, ref: this.refCite, photo: this.photo.cite})
+                        let response = await axios.post('cites', { nom: this.nomCite, ref: this.refCite, photo: await this.$getBase64(this.photo.cite) })
                         data.idCite = response.result.idCite
                     } catch (error) {
                         return App.alertError(error.message)
@@ -212,6 +184,10 @@ export default {
                 }
                 if (!php.empty(this.cite)) {
                     let batiments = $(`#${this.repeaterId}`).repeaterVal().group
+
+                    console.log(batiments);
+                    return;
+
                     if (php.empty(batiments[0].nom) || php.empty(batiments[0].ref)) {
                         return App.error('Vous devez remplir au moins les informations du premier batiment')
                     }
@@ -243,14 +219,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-.photo-cite {
-    width: 10.5em;
-    height: 10.5em;
-    background-size: cover;
-}
-.photo-cite button {
-    cursor: pointer;
-}
-</style>

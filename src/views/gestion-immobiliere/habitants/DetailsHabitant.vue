@@ -253,7 +253,9 @@
                                                     <small v-if="occupation.modeEnergie =='forfait'">{{ occupation.puEnergie }} par mois</small>
                                                 </span>       
                                             </b-td>
-                                            <b-td><b-button  @click.prevent="viewOccupationDetail(occupation)"  :to="{name: 'details-occupation', params: {id: occupation.idOccupation}}" v-b-tooltip="'Accéder à l\'occupation'"><i class="fa fa-eye"></i></b-button></b-td>
+                                            <b-td>
+                                                <b-button id="accessOccupation"  @click.prevent="viewOccupationDetail(occupation)"  :to="{name: 'details-occupation', params: {id: occupation.idOccupation}}" v-b-tooltip.left="'Accéder à l\'occupation'"><i class="fa fa-eye"></i></b-button>
+                                            </b-td>
                                         </b-tr>
                                     </b-tbody>
                                 </b-table-simple>

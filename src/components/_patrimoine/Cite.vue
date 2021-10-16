@@ -14,9 +14,9 @@
                     <p v-b-tooltip.bottom="dateCreation" class="mt-3 mb-1 text-muted text-small date w-15 w-xs-100">{{ $date(cite.createdAt).format("DD.MM.YYYY") }}</p>
                 </div>
                 <div class="list-actions">
-                    <a href="#" @click.prevent="showDetails"><i class="ik ik-eye"></i></a>
-                    <a href="#" @click.prevent="$emit('makeUpdate', cite)"><i class="ik ik-edit-2"></i></a>
-                    <a href="#" @click.prevent="remove" class="list-delete"><i class="ik ik-trash-2"></i></a>
+                    <a href="#" @click.prevent="showDetails" v-b-tooltip.bottom="'Détails'"><i class="ik ik-eye"></i></a>
+                    <a href="#" @click.prevent="$emit('makeUpdate', cite)" v-b-tooltip.bottom="'Editer'"><i class="ik ik-edit-2"></i></a>
+                    <a href="#" @click.prevent="remove" class="list-delete" v-b-tooltip.bottom="'Supprimer'"><i class="ik ik-trash-2"></i></a>
                 </div>
             </div>
         </div>

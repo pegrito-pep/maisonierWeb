@@ -28,7 +28,7 @@
                 <b-overlay :show="showOverlay" rounded="sm">
                     <b-alert variant="info" class="text-center" show v-if="!contrats.length">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                        <span class="h4 d-inline-flex ml-2">Aucun modèle de contrat trouvée</span>
+                        <span class="h4 d-inline-flex ml-2">Aucun modèle de contrat défini pour le moment</span>
                         <p>Le contrat est définit usuellement comme un accord entre deux ou plusieurs volontés en vue de faire naître des effets de droit</p>
                     </b-alert> 
                     <b-row v-else class="layout-wrap">

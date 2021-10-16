@@ -5,6 +5,7 @@ import './plugins/bootstrap-vue'
 //import './plugins/pij'
 import './plugins/axios'
 import './plugins/dayjs'
+import './plugins/helpers'
 
 //import './plugins/custom/files-url'
 
@@ -32,7 +33,9 @@ Vue.component('empty-layout', Empty)
 import VueGeolocation from 'vue-browser-geolocation'
 Vue.use(VueGeolocation)
 
-
+import ImgInputer from 'vue-img-inputer'
+import 'vue-img-inputer/dist/index.css'
+Vue.component('img-inputer', ImgInputer)
 
 
 import * as VueGoogleMaps from 'vue2-google-maps'

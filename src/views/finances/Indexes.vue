@@ -26,7 +26,7 @@
                 <b-overlay :show="showOverlay" rounded="sm">
                     <b-alert variant="info" class="text-center" show v-if="!logements.length">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                        <span class="h4 d-inline-flex ml-2">Vous n'avez défini aucun logement pour le moment</span>
+                        <span class="h4 d-inline-flex ml-2">Vous n'avez enregistré aucun index pour le moment</span>
                     </b-alert> 
                     <b-row v-else>
                         <b-col cols="3" v-for="logement in items" :key="logement.idLogement"> 
@@ -40,7 +40,7 @@
                                         </b-input-group-append>
                                     </b-input-group>
                                 </b-form-group>
-                                <b-form-group label="Indexe lumière">
+                                <b-form-group label="Indexe électricité">
                                     <b-input-group>
                                         <b-form-input type="number" min="0" v-model="logement.indexeMois.energie" />
                                         <b-input-group-append>
@@ -60,7 +60,9 @@
                                         </div>
                                     </div>
                                     <div class="jumbotron pt-10 pb-1 px-2 mb-0 mt-2">
-                                        <b-form-group label="Mois passé"><b-form-input size="sm" min="0" type="number" v-model="logement.indexePassee.eau" /></b-form-group>
+                                        <b-form-group :label="'Mois passé ('+$dayjs(logement.indexePassee.periode).format('MMMM YYYY')+')'">
+                                            <b-form-input size="sm" min="0" type="number" v-model="logement.indexePassee.eau" />
+                                        </b-form-group>
                                     </div>
                                 </b-popover>
                                 <b-popover title="Indexes précedents" :target="'popover-energie-'+logement.idLogement" triggers="click blur" placement="auto">
@@ -74,7 +76,9 @@
                                         </div>
                                     </div>
                                     <div class="jumbotron pt-10 pb-1 px-2 mb-0 mt-2">
-                                        <b-form-group label="Mois passé"><b-form-input size="sm" min="0" type="number" v-model="logement.indexePassee.energie" /></b-form-group>
+                                        <b-form-group :label="'Mois passé ('+$dayjs(logement.indexePassee.periode).format('MMMM YYYY')+')'">
+                                            <b-form-input size="sm" min="0" type="number" v-model="logement.indexePassee.energie" />
+                                        </b-form-group>
                                     </div>
                                 </b-popover>
                             </b-card>
@@ -83,8 +87,7 @@
                     <hr>
                     <div class="d-flex justify-content-between align-items-start">
                         <paginator :offset="offset" :total="logements.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" /> 
-                        <b-button variant="danger" :disabled="submitted" @click.prevent="submitForm">Valider <b-spinner small v-if="submitted" /></b-button>
-
+                        <b-button class="position-fixed validate btn-icon" variant="danger" :disabled="submitted" @click.prevent="submitForm" v-b-tooltip.left="'Valider'"><b-spinner small v-if="submitted" /><i v-else class="fa fa-check fa-lg"></i></b-button>
                     </div>
                 </b-overlay>
             </div>
@@ -106,10 +109,7 @@ export default {
     logements:[],
     trueLogements:[],
 
-
-    popoverShow: false,
     periode: {annee: null, mois: null}
-
   }),
     watch: {
         search(value) {
@@ -132,19 +132,19 @@ export default {
             const current = this.$dayjs().format('YYYY')
             let annees = [current]
 
-            for (let i = current; i > (current - 15); i--) {
+            for (let i = current; i > (current - 5); i--) {
                 if (i != current) {
                     annees.push(i)
-                    annees.push(i + 15)
                 }
             }
             
             return annees.sort((a, b) => a - b)
         },
         mois() {
-            let date = new Date, 
-                mois = []
-            for (let i = 0; i < 12; i++) {
+            const date = new Date, mois = [], 
+                current = this.$dayjs().format('YYYY'),
+                limit = current == this.periode.annee ? date.getMonth() : 11
+            for (let i = 0; i <= limit; i++) {
                 date.setMonth(i)
                 mois.push({ value: i, text: php.ucfirst(this.$dayjs(date).format('MMMM')) })
             }
@@ -237,7 +237,8 @@ export default {
                     
                 elt.indexePassee = {
                     eau: php.empty(iEau) ? null : iEau.nouveau,
-                    energie: php.empty(iEnergie) ? null: iEnergie.nouveau
+                    energie: php.empty(iEnergie) ? null: iEnergie.nouveau,
+                    periode: periodePassee
                 }
 
                 indexesCourants = elt.indexes.filter(e => (this.$dayjs(periodePassee).diff(e.periode, 'month') > 0 && e.nouveau > 0))
@@ -251,3 +252,13 @@ export default {
 
 };
 </script>
+
+<style scoped>
+button.validate{
+    bottom: 1em;
+    right: 1em;
+    width: 3em;
+    height: 3em;
+    box-shadow: 3px 1px 1px gray;
+}
+</style>
