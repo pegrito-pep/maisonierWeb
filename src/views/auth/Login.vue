@@ -137,7 +137,7 @@ export default {
     isHoveredForget: false,
   }),
   methods: {
-    //gestion du survol sur crée un compte maintenant
+    // gestion du survol sur crée un compte maintenant
     handleHover(hovered) {
       this.isHovered = hovered;
     },

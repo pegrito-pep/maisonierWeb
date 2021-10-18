@@ -195,8 +195,6 @@
                         </b-input-group-append>
                     </b-input-group>
                 </b-col>
-            </b-row>
-            <b-row>
                 <b-col> 
                     <label>Nombre de douche<span v-if="logement.nbdouche >1">(s)</span></label>
                     <b-input-group>
@@ -209,32 +207,22 @@
                         </b-input-group-append>
                     </b-input-group>
                 </b-col>
-                <b-col> 
-                    <label>Nombre de parking<span v-if="logement.nbparking >1">(s)</span></label>
-                    <b-input-group>
-                        <b-input-group-prepend>
-                            <b-btn variant="outline-info" @click="logement.nbparking--">-</b-btn>
-                        </b-input-group-prepend>
-                            <b-form-input type="number" min="0.00" v-model="logement.nbparking"></b-form-input>
-                        <b-input-group-append>
-                            <b-btn variant="outline-secondary" @click="logement.nbparking++">+</b-btn>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-col>
-                <b-col> 
-                    <label>Nombre de Piscine<span v-if="logement.nbpiscine >1">(s)</span></label>
-                    <b-input-group>
-                        <b-input-group-prepend>
-                            <b-btn variant="outline-info" @click="logement.nbpiscine--">-</b-btn>
-                        </b-input-group-prepend>
-                            <b-form-input type="number" min="0.00" v-model="logement.nbpiscine"></b-form-input>
-                        <b-input-group-append>
-                            <b-btn variant="outline-secondary" @click="logement.nbpiscine++">+</b-btn>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-col>
             </b-row>
-            <b-row>
+            <!--<b-row>
+                <b-col> 
+                    <label>Nombre de douche<span v-if="logement.nbdouche >1">(s)</span></label>
+                    <b-input-group>
+                        <b-input-group-prepend>
+                            <b-btn variant="outline-info" @click="logement.nbdouche--">-</b-btn>
+                        </b-input-group-prepend>
+                            <b-form-input type="number" min="0.00" v-model="logement.nbdouche"></b-form-input>
+                        <b-input-group-append>
+                            <b-btn variant="outline-secondary" @click="logement.nbdouche++">+</b-btn>
+                        </b-input-group-append>
+                    </b-input-group>
+                </b-col>
+            </b-row>-->
+            <!--<b-row>
                 <b-col> 
                     <label>Nombre de Garage<span v-if="logement.nbgarage >1">(s)</span></label>
                     <b-input-group>
@@ -259,7 +247,37 @@
                         </b-input-group-append>
                     </b-input-group>
                 </b-col>
-            </b-row>
+            </b-row>-->
+
+                <div :id="repeaterId">
+                    <div class="d-flex flex-column justify-content-between" style="height: 95%; overflow-y: auto; overflow-x: hidden">
+                        <div data-repeater-list="group">
+                            <b-row data-repeater-item>
+                                <b-col>
+                                    <b-form-group label="Libellé">
+                                        <b-form-input name="libelle" v-model="libelle" placeholder="Ex: Sona" trim></b-form-input>
+                                    </b-form-group>
+                                </b-col> 
+                                <b-col>
+                                    <b-form-group label="Valeur">
+                                        <b-form-input name="valeur" v-model="valeur" placeholder="Ex: 2" trim></b-form-input>
+                                    </b-form-group>
+                                </b-col> 
+                                <b-col cols="1" class="m-0 p-0 mr-2">
+                                    <b-form-group label="">
+                                        <b-button data-repeater-delete variant="outline-danger" class="mt-4"><i class="fa fa-times"></i></b-button>
+                                    </b-form-group>
+                                </b-col>   
+                            </b-row>   
+                        </div>
+                    </div>
+                    <b-button data-repeater-create class="btn btn-success btn-icon ml-2 mb-2"><i class="ik ik-plus"></i></b-button>
+                    <!--<div class="w-100 d-flex justify-content-end align-items-center mt-4">
+                         <b-button data-repeater-create class="btn btn-success btn-icon ml-2 mb-2"><i class="ik ik-plus"></i></b-button>
+                        <b-button variant="outline-primary" data-repeater-create>Ajouter une caractéristique</b-button>
+                    </div>-->
+                </div>
+         
             </tab-content>
             <div v-if="action == 'edit'&& indexForm!=5">
                 <hr>
@@ -274,6 +292,7 @@ import notif from "@/plugins/notif.js";
 import VueUploadMultipleImage from "vue-upload-multiple-image";
 import {FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+const php = require('phpjs')
 
 export default {
     name: 'add-logement',
@@ -283,6 +302,8 @@ export default {
         action:{type: String}
     },
     data:()=>({
+        libelle:'',
+        valeur:'',
         loadingWizard: false,
         showOverlay:true,
         reference:"une reference est propre à chaque logement",
@@ -620,9 +641,17 @@ export default {
                     lng: this.map.getCenter().lng().toFixed(4)
                 }
                 console.log("lat",mapCoordinates.lat,"lng",mapCoordinates )
-            }
+            },
+            repeaterId() {
+                return `repeat-added-logement-form-${php.empty(this.logement) ? php.uniqid() : this.logement.idLogement}`
+            },
     },
     methods:{
+        makeRepeater() {
+            setTimeout(() => {
+                $(`#${this.repeaterId}`).repeater({ isFirstItemUndeletable: true  })
+            }, 500);
+        },
         resetModal() {
             this.logement = {
                 ref: null, description: null, prixMin: null, prixMax: null,
@@ -741,42 +770,31 @@ export default {
                 adresse:add,
                 photos: this.photos,
                 caracteristiques: [
-                {
-                    libelle: "chambre",
-                    valeur: this.logement.nbchambre
-                },
-                {
-                    libelle: "salon",
-                    valeur: this.logement.nbsalon
-                },
-                {
-                    libelle: "cuisine",
-                    valeur: this.logement.nbcuisine
-                },
-                {
-                    libelle: "douche",
-                    valeur: this.logement.nbdouche
-                },
-                {
-                    libelle: "parking",
-                    valeur: this.logement.nbparking
-                },
-                {
-                    libelle: "piscine",
-                    valeur: this.logement.nbpiscine
-                },
-                {
-                    libelle: "sona",
-                    valeur: this.logement.nbsona
-                },
-                {
-                    libelle: "garage",
-                    valeur: this.logement.nbgarage
-                }
+                    {
+                        libelle: "chambre",
+                        valeur: this.logement.nbchambre
+                    },
+                    {
+                        libelle: "salon",
+                        valeur: this.logement.nbsalon
+                    },
+                    {
+                        libelle: "cuisine",
+                        valeur: this.logement.nbcuisine
+                    },
+                    {
+                        libelle: "douche",
+                        valeur: this.logement.nbdouche
+                    }
                 ]
 
             }
-            console.log("data",data)
+            let caracteristiquesSupplementaires = $(`#${this.repeaterId}`).repeaterVal().group
+                console.log(caracteristiquesSupplementaires);
+            for(let i=0; i<caracteristiquesSupplementaires.length; i++){
+                data.caracteristiques.push(caracteristiquesSupplementaires[i])
+            }
+            console.log("caractéristiques finales", data.caracteristiques)
             if(this.action=='add'){
                 axios.post("logements",data).then(response =>{
                     this.resetModal()
@@ -791,11 +809,8 @@ export default {
             }
             if(this.action=='edit'){
                 axios.put(`logements/${ this.editLogement.idLogement}`,data).then(response =>{
-                    /*this.resetModal()
-                    this.showOverlay=false;
-                    this.$emit("logementAdded");
-                    return App.notifySuccess(response.message)*/
                     if (!response.success) {
+                        this.showOverlay=false;
                         return App.alertError(response.message)
                     }
                     this.resetModal()
@@ -915,6 +930,10 @@ export default {
     },
 
     async mounted(){
+        if (!php.empty(this.logement)) {
+            this.makeRepeater()
+            //this.idLogement = this.logement.idLogement
+        }
         const interval = setInterval(() => {
             if (this.$refs.mapRef) {
                 this.$refs.mapRef.$mapPromise.then(map => this.map = map);
@@ -956,21 +975,8 @@ export default {
                }
                if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique =='douche'){
                    this.logement.nbdouche=this.editLogement.caracteristiques[i].valeur
-               }
-               if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique =='parking'){
-                   this.logement.nbparking=this.editLogement.caracteristiques[i].valeur
-               }
-               if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique =='piscine'){
-                   this.logement.nbpiscine=this.editLogement.caracteristiques[i].valeur
-               }
-               if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique =='sona'){
-                   this.logement.nbsona=this.editLogement.caracteristiques[i].valeur
-               }
-               if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique =='garage'){
-                   this.logement.nbgarage=this.editLogement.caracteristiques[i].valeur
-               }
-               
-           }
+               } 
+            }
           /* if(this.editLogement.photos.length>0){
                let inter
                for (let i=0; i<=this.editLogement.photos.length;i++){
