@@ -70,7 +70,6 @@ const routes = [{
         component: () =>
             import ('@/views/patrimoine/Batiments.vue')
     },
-
     /**
      * Gestion immobiliere
      */
@@ -78,7 +77,7 @@ const routes = [{
         path: '/annonces',
         name: 'annonces',
         component: () =>
-            import ('@/views/gestion-immobiliere/Annonces.vue')
+            import ('@/views/gestion-immobiliere/annonces/Annonces.vue')
     },
     {
         path: '/habitants',

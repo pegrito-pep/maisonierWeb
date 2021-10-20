@@ -265,7 +265,7 @@
                                 </b-col> 
                                 <b-col cols="1" class="m-0 p-0 mr-2">
                                     <b-form-group label="">
-                                        <b-button data-repeater-delete variant="outline-danger" class="mt-4"><i class="fa fa-times"></i></b-button>
+                                        <b-button data-repeater-delete variant="outline-danger" class="mt-4"><i class="ik ik-trash-2"></i></b-button>
                                     </b-form-group>
                                 </b-col>   
                             </b-row>   
@@ -619,7 +619,8 @@ export default {
         //tousLesPays:[],
         showSelectBatiment:false,
         //cette propriété est utilisée pour controler la bouton de vaidatation lors de l'edit
-        indexForm:0
+        indexForm:0,
+        editCaracteristiques:[]
     }),
     components: {
         FormWizard,
@@ -790,15 +791,15 @@ export default {
 
             }
             let caracteristiquesSupplementaires = $(`#${this.repeaterId}`).repeaterVal().group
-                console.log(caracteristiquesSupplementaires);
             for(let i=0; i<caracteristiquesSupplementaires.length; i++){
                 data.caracteristiques.push(caracteristiquesSupplementaires[i])
             }
-            console.log("caractéristiques finales", data.caracteristiques)
+
             if(this.action=='add'){
                 axios.post("logements",data).then(response =>{
                     this.resetModal()
                     this.showOverlay=false;
+                    storage.set('logements',null);
                     this.$emit("logementAdded");
                     return App.notifySuccess(response.message)
                 })
@@ -808,6 +809,10 @@ export default {
                 });
             }
             if(this.action=='edit'){
+                for(let i=0; i<this.editCaracteristiques.length; i++){
+                    data.caracteristiques.push(this.editCaracteristiques[i])
+                }
+                console.log('caractéristiques à envoyer',data.caracteristiques)
                 axios.put(`logements/${ this.editLogement.idLogement}`,data).then(response =>{
                     if (!response.success) {
                         this.showOverlay=false;
@@ -816,6 +821,7 @@ export default {
                     this.resetModal()
                     this.showOverlay=false;
                     this.editLogement=null;
+                    storage.set('logements',null);
                     this.$emit("editSuccessfull", response.result);
                     return App.notifySuccess(response.message)
                      
@@ -963,6 +969,7 @@ export default {
                this.showSelectBatiment=true
                this.idBatiment=this.editLogement.batiment.idBatiment
            }
+           
            for(let i=0; i<=this.editLogement.caracteristiques.length; i++){
                if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique =='chambre'){
                    this.logement.nbchambre=this.editLogement.caracteristiques[i].valeur
@@ -976,7 +983,17 @@ export default {
                if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique =='douche'){
                    this.logement.nbdouche=this.editLogement.caracteristiques[i].valeur
                } 
+               if(this.editLogement.caracteristiques[i]!=null && this.editLogement.caracteristiques[i].libelleCaracteristique !='douche'&&
+               this.editLogement.caracteristiques[i].libelleCaracteristique !='cuisine'&&this.editLogement.caracteristiques[i].libelleCaracteristique !='salon'
+               &&this.editLogement.caracteristiques[i].libelleCaracteristique !='chambre'){
+                   let caracActuelles={
+                       libelle: this.editLogement.caracteristiques[i].libelleCaracteristique,
+                       valeur: this.editLogement.caracteristiques[i].valeur
+                   }
+                   this.editCaracteristiques.push(caracActuelles)
+               }
             }
+            console.log('caracActuelles',this.editCaracteristiques)
           /* if(this.editLogement.photos.length>0){
                let inter
                for (let i=0; i<=this.editLogement.photos.length;i++){

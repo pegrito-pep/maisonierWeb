@@ -70,6 +70,15 @@
                 </tab-content>
                 <tab-content title="Choisir les rubriques" icon="fas fa-file-contract" :before-change="validateSecond">
                     <div class="accordion" role="tablist">
+                        <b-alert variant="info" class="text-center" show v-if="articles.length==0">
+                            <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
+                            <span class="h4 d-inline-flex ml-2">Aucun article crée pour le moment</span>
+                            <br>
+                            <b-button size="lg" class="my-2" variant="outline-info" :disabled="submitted" @click="generateArticles">Générer des articles automatiquement <b-spinner v-if="submitted" small /></b-button>
+                            <p>Un article est une disposition d'un texte législatif qui a pour objet d'énoncer une règle de droit ou qui en indique les éléments 
+                            ou les modalités d'application. Un article de loi peut contenir une règle de droit absolue, impérative ou supplétive</p>
+                        </b-alert>
+
                         <b-card no-body class="mb-1" v-for="items in articles" :key="items.idArticle">
                             <b-card-header header-tag="header" class="p-1" role="tab">
                                 <b-button block v-b-toggle.accordion-1 variant="info">{{items.titreArticle}}</b-button>
@@ -181,7 +190,8 @@ export default {
         requiredModelContrat:true,
         check:true,
         check2:true,
-        requiredRubriques:true
+        requiredRubriques:true,
+        submitted: false
     }),
     watch: {
 
@@ -196,6 +206,19 @@ export default {
        this.logements=storage.get('logements')
     },
     methods: {
+        /**
+         * gestion de la possiblilé de générer des articles et rubriques
+         * directement dans le form de création d'un modèle de contrat
+         */
+       generateArticles() {
+            this.submitted = true 
+            axios.post('/articles/generate').then(response => {
+                if (response.success) {
+                     this.getArticles()
+                }
+                this.submitted = false
+            })
+        },
           /**
             * controle step 1 du formulaire
          */
@@ -232,8 +255,13 @@ export default {
             
         async getArticles(){
              console.log('entrée recuperation de la liste des articles')
+            if(storage.get('articles')!= null && storage.get('articles').length>0){
+                console.log('entrée 1 pas de requète en bd')
+                this.articles = storage.get('articles')
+            }
              try {
-                this.articles = await axios.get("articles").then(response => response.result);
+                this.articles = await axios.get("articles").then(response => response.result || []);
+                storage.set('articles',this.articles)
              } catch (error) {
                 console.log(error)
              }

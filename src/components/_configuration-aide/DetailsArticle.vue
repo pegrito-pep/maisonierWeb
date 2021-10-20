@@ -145,6 +145,7 @@ export default {
                 if (!response.result.length) {
                     return App.notif('Aucune rubrique rajouté', {})
                 }
+                storage.set('articles',null);
                 return App.notifySuccess(response.message)
             })
         },

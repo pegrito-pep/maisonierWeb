@@ -51,59 +51,9 @@
                             </dl>
                         </div>
                     </div>
-                    <!--<div class="mt-2  epp">
-                        <b-row>
-                            <b-col class="pl-0 pr-0">
-                                <b-button  @click.prevent="callRechargeForm(locataire)" size="sm" block variant="outline-success"  class="w-80 ml-2 pl-0 pr-0"><i class="fa fa-credit-card"></i>Recharger le compte</b-button>
-                
-                            </b-col>
-                            <b-col class="pl-0 pr-0">
-                                <b-button to="#" size="sm" block variant="outline-secondary" class="w-80 ml-2 pl-0 pr-0"><i class="fas fa-money-bill-alt"></i>Débiter le compte</b-button>
-                            </b-col>
-                            <b-col class="pl-0 pr-0">
-                                <b-button to="#" size="sm" block variant="outline-danger" class="pl-0 pr-0"><i class="fas fa-times-circle"></i>Annuler la dernière recharge</b-button>
-                            </b-col>
-                        </b-row>
-                    </div>-->
+
                 </div>
-                <!--<div class="card-body pt-0">                         
-                    <div class="d-flex align-items-center justify-content-between">
-                        <hr class="w-25 bg-danger"> Logement <hr class="w-25 bg-danger">
-                    </div>
-                    <span class="d-inline-block w-100 mb-1 text-center">{{ occupation.logement.refLogement }}</span>    
-                    <span class="d-inline-block w-100 mb-1 text-center text-muted">{{ occupation.logement.sousTypeLogement.libelleSousType }}</span>    
-                        <div class="jumbotron pt-10 pb-10 px-2">
-                        <dl class="row text-muted">
-                            <dd class="mt-1 col-1"><i class="fa fa-dollar-sign"></i></dd>
-                            <dt class="mt-1 col-10 truncate" v-b-tooltip="'Plage de loyer'">{{ occupation.logement.prixMin + 'F' }} - {{ occupation.logement.prixMax + 'F' }}</dt>
-                            <dd class="mt-1 col-1"><i class="fa fa-map-marker-alt"></i></dd>
-                            <dt class="mt-1 col-10 truncate" v-b-tooltip="'Localisation'">{{ occupation.logement.adresse.ville + ' ' + occupation.logement.adresse.pays }}</dt>
-                            <dd v-if="occupation.logement.batiment" class="mt-1 col-1"><i class="fa fa-building"></i></dd>
-                            <dt v-if="occupation.logement.batiment" class="mt-1 col-10 truncate" v-b-tooltip="'Batiment'">{{ occupation.logement.batiment.nomBatiment }}</dt>
-                            <dd v-if="occupation.logement.batiment" class="mt-1 col-1"><i class="fas fa-city"></i></dd>
-                            <dt v-if="occupation.logement.batiment" class="mt-1 col-10 truncate" v-b-tooltip="'Cité'">{{ occupation.logement.batiment.cite.nomCite }}</dt>
-                        </dl>
-                        <b-button :to="{name: 'logements', query: {target: occupation.logement.idLogement}}" size="sm" block variant="outline-secondary">Voir les details</b-button>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between">
-                        <hr class="w-25 bg-danger"> Locataire <hr class="w-25 bg-danger">
-                    </div>
-                    <span class="d-inline-block w-100 mb-1 text-center">{{ occupation.locataire.titre + ' ' + occupation.locataire.nomLocataire + ' ' + occupation.locataire.prenomLocataire }}</span>    
-                    <span class="d-inline-block w-100 mb-1 text-center text-muted">{{ occupation.locataire.profession }}</span>    
-                        <div class="jumbotron pt-10 pb-10 px-2">
-                        <dl class="row text-muted">
-                            <dd class="mt-1 col-1"><i class="fa fa-id-card"></i></dd>
-                            <dt class="mt-1 col-10 truncate" v-b-tooltip="'Numéro de CNI'">{{ occupation.locataire.cniLocataire }}</dt>
-                            <dd class="mt-1 col-1"><i class="fa fa-phone"></i></dd>
-                            <dt class="mt-1 col-10 truncate" v-b-tooltip="'Numéro de téléphone'">{{ occupation.locataire.tel + ' / ' + occupation.locataire.tel2 }}</dt>
-                            <dd class="mt-1 col-1"><i class="fa fa-envelope"></i></dd>
-                            <dt class="mt-1 col-10 truncate" v-b-tooltip="'Email'">{{ occupation.locataire.email + ' / ' + occupation.locataire.email2 }}</dt>
-                            <dd class="mt-1 col-1"><i class="fas fa-calendar-alt"></i></dd>
-                            <dt class="mt-1 col-10 truncate" v-b-tooltip="'Date de naissance'">{{ $date(occupation.locataire.dateNaiss).format('DD MMMM YYYY') }}</dt>
-                        </dl>
-                        <b-button to="#" size="sm" block variant="outline-secondary">Voir le dossier</b-button>
-                    </div>
-                </div>-->
+      
                 <!--DEBUT FORMULAIRE DE RECHARGE DU COMPTE PRINCIPAL>-->
                    
 

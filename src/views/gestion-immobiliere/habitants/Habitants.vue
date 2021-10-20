@@ -16,7 +16,7 @@
                             </div>
                         </div>
                         <div class="float-md-right">
-                            <b-button variant="danger"  @click.prevent="addHabitant"  v-b-modal.modal-lg ref="buttonAdd"><i class="fa fa-plus-circle"></i> Créer un habitant</b-button>
+                            <b-button variant="danger" v-b-modal.habitantForm><i class="fa fa-plus-circle"></i> Créer un habitant</b-button>
                         </div>
                     </div>
                 </div>
@@ -84,12 +84,17 @@
             </div>
         </div>
         
-        <add-habitant v-if="commandeHabitant" :action="action" @closeModal="onCloseSet"/>
+        <!--MODAL POUR AJOUTER OU MODIFIER UN LOGEMENT-->
+        <b-modal id="habitantForm" ref="habitant-form" size="lg" :title="title" ok-title="Fermer" ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
+            <div>
+                <habitant-form @habitantAdded="addedHabitant" :action='action'/>
+            </div>
+        </b-modal>
     </div>
 </template>
 
 <script>
-   import AddHabitant from "@/views/gestion-immobiliere/habitants/AddHabitant.vue";
+   import HabitantForm from "@/views/gestion-immobiliere/habitants/HabitantForm.vue";
    import DetailsHabitant from '@/views/gestion-immobiliere/habitants/DetailsHabitant.vue'
 
   const php  = require ( 'phpjs' ) ; 
@@ -97,19 +102,19 @@
 export default {
   name: "list-habitants",
   components: {
-    AddHabitant,
+    HabitantForm,
     DetailsHabitant,
   },
   data: () => ({
      action:"add",
-     commandeHabitant:false,
      search: null,
      showOverlay: true,
      currentPage: 1,
      perPage: 4,
      locataire: null,
      habitants:[],
-     trueHabitants:[]
+     trueHabitants:[],
+     title:"Ajouter un locataire"
 
   }),
   computed: {
@@ -128,24 +133,25 @@ export default {
         this.getHabitants()
     },
     mounted(){
-        this.$root.$on("new-habitant-added", () => {
-         this.getHabitants();
-         this.commandeHabitant=false;
-     });
-     this.autoAddTarget();
+
      this.$root.$on('show-detail-occupation', (occupation) => {
          $('#editLayoutItem').modal('hide')
      })
     },
     methods: {
+        //traitement de l'évènement émis d'ajout d'un locataire
+        addedHabitant() {
+            this.getHabitants();
+            this.$bvModal.hide('habitantForm')
+        },
             /**
-         * Affiche le modal de création d'une cité directement au chargement de la page
+         * Affiche le modal de création d'un locataire directement au chargement de la page
          * ceci est utilisé lorsqu'on est arrivé ici en provenant de la homepage
          */
         autoAddTarget() {
             const target = this.$route.query.target || null;
             if (target) {
-                this.$refs.buttonAdd.click();
+                this.$refs['habitant-form'].show();
                 window.history.replaceState(
                     {},
                     "",
@@ -153,34 +159,22 @@ export default {
                 );
             }
         },
-        sendData(){
-            
-        },
-        onCloseSet(){
-            this.commandeHabitant=false;
-        },
-        addHabitant(){
-            console.log("entrée")
-            this.action="add";
-            this.commandeHabitant=true;
-        },
-    //recupération de la liste des logements
-     getHabitants() {
+        //recupération de la liste des locataires
+        getHabitants() {
             axios.get('locataires').then(response => response.result || []).then(habitants => {
                 this.habitants = this.habitants = habitants
+                this.autoAddTarget();
                 this.showOverlay = false
             })
-     },
-     addHabitant(){
-         this.commandeHabitant=true;
-     },
-     updateHabitant(habitant) {
-           console.log("habitant",habitant)
-      },
-      removeHabitant(habitant) {
-           console.log("habitant",habitant)
-      },
-      showDetails(locataire) {
+            
+        },
+        updateHabitant(habitant) {
+            console.log("habitant",habitant)
+        },
+        removeHabitant(habitant) {
+            console.log("habitant",habitant)
+        },
+        showDetails(locataire) {
           console.log('locataire',locataire,' ')
             this.locataire = locataire
             console.log('locataire',locataire,' this.locataire',this.locataire)

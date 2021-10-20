@@ -74,7 +74,7 @@
           <b-alert variant="info" class="text-center" show v-if="!logements.length">
             <i class="fa fa-exclamation-triangle fa-3x"></i>
             <br />
-            <span class="h4 d-inline-flex ml-2">Aucun enregistré pour le moment</span>
+            <span class="h4 d-inline-flex ml-2">Aucun logement enregistré pour le moment</span>
           </b-alert>
           <b-row v-else class="layout-wrap">
             <b-col
@@ -331,9 +331,10 @@ export default {
     }
   },
   beforeMount() {
-      setTimeout(() => {
+      /*setTimeout(() => {
           this.getHousing();
-      }, 5000)
+      }, 5000)*/
+      this.getHousing();
   },
   mounted(){
     /*this.$root.$on('logement-modifie', (logement) => {
@@ -358,12 +359,11 @@ export default {
             this.autoAddTarget();
 
         },
-        editSuccessfull(logement){
-          console.log(" 11 result", logement)
-          this.action='add'
-          this.title="Ajouter un logement"
-          this.$bvModal.hide('logementForm')
-          this.logement=null
+        editSuccessfull(){
+          this.action='add';
+          this.title="Ajouter un logement";
+          this.$bvModal.hide('logementForm');
+          this.logement=null;
           this.getHousing(false);
           /*this.showOverlay=true;
           this.logements = this.renameLogements(this.logements, logement);
@@ -376,7 +376,14 @@ export default {
     //recupération de la liste des logements
     async getHousing(begin) {
         this.showOverlay = true;
-        this.logements = this.trueLogements = await axios.get("logements").then(response => response.result || []);
+        if(storage.get('logements')!= null && storage.get('logements').length>0){
+          console.log('entrée 1 pas de requète en bd')
+          this.logements = this.trueLogements=storage.get('logements')
+        }else{
+          console.log('entrée 2 requète en bd')
+          this.logements = this.trueLogements = await axios.get("logements").then(response => response.result || []);
+          storage.set('logements',this.logements)
+        }
         this.showOverlay = false;
       
         if (begin !== false) {

@@ -115,7 +115,7 @@
     <!--MODAL POUR AJOUTER OU MODIFIER UNE DEPENSE-->
     <b-modal id="depenseForm" size="lg" hide-footer no-close-on-backdrop>
         <template #modal-title>
-          <span class="ml-4 text-form-annone">{{ title }}</span>
+          <span class="ml-4 text-form-depense">{{ title }}</span>
         </template>
         <div>
             <depense-form @depenseAdded="pushDepense" :action="action" />
@@ -261,7 +261,7 @@ export default {
 };
 </script>
 <style scoped>
-.text-form-annone {
+.text-form-depense {
     font-size: 1.3em;
     color: #212121ef;
     font-weight: 800;

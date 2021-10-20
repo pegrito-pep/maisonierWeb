@@ -21,14 +21,18 @@
                 </div>
                 <div class="separator mb-20"></div>
                 <b-overlay :show="showOverlay" rounded="sm">
-                    <b-alert variant="info" class="text-center" show v-if="!articles.length">
+                    <b-alert variant="info" class="text-center" show v-if="!articles.length && source == 1">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
                         <span class="h4 d-inline-flex ml-2">Aucun article crée pour le moment</span>
                         <br>
                         <b-button size="lg" class="my-2" variant="outline-info" :disabled="submitted" @click="generateArticles">Générer des articles automatiquement <b-spinner v-if="submitted" small /></b-button>
                         <p>Un article est une disposition d'un texte législatif qui a pour objet d'énoncer une règle de droit ou qui en indique les éléments 
                         ou les modalités d'application. Un article de loi peut contenir une règle de droit absolue, impérative ou supplétive</p>
-                    </b-alert> 
+                    </b-alert>
+                    <b-alert variant="info" class="text-center" show v-if="!articles.length && source == 2">
+                        <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
+                        <span class="h4 d-inline-flex ml-2">Aucun résultat trouvé</span>
+                    </b-alert>  
                     <b-row v-else class="layout-wrap">
                         <b-col v-for="(article, i) in items" :key="article.idArticle || i" xl="3" lg="4" cols="12" sm="6" class="animated flipInX mb-4">
                             <app-article @makeUpdate="updateArticle" @deleted="removeArticle" :article="article" @showDetails="showDetails" />
@@ -111,11 +115,13 @@ export default {
             action: '',
             titreArticle: '', numArticle: '', idArticle: '',rubriques:[]
         },
-        submitted: false
+        submitted: false,
+        source:1
     }),
     watch: {
         search(value) {
             if (!php.empty(value)) {
+                this.source=2
                 this.articles = this.trueArticles.filter(elt => elt.titreArticle.toLowerCase().includes(value.toLowerCase()))
             }
             else {
@@ -203,6 +209,7 @@ export default {
                     this.articles = this.addNewArticle(this.articles, response.result)
                     this.trueArticles = this.addNewArticle(this.trueArticles, response.result)
                     this.$bvModal.hide('modal-article')
+                    storage.set('articles',null);
                     return App.notifySuccess(response.message)
                 }).catch(error => {
                     App.notifyError(error.message)
@@ -219,6 +226,7 @@ export default {
                     this.articles = this.renameArticle(this.articles, this.modal)
                     this.trueArticles = this.renameArticle(this.trueArticles, this.modal)
                     this.$bvModal.hide('modal-article')
+                    storage.set('articles',null);
                     return App.notifySuccess(response.message)
                 }).catch(error => {
                     this.modal.submitted = false 

@@ -52,7 +52,7 @@
                     </div>  
                 </div> 
                  <div v-show="section == 'add-depense'">
-                    <depense-form :cite="cite"  @depenseAdded="addedDepense" :provenance="provenance"/>
+                    <depense-form :cite="cite"  @depenseAdded="addedDepense" :provenance="provenance" :action="action"/>
                 </div>
             </div>
         </div>
@@ -100,7 +100,7 @@ export default {
         provenance:"2",
         
         //données manipulées pour l'ajout d'une dépense
-        action:""
+        action:"add"
     }),
    mounted() {
         this.section =  'batiments'
