@@ -1,21 +1,21 @@
 <template>
-  <div class="container-fluid">
+  <div class="container-fluid position-relative">
+      
     <!--page header start -->
-    <page-description title="Occupations" description="Gestion de vos occupations" icon="fas fa-users" :path="['Gestion Immobilière', 'Mes Occupations']" />
         <div class="row">
             <div class="col-md-12">
                 <div class="mb-2 clearfix">
                     <div class="collapse d-md-block display-options" id="displayOptions">               
                         <div class="d-block d-md-inline-block">
-                            <div class="search-sm d-inline-block float-md-left mr-1 mb-1 align-top">
-                                <form action="" onSubmit="return false">
-                                    <input type="text" class="form-control" placeholder="Recherche..." v-model="search">
-                                    <button type="submit" class="btn btn-icon"><i class="ik ik-search"></i></button>
-                                </form>
-                            </div>
+                            <SearchForm v-model="search" />
                         </div>
-                        <div class="float-md-right">
-                            <b-button variant="danger" v-b-modal.occupationForm><i class="fa fa-plus-circle"></i> Définir une occupation</b-button>
+                        <div class="d-flex align-items-center justify-content-end">
+                            <btnAdd  message="Définir une occupation" v-b-modal.occupationForm/>
+                            <b-button-group  class="mt-n1">
+                                <b-button variant="outline-light" class="text-danger" @click.prevent="goTo('prev')"><i class="fa fa-2x fa-chevron-left"></i></b-button>
+                                <b-button variant="outline-light" class="text-danger" @click.prevent="goTo('next')"><i class="fa fa-2x fa-chevron-right"></i></b-button>
+                                <b-button variant="outline-light" class="text-danger" @click.prevent="toogleList"><i class="fa fa-2x fa-list-alt" id="toogleList"></i></b-button>
+                            </b-button-group>
                         </div>
                     </div>
                 </div>
@@ -25,78 +25,70 @@
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
                         <span class="h4 d-inline-flex ml-2">Vous n'avez défini aucune occupation pour le moment</span>
                     </b-alert> 
-                    <b-row v-else>
-                        <div class="card-body">
-                            <b-table-simple hover small responsive>
-                                <b-thead head-variant="light">
-                                    <b-tr>
-                                        <b-th>N°</b-th>
-                                        <b-th>Logement</b-th>
-                                        <b-th>Locataire</b-th>
-                                        <b-th>Loyer de base</b-th>
-                                        <b-th>Action</b-th>
-                                    </b-tr>
-                                </b-thead>
-                                <b-tbody>
-                                    <b-tr v-for="occupation in occupations" :key="occupation.idOccupation">
-                                        <b-td class="p-2">{{ occupation.idOccupation }}</b-td>
-                                        <b-td class="p-2">
-                                            <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.logement.refLogement }}</span>    
-                                            <span class="d-inline-block w-100 mt-1 text-muted">
-                                                {{ occupation.logement.sousTypeLogement.libelleSousType  }}
-                                                <span v-if="occupation.logement.batiment"> / Batiment : {{ occupation.logement.batiment.nomBatiment }}</span>
-                                            </span>    
-                                        </b-td>
-                                        <b-td class="p-2">
-                                            <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.locataire.titre + ' ' + occupation.locataire.nomLocataire + ' ' + occupation.locataire.prenomLocataire }}</span>    
-                                            <span class="d-inline-block w-100 mt-1 text-muted">{{ occupation.locataire.tel + ' / ' + occupation.locataire.email }}</span>    
-                                        </b-td>
-                                        <b-td class="p-2">
-                                            <span class="d-inline-block w-100 mb-1"><b>{{ occupation.loyerBase + ' F' }}</b> / <small>{{ occupation.modePaiement }}</small></span>    
-                                            <span class="d-inline-block w-100 mt-1">
-                                                <span class="text-success" v-if="occupation.dateFin == null">Bail en cours</span>
-                                                <span class="text-danger" v-else>Bail terminé</span>
-                                            </span>    
-                                        </b-td>
-                                        <b-td><b-button :to="{name: 'details-occupation', params: {id: occupation.idOccupation}}" v-b-tooltip="'Voir les details'"><i class="fa fa-eye"></i></b-button></b-td>
-                                    </b-tr>
-                                </b-tbody>
-                            </b-table-simple>
-                        </div>
-                    </b-row>
-                    <paginator hr="top" :offset="offset" :total="occupations.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" />                   
+                    <div v-else>
+                        <occupation :occupation="occupation" @change="getOccupations"/>
+                    </div>
                 </b-overlay>
             </div>
-        </div>
-        <!-- MODALE POUR AFFICHER LES DETAILS D'UNE OCCUPATION -->
-        <div v-if="occupation" class="modal fade edit-layout-modal" id="editLayoutItem" tabindex="-1" role="dialog" aria-labelledby="editLayoutItemLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editLayoutItemLabel">Détails de <b>{{ habitant.titre }}</b> <b>{{ habitant.nomLocataire }}</b></h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div>
-                    <div class="modal-body pt-2">
-                        <!-- <details-habitant :habitant="habitant" /> -->
-                    </div>
+
+            <div id="mySidenav" class="occupations-sidenav py-2">
+                <h5 class="text-center text-white border-bottom py-1">Occupations disponibles</h5>
+                <form action="" class="container" onSubmit="return false">
+                    <b-form-input placeholder="Recherche..." v-model="search" />
+                </form>
+                <b-container class="my-2" style="height: 76%; overflow-y: auto">
+                    <b-list-group>
+                        <b-list-group-item class="mb-1 p-1" :class="{'active' : item.idOccupation == occupation.idOccupation}" v-for="(item, i) in items" :key="item.idOccupation || i" @click.prevent="selectLogement(item)">
+                            <dl class="d-flex m-0">
+                                <dt class="pl-1 col-1"><i class="fa fa-home"></i></dt>
+                                <dd class="col-11 pl-1 truncate">{{ item.logement.refLogement }} / <span class="text-muted small">{{ item.logement.sousTypeLogement.libelleSousType }}</span></dd>
+                            </dl>
+                            <dl class="d-flex m-0">
+                                <dt class="pl-1 col-1"><i class="fa fa-user"></i></dt>
+                                <dd class="col-11 pl-1 truncate">{{ item.locataire.titre + ' ' + item.locataire.nomLocataire + ' ' + item.locataire.prenomLocataire }}</dd>
+                            </dl>
+                            <div class="text-center">
+                                <span class="small text-success" v-if="item.dateFin == null">Bail en cours</span>
+                                <span class="small text-danger" v-else>Bail terminé le {{ $date(occupation.dateFin).format('DD MMMM YYYY') }}</span>
+                            </div>
+                        </b-list-group-item>
+                    </b-list-group>
+                </b-container>
+                <div class="d-flex justify-content-center w-100">
+                    <paginator no-control :offset="offset" :total="occupations.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" />
                 </div>
             </div>
         </div>
+        <!-- MODALE POUR AFFICHER LES DETAILS D'UNE OCCUPATION -->
+        
      
         <!--MODAL POUR AJOUTER OU MODIFIER UNE OCCUPATION-->
-        <b-modal id="occupationForm" size="lg" hide-footer no-close-on-backdrop>
+        <!--<b-modal id="occupationForm" size="lg" hide-footer no-close-on-backdrop>
             <template #modal-title>
             <span class="ml-4 text-form-occupation">{{ title }}</span>
             </template>
             <div>
-                <occupation-form @occupationAdded="addedOccupation" :action="action" :provenance="provenance"/>
+                <occupation-form class="animated flipInX" @occupationAdded="addedOccupation" :action="action" :provenance="provenance" @createLogementSecond="goToLogement" @createLocataire="gotToLocataire"/>
+            </div>
+        </b-modal>-->
+        
+        <!--MODAL POUR AJOUTER OU MODIFIER UN LOGEMENT-->
+        <b-modal id="occupationForm" ref="occupation-form" size="lg" :title="title" ok-title="Fermer" ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
+            <template #modal-title>
+                <span class="ml-4 text-form-occupation">{{ title }}</span>
+            </template>
+            <div>
+                <occupation-form  @occupationAdded="addedOccupation" :action="action" :provenance="provenance"   @createLogementSecond="goToLogement" @createLocataire="gotToLocataire"/>
             </div>
         </b-modal>
   </div>
 </template>
 <script>
-  import OccupationForm from "@/components/_gestion-immobiliere/OccupationForm.vue";
-//   import DetailsOccupation from '@/components/_patrimoine/DetailsOccupation.vue'
+  //import OccupationForm from "@/components/_gestion-immobiliere/OccupationForm.vue";
+  import OccupationForm from "@/views/gestion-immobiliere/occupations/OccupationForm.vue";
+
+import Occupation from './occupations/Occupation.vue';
+import SearchForm from "@/components/parts/SearchForm.vue";
 
   const php  = require ( 'phpjs' ) ; 
 
@@ -105,6 +97,8 @@ export default {
   components: {
       OccupationForm,
   //  DetailsOccupation,
+    Occupation,
+    SearchForm,
   },
   data: () => ({
      title:"Affecter une occupation",
@@ -112,14 +106,14 @@ export default {
      search: null,
      showOverlay: true,
      currentPage: 1,
-     perPage: 4,
+     perPage: 10,
      occupation: null,
      occupations:[],
      trueOccupations:[],
      provenance:1
 
   }),
-  computed: {
+    computed: {
         /**
          * Elements affichés avec prise en charge de la pagination
          */
@@ -130,13 +124,108 @@ export default {
             return (this.currentPage * this.perPage) - this.perPage
         }
     },
+     watch: {
+        search(value) {
+            value = value.toLowerCase()
+            this.occupations = !php.empty(value) ? this.trueOccupations.filter(elt => {
+                return elt.logement.refLogement.toLowerCase().includes(value) || (elt.locataire.nomLocataire + ' ' + elt.locataire.prenomLocataire).toLowerCase().includes(value)
+            }) : this.trueOccupations
+        }
+    },
 
     beforeMount() {
         this.getOccupations()
     },
+    mounted() {
+        setTimeout(() => {
+            $('#editLayoutItem').modal('hide')
+        }, 100);
+    },
     methods: {
-        sendData(){
-            
+        toogleList() {
+            const btn = $('#toogleList')
+            if (btn.hasClass('fa-list-alt')) {
+                btn.removeClass('fa-list-alt').addClass('fa-times')
+            }
+            else {
+                btn.addClass('fa-list-alt').removeClass('fa-times')
+            }
+            $('#mySidenav').toggleClass('active')
+        },
+
+        goTo(step) {
+            const count = this.occupations.length
+
+            let index = this.occupations.findIndex((elt) => elt.idOccupation == this.occupation.idOccupation)
+            if (step == 'prev') {
+                index--
+            }
+            else {
+                index++
+            }
+            if (index >= count) {
+                index = 0
+            }
+            if (index < 0) {
+                index = count - 1
+            }
+            this.selectLogement(this.occupations[index])
+        },
+        selectLogement(occupation) {
+            this.occupation = occupation
+            let href = window.location.href.split('/'), last = href[href.length - 1]
+            if (last == 'occupations') {
+                href.push(this.occupation.idOccupation)
+            }
+            else {
+                href[href.length - 1] = this.occupation.idOccupation
+            }
+            window.history.pushState({}, '', href.join('/'));
+            $('#mySidenav').removeClass('active')
+            $('#toogleList').addClass('fa-list-alt').removeClass('fa-times')
+        },
+        /**
+        * affichage directe de l'occupation demandé
+        * source="detailLogement"
+        */
+    autoDetailsTarget() {
+      const target = this.$route.query.target || null;
+      if (target) {
+          console.log("occupation n", target)
+        /*const logement = this.trueLogements.filter(
+          elt => elt.idLogement == target
+        )[0];
+        if (logement) {
+          this.showDetails(logement);
+          window.history.replaceState(
+            {},
+            "",
+            window.location.href.split("?")[0]
+          );
+        }*/
+        window.history.pushState({}, '', '/'+target);
+      }
+    },
+      
+        /**ecoute évènement émis;
+        * fermetire formulmaire de création d'une occupation
+        * redirection vers la création d'un logement
+       */
+        goToLogement(){
+            this.$bvModal.hide('occupationForm');
+            setTimeout(() => {
+                    this.$router.push({name: 'logements', query: {target: "call-logement"}}) 
+                }, 50);
+        },
+        /**ecoute évènement émis;
+        * fermetire formulmaire de création d'une occupation
+        * redirection vers la création d'un locataire
+       */
+        gotToLocataire(){
+            this.$bvModal.hide('occupationForm');
+            setTimeout(() => {
+                     this.$router.push({name: 'habitants', query: {target: "call-habitant"}}) 
+                }, 50);
         },
         addedOccupation(){
             this.getOccupations()
@@ -146,7 +235,13 @@ export default {
      getOccupations() {
             axios.get('occupations').then(response => response.result || []).then(occupations => {
                 this.occupations = this.trueOccupations = occupations
+                let index = occupations.findIndex(elt => elt.idOccupation == this.$route.params.id)
+                if (index == -1) {
+                    index = 0
+                }
+                this.occupation = occupations[index] || {}
                 this.showOverlay = false
+                this.autoDetailsTarget()
             })
      },
      updateOccupation(occupation) {
@@ -175,7 +270,13 @@ export default {
 
 };
 </script>
+<style>
+html, body {
+    overflow-x: hidden;
+}
+</style>
 <style scoped>
+
     .text-form-occupation {
         font-size: 1.3em;
         color: #212121ef;
@@ -183,4 +284,33 @@ export default {
         text-align: center;
         margin-top: 2px;
     }
+    .occupations-sidenav {
+        height: 45em;
+        border-radius: 5px 0 0 5px;
+        width: 0;
+        position: absolute;
+        z-index: 100;
+        top: 5%;
+        right: 0;
+        background-color: #111;
+        overflow: hidden;
+        transition: 0.5s;
+    }
+    .occupations-sidenav.active {
+        width: 300px
+    }
+    .occupations-sidenav .list-group-item:hover {
+        cursor: pointer;
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+
+
+.occupations-sidenav a:hover {
+  color: #f1f1f1;
+}
+
+@media screen and (max-height: 450px) {
+  .occupations-sidenav {padding-top: 15px;}
+  .occupations-sidenav a {font-size: 18px;}
+}
 </style>

@@ -1,284 +1,221 @@
 <template>
-<div class="container-fluid">
-<!-- page hearder start -->
-    <page-description title="Modèle de contrats" description="Gestion de  vos modèles contrat de baux " icon="file-signature" :path="['Configuration et aide ', 'Mes Modèles de Contrats']" />
-      <div class="row">
-            <div class="col-md-12">
-                <div class="mb-2 clearfix">
-                    <div class="collapse d-md-block display-options" id="displayOptions">               
-                        <div class="d-block d-md-inline-block">
-                            <div class="search-sm d-inline-block float-md-left mr-1 mb-1 align-top">
-                                <form action="" onSubmit="return false">
-                                    <input type="text" class="form-control" placeholder="Recherche..." v-model="search">
-                                    <button type="submit" class="btn btn-icon"><i class="ik ik-search"></i></button>
-                                </form>
-                            </div>
-                        </div>
-                        <!--<div class="float-md-right">
-                            <b-button variant="danger" @click.prevent="() => {modal.action = 'add'; $bvModal.show('contrat-modal'),getArticle()}"><i class="fa fa-plus-circle"></i> Nouveau Modèle</b-button>
-                        </div>-->
-                        <div class="float-md-right">
-                            <b-button variant="danger" @click.prevent="callContratForm" v-b-modal.modal-contrat-form>
-                                <i class="fa fa-plus-circle"></i> Ajouter un modèle de contrat
-                            </b-button>
-                        </div>
-                    </div>
-                </div>
-                <div class="separator mb-20"></div>
-                <b-overlay :show="showOverlay" rounded="sm">
-                    <b-alert variant="info" class="text-center" show v-if="!contrats.length">
+    <div>
+        <b-col md="12">
+            <div class="ContratcontainerMessage" v-if="definition">
+                <span class="bonjour ">
+                    Un contrat de bail ou un contrat de location est le contrat par lequel l'une des parties (appelée bailleur) s'engage, moyennant un prix (le loyer) que 
+                    l'autre partie (appelée preneur) s'oblige à payer, à procurer à celle-ci, pendant un certain temps, la jouissance d'une chose mobilière ou immobilière.
+                </span>
+            </div>
+        </b-col>
+          <b-alert variant="info" class="text-center" show v-if="!contrats.length && source == 2">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                        <span class="h4 d-inline-flex ml-2">Aucun modèle de contrat défini pour le moment</span>
-                        <p>Le contrat est définit usuellement comme un accord entre deux ou plusieurs volontés en vue de faire naître des effets de droit</p>
-                    </b-alert> 
+                        <span class="h4 d-inline-flex ml-2">Aucun résultat trouvé</span>
+                    </b-alert>  
                     <b-row v-else class="layout-wrap">
-                        <b-col v-for="(contrat, i) in items" :key="contrat.idContrat || i" xl="3" lg="4" cols="12" sm="6" class="animated flipInX mb-4">
-                            <contrat @makeUpdate="updateArticle"  :contrat="contrat" @showDetails="showDetails" />
+                        <b-col v-for="(contrat, i) in items" :key="contrat.id || i" xl="3" lg="4" cols="12" sm="6" class="animated flipInX mb-4">
+                            <!-- <app-article @makeUpdate="updateArticle" @deleted="removeArticle" :article="article" @showDetails="showDetails" /> -->
+                            <app-contrat :contrat="contrat"  @showDetails="showDetails" />
                         </b-col>
                     </b-row>
-                    <paginator hr="top" :offset="offset" :total="contrats.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" />                   
-                </b-overlay>
-            </div>
-      </div>
-      <b-modal id="modal-contrat-form" size="xl" :header-bg-variant="headerBgVariant" ref="contrat-modal"  :header-text-variant="headerTextVariant" title="Ajouter un Modèle de contrat" ok-title="Fermer"  ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
-            <div>
-                <contrat-form @newModeleContratAdded="addedContrat"/>
-            </div>
-     </b-modal>
-</div>
-</template>
 
+         <!-- MODALE POUR AFFICHER LES DETAILS D'UN ARTICLE -->
+        <div v-if="contrat" class="modal fade edit-layout-modal" id="editLayoutItem" tabindex="-1" role="dialog" aria-labelledby="editLayoutItemLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editLayoutItemLabel">Visuel contrat : <b> {{contrat.typeContrat}} </b>.</h5>
+                        <b-button variant="danger" @click="editTemplate = !editTemplate"><i class="fa fa-plus-circle"></i> Editer</b-button>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body pt-2">
+                        <div v-if="editTemplate">
+                            <button @click="execCmd('bold')"><i class="fa fa-bold"></i></button>
+                            <button @click="execCmd('italic')"><i class="fa fa-italic"></i></button>
+                            <button @click="execCmd('underline')"><i class="fa fa-underline"></i></button>
+                            <button @click="execCmd('strikethrough')"><i class="fa fa-strikethrough"></i></button>
+                            <button @click="execCmd('justifyLeft')"><i class="fa fa-align-left"></i></button>
+                            <button @click="execCmd('justifyCenter')"><i class="fa fa-align-center"></i></button>
+                            <button @click="execCmd('justifyRight')"><i class="fa fa-align-right"></i></button>
+                            <button @click="execCmd('justifySlash')"><i class="fa fa-align-slash"></i></button>
+                            <button @click="execCmd('justifyFull')"><i class="fa fa-align-justify"></i></button>
+                            <button @click="execCmd('cut')"><i class="fa fa-cut"></i></button>
+                            <button @click="execCmd('copy')"><i class="fa fa-copy"></i></button>
+                            <button @click="execCmd('indent')"><i class="fa fa-indent"></i></button>
+                            <button @click="execCmd('outdent')"><i class="fa fa-dedent"></i></button>
+                            <button @click="execCmd('subscript')"><i class="fa fa-subscript"></i></button>
+                            <button @click="execCmd('superscript')"><i class="fa fa-superscript"></i></button>
+                            <button @click="execCmd('undo')"><i class="fa fa-undo"></i></button>
+                            <button @click="execCmd('redo')"><i class="fa fa-redo"></i></button>
+                            <button @click="execCmd('repeat')"><i class="fa fa-repeat"></i></button>
+                            <button @click="execCmd('insertUnorderedList')"><i class="fa fa-list-ul"></i></button>
+                            <button @click="execCmd('insertOrderedList')"><i class="fa fa-list-ol"></i></button>
+                            <button @click="execCmd('insertParagraph')"><i class="fa fa-paragraph"></i></button>
+                            <select @click="execCommandWithArg('formatBlock',this.value)">
+                            <option value="H1">H1</option>
+                            <option value="H2">H2</option>
+                            <option value="H3">H3</option>
+                            <option value="H4">H4</option>
+                            <option value="H5">H5</option>
+                            <option value="H6">H6</option>
+                            </select>
+                            <button @click="execCmd('insertHorizontalRule')">HR</button>
+                            <br>
+                            <br>
+                            <button @click="toggleSource()"><i class="fa fa-code"></i></button>
+                            <button @click="toggleEdit()">Enable Edit </button>
+                            <select @click="execCommandWithArg('formatName',this.value)">
+                            <option value="Arial">Arial</option>
+                            <option value="Comic Sans MS">Comic Sans MS</option>
+                            <option value="Courier">Courier</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Tahoma">Tahoma</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            </select>
+                            <select @click="execCommandWithArg('formatSize',this.value)">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            </select>
+                            Color : <input type="color" onchange="execCommandWithArg('foreColor',this.value)">
+                            background: <input type="color" @click="execCommandWithArg('hiliteColor',this.value)">
+                            <button @click="execCmd('selectAll')">Select All </button>
+
+                        </div>
+                        <iframe name="richTextField" style="width: 21cm;height: 29.7cm;" ></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
 <script>
 
-// Je renome le composant Cite en AppCite parcequ'il existe une balise <cite>. Du coup le composant n'allait pas etre prise en compte
-import Contrat from '@/components/_configuration-aide/Contrat.vue';
+    import AppContrat from '@/components/_configuration-aide/Contrat.vue'
+    const php  = require ( 'phpjs' ) ; 
 
-import ContratForm from "@/views/configuration-aide/contratForm.vue";
-
-
-const php  = require ( 'phpjs' ) ; 
-
-export default {
-    name: 'Contrats',
-    components: {
-        Contrat,
-        ContratForm
-    },
-    computed: {
-        /**
-         * Elements affichés avec prise en charge de la pagination
-         */
-        items() { 
-            return php.array_slice(this.contrats, this.offset, this.perPage) 
+    export default {
+        components: {
+            AppContrat,
         },
-        offset() {
-            return (this.currentPage * this.perPage) - this.perPage
-        }
-    },
-    data: () => ({
-        contrats: [],
-        trueContrats: [],
-        articles:[],
-        selectArcticle:[],
-
-
-        showOverlay: true,
-        contrat: null,
-        currentPage: 1,
-        itemTextShow:'',
-        text:'lqdmfdqf',
-        headerBgVariant: 'dark',
-        headerTextVariant: 'light',
-        ListItem:[],
-        perPage: 10,
-        search: null,
-          modal: {
-            action: '',
-            nom: '', ref: '', idCite: ''
-        },
-    }),
-    watch: {
-        search(value) {
-            if (!php.empty(value)) {
-                this.contrats = this.trueContrats.filter(elt => elt.nomCite.toLowerCase().includes(value.toLowerCase()))
-            }
-            else {
-                this.contrats = this.trueContrats
-            }
-        }
-    },
-    // created(){
-    //     this.getArticle()
-    // },
-    async beforeMount() {
-        await this.getContrats()
-        await this.getData()
-    },
-    mounted(){
-       
-    },
-    methods: {
-            //recupération du dernier modèle de contrat ajouté
-            addedContrat(){
-                this.getContrats();
-                this.$bvModal.hide('modal-contrat-form')
-            },
-            //methode de récupération des logements et des batiments
-        async getData(){
-            let batiments=[]; let logements=[];
-            try {
-                batiments=await axios.get("batiments").then(response =>response.result);
-                storage.set('batiments', batiments)
-            } catch (error) {
-                console.log(error)
-            }
-            try {
-                logements=await axios.get("logements").then(response => response.result);
-                storage.set('logements', logements)
-            } catch (error) {
-                console.log(error)
+        data (){
+            return {
+                templateContrat: [],
+                definition:false,
+                showOverlay:true,
+                contrats:[],
+                trueContrats:[],
+                contrat:null,
+                editTemplate:false
             }
         },
-        /**
-         * appel du formulaire d'ajout/edit d'un modèle de contrat
-         */
-        callContratForm(){
-            this.commandeContrat = true;
-        },
-        /**
-            * reception de l'évènement émis de fermeture du modal d'ajout d'un logement
-            * ceci permet de re-initialiser le composant(formwizard) d'ajout d'un logement de manière appropriée
-        */
-        onCloseSet() {
-            this.commandeContrat = false;
-        },
-               /**
-         * Recupere les modèle de contrats au backend
-         */
-        async getContrats() {
-           try {
-                this.contrats=await axios.get("modeles-contrats").then(response =>response.result);
-            } catch (error) {
-                console.log(error)
-            }
-            this.showOverlay=false;
-        },
-        onComplete(){
-            let data = {
-                libelle: this.modelContrat.libele,
-                titre: this.modelContrat.title,
-                rubriques: []
-            }
-            this.selectArcticle.forEach(elt => {
-                data.rubriques = php.array_merge(data.rubriques, elt.rubriques.map(e => e.idRubrique))
-            })
-            console.log(data)
-            axios.post("modeles-contrats",data).then(response => {
-                if(response.success){
-                    this.getContrats()
-                }
-            }).catch(error => {
-                console.log(error.response)
-            })
-        },
-        Rubrique(item){
-            console.log(item)
-            let selectionner = this.articles.filter(y => y.idArticle === item.idArticle)[0]
-            if (!this.articleIsSelected(selectionner.idArticle)) {
-                this.selectArcticle.push({
-                    idArticle: selectionner.idArticle,
-                    title: selectionner.titreArticle,
-                    rubriques: [item]
-                })
-            }
-            else {
-                this.selectArcticle = this.selectArcticle.map(elt => {
-                    if (elt.idArticle == selectionner.idArticle) {
-                        elt.rubriques.push(item)
-                    }
-                    return elt;
-                })
-            }
-
-            console.log(this.selectArcticle)
-        },
-
-        articleIsSelected(idArticle) {
-            return this.selectArcticle.filter(elt => elt.idArticle == idArticle).length > 0
-        },
-           showDetails(contrat) {
-            this.contrat = contrat
+        created(){
+            this.definition = true
             setTimeout(() => {
-                $('#editLayoutItem').modal('show')
-                $('#editLayoutItem').on('hide.bs.modal', (e) => {
-                    this.contrat = null
-                })
-                $('#editLayoutItem').on('hidden.bs.modal', (e) => {
-                    this.contrat = null
-                })
-            }, 100)          
+                let define = document.querySelector(".ContratcontainerMessage")
+                define.classList.add("activeDefinition")
+                console.log(define)
+                var tabelaContent = document.querySelector(".ContratcontainerMessage").innerHTML;
+                console.log(tabelaContent)
+                
+            }, 500);
+
+            setTimeout(() => {
+                let define = document.querySelector(".ContratcontainerMessage")
+                define.classList.remove("activeDefinition")
+                this.definition = false
+            }, 3500);
+            
         },
-
-
-
-       /**
-        * this function is for set up the different item on the for step 
-       */
-      setItems(n){
-        this.ListItem =document.querySelectorAll(".items")
-        console.log(this.ListItem)
-        for (let index = 0; index < this.ListItem.length; index++) {
-          this.ListItem[index].classList.remove("active")
+            computed: {
+                /**
+                 * Elements affichés avec prise en charge de la pagination
+                 */
+                items() { 
+                    return php.array_slice(this.contrats, this.offset, this.perPage) 
+                },
+                offset() {
+                    return (this.currentPage * this.perPage) - this.perPage
+                }
+            },
+        methods:{
+            /**
+             * Affiche les details d'un element
+            * 
+            * @param {Object} contrat
+            */
+            showDetails(contrat) {
+                this.contrat = contrat
+                setTimeout(() => {
+                    $('#editLayoutItem').modal('show')
+                    $('#editLayoutItem').on('hide.bs.modal', (e) => {
+                        this.contrat = null
+                    })
+                    $('#editLayoutItem').on('hidden.bs.modal', (e) => {
+                        this.contrat = null
+                    })
+                    this.enableEditMode()
+                }, 100)          
+            },
+            enableEditMode(){
+                richTextField.document.designMode = 'On'
+            },
+             execCmd(element){
+                richTextField.document.execCommand(element,false, null)
+            }
+        },
+        mounted(){
+            this.contrats = this.trueContrats = JSON.parse(localStorage.getItem("contrats"))
+            this.showOverlay = false
         }
-        this.ListItem[n].classList.add("active")
-
-      },
-       defaultBtnActive(){
-         const defaultBtn = document.querySelector("#default-btn");
-        defaultBtn.click();
-    },
-
-      updateArticle(article) {
-            this.modal = {
-                action: 'edit',
-                titreArticle: article.titreArticle, numArticle: article.numArticle, idCite: article.idArticle
-            }
-            this.$bvModal.show('modal-cite')
-        },
-
-
-
-        romanize (num) {
-            if (!+num) {
-                return false;
-            }
-            var	digits = String(+num).split(""),
-                key = ["","C","CC","CCC","CD","D","DC","DCC","DCCC","CM",
-                    "","X","XX","XXX","XL","L","LX","LXX","LXXX","XC",
-                    "","I","II","III","IV","V","VI","VII","VIII","IX"],
-                roman = "",
-                i = 3;
-            while (i--) {
-                roman = (key[+digits.pop() + (i * 10)] || "") + roman;
-            }
-            return Array(+digits.join("") + 1).join("M") + roman;
-        },
-
-    },
-}
+    }
 </script>
 <style>
-
-
-@media screen and (max-width: 400px) {
-   #ListItemsContrat { 
-    float: none;
-    margin-right:0;
-    width:auto;
-    border:0;
-    border-bottom:2px solid #000;    
-  }
+.ContratcontainerMessage{
+    height: 180px;
+    background:#0FC286;
+    border-left: 15px solid #0C6D4D;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items:center;
+    font-weight: bold;
+    color: #F0F0F0;
+    font-size: 20px;
+    opacity: 0;
+    transition:  ease-in-out 1.5s;
 }
-</style>>
-
+.activeDefinition{
+    opacity: 1;
+}
+.contratLocationBailContainer{
+    height: 260px;
+    width: 180px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+    padding-top: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.cardImageBailContainer{
+    height: 200px;
+    width: 100%;
+}
+.cardImageBailContainer img{
+    width: 100%;
+    height: 100%;
+}
+.footerBailContainer{
+    background: #191c22;
+    height: 50px;
+    width: 100%;
+    border-left: #f5365c solid;
+    border-right: #f5365c solid;
+    color: #fff;
+    text-align: center;
+    font-size: 12px;
+    padding: 5px;
+}
 </style>

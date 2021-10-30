@@ -1,18 +1,12 @@
 <template>
   <div class="container-fluid">
     <!--page header start -->
-    <page-description title="Rélévés d'indexes" description="Rélévés des indexes d'eau et d'énergie" icon="clipboard-list" :path="['Finance', 'Rélévés d\'indexes']" />
         <div class="row">
             <div class="col-md-12">
                 <div class="mb-2 clearfix">
                     <div class="collapse d-md-block display-options" id="displayOptions">               
                         <div class="d-block d-md-inline-block">
-                            <div class="search-sm d-inline-block float-md-left mr-1 mb-1 align-top">
-                                <form action="" onSubmit="return false">
-                                    <input type="text" class="form-control" placeholder="Recherche..." v-model="search">
-                                    <button type="submit" class="btn btn-icon"><i class="ik ik-search"></i></button>
-                                </form>
-                            </div>
+                            <SearchForm v-model="search" />
                         </div>
                         <div class="float-md-right">
                             <div class="d-flex ">
@@ -96,10 +90,14 @@
   </div>
 </template>
 <script>
-  const php  = require ( 'phpjs' ) ; 
+    import SearchForm from "@/components/parts/SearchForm.vue";
+    const php  = require ( 'phpjs' ) ; 
 
 export default {
   name: "releves-indexes",
+  components: {
+      SearchForm,
+  },
   data: () => ({
     search: null,
     showOverlay: true,
@@ -222,10 +220,9 @@ export default {
             let periodePassee = this.$dayjs(periode).subtract(1, 'month').format('YYYY-MM')+'-01'
 
             return logements.map(elt => {
-                let indexesCourants = elt.indexes.filter(e => this.$dayjs(periode).diff(e.periode, 'month') == 0),
+                let indexesCourants = elt.indexes.filter(e => this.$dayjs(periode).diff(e.periode, 'month') == 0).sort((a, b) => b.idIndexe - a.idIndexe),
                     iEau = indexesCourants.find(e => e.typeIndexe == 'eau'),
                     iEnergie = indexesCourants.find(e => e.typeIndexe == 'energie')
-                  
                 elt.indexeMois = {
                     eau: php.empty(iEau) ? null : iEau.nouveau,
                     energie: php.empty(iEnergie) ? null: iEnergie.nouveau

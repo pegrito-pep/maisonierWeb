@@ -38,6 +38,7 @@ import 'vue-img-inputer/dist/index.css'
 Vue.component('img-inputer', ImgInputer)
 
 
+
 import * as VueGoogleMaps from 'vue2-google-maps'
 Vue.use(VueGoogleMaps, {
     load: { key: 'AIzaSyB4wnGV-GeVMiv-_yT2qO_iKyaM_bMGX7w' }

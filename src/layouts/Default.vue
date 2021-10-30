@@ -23,13 +23,17 @@ import FullFeatures from '@/components/templates/FullFeatures.vue'
 import Vue from 'vue'
 
 import PageDescription from '@/components/templates/PageDescription.vue'
+import BtnAdd from '@/components/templates/btn.vue'
 import Paginator from '@/components/Paginator.vue'
 Vue.component('PageDescription', PageDescription)
+Vue.component('BtnAdd', BtnAdd)
 Vue.component('Paginator', Paginator)
 
 import VueRepeater from 'vue-repeater'
 import 'vue-repeater/dist/lib/vue-repeater.css'
 Vue.component('vue-repeater', VueRepeater)
+
+const php = require('phpjs')
 
 export default {
     name: 'DefaultLayout',
@@ -39,15 +43,24 @@ export default {
         AppFooter,
         FullFeatures
     },
-    created() {
-        const token = storage.get('access_token')
-        if (token && token != null && token != '') {
-            axios.get(`utilisateurs/${token}`).then(response => response.result).then(user => {
+    async created() {
+        if (php.empty(this.$store.state.user.nom)) {
+            let user = storage.get('user') 
+            if (php.empty(user)) {
+                const token = storage.get('access_token')
+                if (token && token != null && token != '') {
+                    try {
+                        user = await axios.get(`utilisateurs/${token}`).then(response => response.result)
+                        storage.set('user', user)
+                    } catch (error) {
+                         // storage.clear()
+                        // this.$router.push({name: 'login'})
+                    }
+                }
+            }
+            if (!php.empty(user)) {
                 this.$store.dispatch('user', user)
-            }).catch(error => {
-                storage.clear()
-                this.$router.push({name: 'login'})
-            })
+            }
         }
   	},
     mounted() {
@@ -55,6 +68,7 @@ export default {
     },
     updated() {
 		this.activeSidebarItem()
+        console.log('updqted');
 	},
 	methods: {
 		/**

@@ -45,7 +45,7 @@
                         <div style="height: 90%; overflow-y: auto; overflow-x: hidden">
                             <b-row class="layout-wrap">
                                 <b-col v-for="(depense, i) in itemsDepenses" :key="depense.idDepense || i" cols="6">
-                                    <depense @deleted="removeDepense" :depense="depense" :source="source" is-sub />
+                                    <depense @deleted="removeDepense" :depense="depense" is-sub />
                                 </b-col>
                             </b-row>    
                         </div> 
@@ -96,7 +96,7 @@ export default {
 
         currentPage: 1,
         perPage: 10,
-        source:1,
+        source:"2",
         provenance:"2",
         
         //données manipulées pour l'ajout d'une dépense

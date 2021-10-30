@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import ListLogements from '../views/logements/ListLogements.vue'
-
 
 Vue.use(VueRouter)
 
@@ -12,11 +10,6 @@ const routes = [{
         component: Home
     },
     { path: '/', redirect: { name: 'home' } },
-    {
-        path: '/housing',
-        name: 'logements',
-        component: ListLogements
-    },
     {
         path: '/profil',
         name: 'profil',
@@ -59,38 +52,70 @@ const routes = [{
      * Patrimoine immobilier
      */
     {
-        path: '/cites',
-        name: 'cites',
+        path: '/patrimoine',
+        name: 'patrimoine',
         component: () =>
-            import ('@/views/patrimoine/Cites.vue')
+            import ('@/views/patrimoine/patrimoine.vue'),
+        children : [
+            {
+                path: 'batiments',
+                name: 'batiments',
+                component: () =>
+                    import ('@/views/patrimoine/Batiments.vue')
+            },
+            {
+                path: 'cites',
+                name: 'cites',
+                component: () =>
+                    import ('@/views/patrimoine/Cites.vue')
+            },
+            {
+                path: 'logements',
+                name: 'logements',
+                component: () =>
+                    import ('@/views/logements/ListLogements.vue')
+            },
+        ]
     },
-    {
-        path: '/batiments',
-        name: 'batiments',
-        component: () =>
-            import ('@/views/patrimoine/Batiments.vue')
-    },
+    
+
     /**
      * Gestion immobiliere
      */
     {
-        path: '/annonces',
-        name: 'annonces',
+        path: '/gestion',
+        name: 'gestion',
         component: () =>
-            import ('@/views/gestion-immobiliere/annonces/Annonces.vue')
-    },
-    {
-        path: '/habitants',
-        name: 'habitants',
-        component: () =>
-            import ('@/views/gestion-immobiliere/habitants/Habitants.vue')
-    },
-    {
-        path: '/occupations',
-        name: 'occupations',
-        component: () =>
-            import ('@/views/gestion-immobiliere/Occupations.vue')
-    },
+            import ('@/views/gestion-immobiliere/gestion.vue'),
+            children : [
+                {
+                    path: 'annonces',
+                    name: 'annonces',
+                    component: () =>
+                        import ('@/views/gestion-immobiliere/annonces/Annonces.vue')
+                },
+                {
+                    path: 'habitants',
+                    name: 'habitants',
+                    component: () =>
+                        import ('@/views/gestion-immobiliere/habitants/Habitants.vue')
+                },
+                {
+                    path: 'occupations',
+                    name: 'occupations',
+                    component: () =>
+                        import ('@/views/gestion-immobiliere/Occupations.vue')
+                },
+                {
+                    path: 'occupations/:id',
+                    name: 'occupation',
+                    component: () =>
+                        import ('@/views/gestion-immobiliere/Occupations.vue')
+                },
+                
+            ]
+    }
+    ,
     {
         path: '/occupations/:id',
         name: 'details-occupation',
@@ -100,17 +125,33 @@ const routes = [{
      * configuration et aide 
      */
     {
-        path: '/articles',
-        name: 'articles',
+        path: '/configuration',
+        name: 'configuration',
         component: () =>
-            import ('@/views/configuration-aide/article.vue')
+            import ('@/views/configuration-aide/configuration.vue'),
+            children : [
+                {
+                    path: 'articles',
+                    name: 'articles',
+                    component: () =>
+                        import ('@/views/configuration-aide/article.vue')
+                },
+                {
+                    path: 'contrat',
+                    name: 'contrat',
+                    component: () =>
+                        import ('@/views/configuration-aide/contrat.vue')
+                },
+                {
+                    path: 'contrats',
+                    name: 'contrats',
+                    component: () =>
+                        import ('@/views/configuration-aide/Contrats/Contrats.vue')
+                },
+            ]
     },
-    {
-        path: '/contrat',
-        name: 'contrat',
-        component: () =>
-            import ('@/views/configuration-aide/contrat.vue')
-    },
+    
+    
      /**
      * Analyse & stats, depenses
      */
@@ -126,15 +167,24 @@ const routes = [{
      * Finances
      */
     {
-        path: '/indexes',
-        name: 'indexes',
-        component: () => import('@/views/finances/Indexes.vue')
+        path: '/finances',
+        name: 'finances',
+        component: () =>
+            import ('@/views/finances/finances.vue'),
+        children: [
+            
+            {
+                path: 'indexes',
+                name: 'indexes',
+                component: () => import('@/views/finances/Indexes.vue')
+            },
+            {
+                path: 'loyers',
+                name: 'loyers',
+                component: () => import('@/views/finances/Loyers.vue')
+            }
+        ]
     },
-    {
-        path: '/loyers',
-        name: 'loyers',
-        component: () => import('@/views/finances/Loyers.vue')
-    }
 
 ]
 

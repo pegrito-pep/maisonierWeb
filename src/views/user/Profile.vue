@@ -10,8 +10,8 @@
                               <b-img v-bind="mainProps" :src="user.avatar" rounded="circle" alt="Circle image"></b-img>
                             <h4 class="card-title mt-10"><span v-if="user.profil.titre != ''">{{  user.profil.titre+' ' }}</span>{{ user.nom + ' ' + user.prenom }}</h4>
                             <p class="card-subtitle font-weight-bold" :class="user.isCertified ? 'text-succes' : 'text-danger'">{{ user.code }}
-                            <b-button v-if="!user.isCertified" class="btn-icon my-1" variant="warning" id="certified-infos"><i class="fa fa-envelope" aria-hidden="true"></i></b-button></p>
-                             <b-tooltip target="certified-infos" placement="right" noninteractive variant="success"><h4>Certifier mes informations</h4>
+                            <b-button v-if="!user.isCertified" class="btn-icon my-1" variant="warning" id="certified-infos"><i class="ik ik-award" aria-hidden="true"></i></b-button></p>
+                             <b-tooltip target="certified-infos" placement="right" noninteractive variant="danger"><h4>Certifier mes informations</h4>
                              celà consiste à envoyer mes informations pour étude aux administrateurs de la plateforme.
                              Bien vouloir cliquer sur le bouton pour certifier vos infomations</b-tooltip>
                             <div class="row text-center justify-content-md-center">

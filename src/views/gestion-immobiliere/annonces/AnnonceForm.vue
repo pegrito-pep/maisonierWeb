@@ -1,7 +1,8 @@
 <template>
   
     <b-overlay :show="showOverlay" rounded="sm">
-        <b-row>
+      <div v-if="logements.length>0">
+          <b-row>
           <b-col>
             <b-form-group
               label="Titre de l'annonce"
@@ -36,9 +37,6 @@
                 rows="8"
                 v-model="annonce.description"
               ></b-form-textarea>
-              <!--<b-form-checkbox v-model="annonce.publish" switch>
-                <span class="fa-lg">Directement pubier cette annonce ?</span>
-              </b-form-checkbox>-->
             </b-form-group>
           </b-col>
           <b-col cols="5">
@@ -69,8 +67,7 @@
         <b-row>
           <b-col>
             <b-form-checkbox v-model="annonce.publish" switch>
-              <span class="fa-lg" v-if="annonce.publish">Directement pubier cette annonce ?</span>
-              <span class="fa-lg" v-else>Spécifier la durée de validité</span>
+
             </b-form-checkbox>
           </b-col>
           <b-col>
@@ -97,14 +94,30 @@
           </b-row>
         </transition>
         <hr>
-          <div class="float-right"><b-button @click.prevent="submitModal" variant="primary">Valider</b-button></div>
+          <div class="float-right">
+              <b-button variant="danger" @click="submitModal" class="ml-2" :disabled="submitted">Valider <b-spinner v-if="submitted" small /></b-button>   
+            <!--<b-button @click.prevent="submitModal" variant="primary">Valider</b-button>-->
+            
+            </div>
+      </div>
+      <div v-else>
+        <b-row>
+          <div class="text-center">
+            <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
+            <span class="h4 d-inline-flex ml-2">Aucun logement trouvé</span>
+            <br>
+            <b-button size="lg" class="my-2" variant="outline-info" @click.prevent="createLogement">créer un logement</b-button>
+            <p>Une annonce concerne un logement du coup avant de pouvoir en créer une, vous devez préalablemenet creér au moins un logement</p>
+          </div>
+        </b-row>
+      </div>
     </b-overlay>
 </template>
 <script>
 import notif from "@/plugins/notif.js";
 const php = require("phpjs");
 export default {
-  name: "add-annonce",
+  name: "annonce-form",
   data: () => ({
     duree: [null, null],
     selected_index: -1,
@@ -118,17 +131,23 @@ export default {
       duree: "",
       publish: true
     },
+    idAnnonce:'',
     showOverlay: false,
     sendForm: false,
     logements: [],
-    commande:false
+    commande:false,
+    submitted:false
   }),
   watch: {
     selected_index(value) {
       this.annonce.idLogement = this.logements[value].idLogement;
     }
   },
-  props: ["action"],
+  props: {
+      action: {type: String, default: 'add'},
+      editAnnonce: {type: Object, default: null}
+    },
+
   methods: {
     /**
      * Set l'image du carousel lorsqu'on change le logement
@@ -167,17 +186,21 @@ export default {
       if (this.annonce.description.length<200) {
         return App.error('La description doit contenir au moins 200 caractères')
       }
+      this.submitted = true ;
+      this.showOverlay = true;
       if (this.action == "add") {
         console.log("annonce",this.annonce)
-        this.showOverlay = true;
+        
           axios
             .post("annonces", this.annonce)
             .then(response => {
               notif.success(response.message);
               this.$emit("annonceAdded");
+              this.submitted = false ;
               return App.notifySuccess(response.message);
             })
             .catch(error => {
+              this.submitted = false ;
               return App.alertError(error.message);
             });
             setTimeout(() => {
@@ -185,8 +208,21 @@ export default {
             }, 500);
             
       }
+      if (this.action == 'edit' && !php.empty(this.annonce)) {
+            axios.put(`annonces/${this.idAnnonce}`, this.annonce).then(response => {
+                //this.$emit('annonceUpdated', {response, idAnnonce: this.idAnnonce})
+                this.$emit('annonceUpdated')
+                this.submitted = false
+                this.showOverlay = false;
+                return App.notifySuccess(response.message)
+            }).catch(error => {
+                this.submitted = false
+                this.showOverlay = false;
+                return App.notifyError(error.message)
+            })
+        }
     },
-    getAllHousing() {
+   /* getAllHousing() {
       axios
         .get("logements")
         .then(response => response.result || [])
@@ -196,10 +232,37 @@ export default {
             this.annonce.idLogement = logements[0].idLogement;
           }
         });
+    },*/
+     //recupération de la liste des logements
+    async getHousing() {
+        this.showOverlay = true;
+        if(storage.get('logements')!= null && storage.get('logements').length>0){
+          this.logements=storage.get('logements')
+        }else{
+          this.logements = await axios.get("logements").then(response => response.result || []);
+          storage.set('logements',this.logements)
+        }
+        if (this.editAnnonce!=null) {
+
+                this.annonce.titre = this.editAnnonce.titreAnnonce
+                this.annonce.description = this.editAnnonce.descAnnonce
+                this.annonce.tags  = this.editAnnonce.tags
+                this.annonce.idLogement = this.editAnnonce.idLogement
+                this.idAnnonce=this.editAnnonce.idAnnonce
+
+        }
+           console.log('entrée 2', 'editAnnonce', this.editAnnonce)
+        this.showOverlay = false;
+    },
+    /**emission évènement pour fermer le formulaire
+     * de création d'une annonce et basculer à la création préalable d'un logement
+     */
+    createLogement(){
+      this.$emit('createLogementFirst') 
     }
   },
-  mounted() {
-    this.getAllHousing();
+  async mounted() {
+    await this.getHousing();
   }
 };
 </script>

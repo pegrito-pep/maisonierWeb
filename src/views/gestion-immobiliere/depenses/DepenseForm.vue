@@ -99,7 +99,10 @@
                     </b-col>
             </b-row>
              <hr>
-             <div class="float-right"><b-button @click.prevent="submitModal" variant="primary">Valider</b-button></div>
+             <div class="float-right">
+                <b-button @click.prevent="$emit('cancel')" class="mr-1" v-if="provenance == '2'">Annuler</b-button>
+                <b-button @click.prevent="submitModal" variant="danger">Valider</b-button>
+            </div>
         </b-overlay>
     </b-overlay>
 </template>

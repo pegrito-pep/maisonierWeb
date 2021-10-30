@@ -155,6 +155,7 @@ export default {
          * Validation du formulaire d'ajout/modification du batiment
          */
         async submitForm() {
+
             if (php.empty(this.nom) || php.empty(this.ref) || php.empty(this.idCite)) {
                 return App.error('Veuillez remplir le nom et la reference du batiment')
             }
@@ -186,7 +187,7 @@ export default {
                     let batiments = $(`#${this.repeaterId}`).repeaterVal().group
 
                     console.log(batiments);
-                    return;
+                    //return;
 
                     if (php.empty(batiments[0].nom) || php.empty(batiments[0].ref)) {
                         return App.error('Vous devez remplir au moins les informations du premier batiment')
@@ -214,6 +215,7 @@ export default {
                     return App.notifyError(error.message)
                 })
             }
+   
         },
         
     }

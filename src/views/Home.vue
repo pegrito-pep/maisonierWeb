@@ -1,6 +1,5 @@
 <template>
     <div>
-        <page-description title="Accueil" description="bienvenu sur le maisonier" icon="home" :path="[ ]"/>
         <link rel="stylesheet" href="">
         <div class="top-banner">
             <div class="img">
@@ -42,7 +41,7 @@
             <div>
                 <div class="action-item">
                     <div class="img">
-                        <img src="/img/cite.jpg" alt="">
+                        <img src="/img/cite.jfif" alt="">
                     </div>
                     <div class="txt">
                         <h2>Créer une cité</h2>
@@ -52,7 +51,7 @@
                 </div>
                 <div class="action-item">
                     <div class="img">
-                        <img src="/img/batiment (2).jpg" alt="">
+                        <img src="/img/batiment (2).jpeg" alt="">
                     </div>
                     <div class="txt">
                         <h2>Créer un batiment</h2>
@@ -62,7 +61,7 @@
                 </div>
                 <div class="action-item">
                     <div class="img">
-                        <img src="/img/appart-sejour.jpg" alt="">
+                        <img src="/img/appart-sejour (2).jpg" alt="">
                     </div>
                     <div class="txt">
                         <h2>Créer un logement</h2>
@@ -82,97 +81,6 @@
                 </div>
             </div>
         </div>
-        <!--<div class="row">
-            <div class="form-box-content">
-                <div class="row-fluid">
-                    <div class="span12 p-t-10 p-b-10 p-l-10 text-center">
-                        <img src="/img/homepage.jpg" width="50%" class="hidden-phone">
-                        <h4 class="lead m-b-20 m-t-20">Merci de vous être inscrit ! Nous sommes heureux de vous avoir à bord !</h4>
-                        <p>Nous vous prions de bien vouloir configurer vos biens immobiliers;celà passe par la création de:</p>
-                        <span class="font-weight-bold">vos cités, vos batiments, vos logements, vos habitants,...</span>
-                        <div class="row-fluid">
-                            <vue-slider v-model="pourcentage" :disabled="disabled"></vue-slider>
-                            <p>Votre profil est prêt à <b>15%</b>
-                            <b-tooltip target="button-complete-profil" placement="top" noninteractive variant="success">mon profil</b-tooltip>
-                            <button type="button" class="btn btn-primary diposition" id="button-complete-profil"  @click.prevent="gotToProfile">Compléter mon profil  <i class="fas fa-arrow-alt-circle-right"></i></button>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-box-content">
-                <div class="row-fluid">
-                    <div class="span12 p-t-10 p-b-10 p-l-10">
-                        <h4 class="m-b-20 m-t-20 fontTitle">comment créer ma cité ?</h4>
-                        <b-card img-src="/img/bgCity.jpg" img-alt="Card image" img-right>
-                            <b-card-text class="text-form-bien">
-                                Nous entendons par cité dans notre plateforme, une ensembre regroupé de batiments ou de logements.
-                                Pour créer une cité, vous devez renseigner un nom, une reférence et de manière optionnelle une photo de votre cité.
-                                Nous vous donnons aussi la possibilité de pouvoir modifier les informations d'une cité existante en changeant de photo par exemple
-                                
-                            </b-card-text>
-                            <b-tooltip target="button-new-cite" placement="top" noninteractive variant="success">nouvelle cité</b-tooltip>
-                                <button type="button" class="btn btn-primary diposition" id="button-new-cite" @click.prevent="createCite"><i class="fa fa-plus-circle"></i>Créer une cité</button>
-                        </b-card>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-box-content">
-                <div class="row-fluid">
-                    <div class="span12 p-t-10 p-b-10 p-l-10">
-                        <h4 class="m-b-20 m-t-20 fontTitle">comment créer mon batiment ?</h4>
-                        <b-card img-src="/img/imgBatiment.jpg" img-alt="Card image" img-right>
-                            <b-card-text class="text-form-bien">
-                                Nous entendons par batiment dans notre plateforme, une construction destinée à servir d'abri ou d'habitat et à protéger des biens et des personnes des conditions météorologiques extérieures.
-                                Pour créer un batiment, vous devez renseigner un nom, une reférence et de manière optionnelle la citè à laquelle appartient votre batiment.                                
-                            </b-card-text>
-                            <b-tooltip target="button-new-batiment" placement="top" noninteractive variant="success">nouveau batiment</b-tooltip>
-                                <button type="button" class="btn btn-primary diposition" id="button-new-batiment"  @click.prevent="createBatiment"><i class="fa fa-plus-circle"></i>Créer un batiment</button>
-                        </b-card>
-                    </div>
-                </div>
-            </div>
-        </div> 
-        <div class="row">
-            <div class="form-box-content">
-                <div class="row-fluid">
-                    <div class="span12 p-t-10 p-b-10 p-l-10">
-                        <h4 class="m-b-20 m-t-20 fontTitle">comment créer mon logement?</h4>
-                        <b-card img-src="/img/imgLogementHomepage.jpg" img-alt="Card image" img-right>
-                            <b-card-text class="text-form-bien">
-                                Nous entendons par batiment dans notre plateforme, un local utilisé pour l'habitation. Il peut etre libre ou associé à un batiment.
-                                Pour créer votre logement, il vous sera démandé la reférence, le type de logement, un intervalle de prix(prix min et prix max),
-                                les coordonnées de ce dernier et ses caractéristiques(nombre de chambres, salons, cuisines, douches...)
-                            </b-card-text>
-                            <b-tooltip target="button-new-logement" placement="top" noninteractive variant="success">Accéder aus logements</b-tooltip>
-                                <button type="button" class="btn btn-primary diposition" id="button-new-logement" @click.prevent="createLogement"><i class="fa fa-plus-circle"></i>Acceder aux logements</button>
-                        </b-card>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-box-content">
-                <div class="row-fluid">
-                    <div class="span12 p-t-10 p-b-10 p-l-10">
-                        <h4 class="m-b-20 m-t-20 fontTitle">comment créer mon habitant?</h4>
-                        <b-card img-src="/img/profile-picture.jpg" img-alt="Card image" img-right>
-                            <b-card-text class="text-form-bien">
-                                Nous entendons par habitant dans notre plateforme, toute personne qui prend à bail un logement.Ainsi donc un habitant put avoir plusieurs
-                                logements. Pour créer un habitant vous devez tout d'abord chosir le mode de création:est ce qu'il s'agit d'un utlisaeur entidaté ou alors
-                                d'un habitant disposant d'un code utilisateur.
-                            </b-card-text>
-                            <b-tooltip target="button-new-habitant" placement="top" noninteractive variant="success">acceder aux habitants</b-tooltip>
-                                <button type="button" class="btn btn-primary diposition" id="button-new-habitant"  @click.prevent="createHabitant"><i class="fa fa-plus-circle"></i>Accéder aux habitants</button>
-                        </b-card>
-                    </div>
-                </div>
-            </div>
-        </div>-->
     </div>
 </template>
 
@@ -193,19 +101,58 @@ export default {
         $('button.nav-toggle').click()
             
         }, 100);
+
+           let data = [
+            {
+                id:"1",
+                typeContrat:"CONTRAT TYPE - LOCATION DE LOGEMENT VIDE"
+            },
+             {
+                id:"2",
+                typeContrat:"B A I L D ' U N E M A I S O N U N I F A M I L I A L E"
+            },
+             {
+                id:"3",
+                typeContrat:"CONTRAT TYPE - LOCATION DE LOGEMENT MEUBLE"
+            },
+             {
+                id:"4",
+                typeContrat:"CONTRAT TYPE - LOCATION  COMMERCIAL"
+            },
+            {
+                id:"5",
+                typeContrat:"CONTRAT TYPE - LOCATION MEUBLE-COMMERCIAL"
+            }
+        ]
+
+        localStorage.setItem("contrats",JSON.stringify(data))
+
+        let data2 = [
+            {
+                idModele:"1",
+                titre:"contrat à but commercial",
+                contenu:"<p>Un blog contribue à renforcer le SEO, à fidéliser une communauté sur les réseaux sociaux, à attirer prospects et clients, et à multiplier les call-to-action en vue de générer des leads inbound.</p><p>En dépit de ces avantages, de nombreux marketeurs hésitent à se lancer. Certains doutent de leurs qualités rédactionnelles, d'autres ne savent pas par quoi commencer. Tenir un blog est pourtant plus simple qu'il n'y parait.</p><div style=\"border: 1px solid #ccc; background: #efefef; border-radius: 5px; padding: 20px;\"><p style=\"text-align: center;\"><strong>Sommaire</strong></p>"
+            },
+             {
+                idModele:"2",
+                titre:"contrat de bail maisons",
+                contenu:"<p>Le terme blog est un condensé de «&nbsp;web log&nbsp;», autrement dit, «&nbsp;journal en ligne&nbsp;». Les blogs sont apparus au début des années&nbsp;1990. À la manière d'un journal, ils permettaient à leurs auteurs de publier pensées et anecdotes sur un site web personnel, en vue de les partager une communauté de lecteurs virtuelle. Les premiers blogs étaient donc beaucoup plus intimistes qu'aujourd'hui.</p>"
+            }
+        ]
+        localStorage.setItem("modelescontrats",JSON.stringify(data2))
     },
     methods:{
         createCite() {
-            this.$router.push({name: 'cites', query: {target: "call-cite"}})
+            this.$router.push({name: 'cites', query: {formCite: "call-cite"}})
         },
         createBatiment(){
-           this.$router.push({name: 'batiments', query: {target: "call-batiment"}}) 
+           this.$router.push({name: 'batiments', query: {formBatiment: "call-batiment"}}) 
         },
         createLogement(){
-            this.$router.push({name: 'logements', query: {target: "call-logement"}}) 
+            this.$router.push({name: 'logements', query: {formLogement: "call-logement"}}) 
         },
         createHabitant(){
-            this.$router.push({name: 'habitants', query: {target: "call-habitant"}}) 
+            this.$router.push({name: 'habitants', query: {formHabitant: "call-habitant"}}) 
         },
         gotToProfile(){
             this.$router.push({name: 'profil', query: {target: "call-profile"}}) 
@@ -314,6 +261,7 @@ export default {
 }
 .summary .stat .stat-item i{
     margin: 0 20px;
+    color:#f5365c;
 }
 .summary .stat .stat-item div{
     padding: 5% 0;
@@ -324,6 +272,7 @@ export default {
     font-weight: 600;
     margin: 0 0 10px;
     font-size: .9rem;
+    color:#f5365c;
 }
 .summary .stat .stat-item span{
     margin: 0;
@@ -397,7 +346,7 @@ export default {
     font-weight: 600;
     transition: .3s ease;
     color: white;
-    background: rgba(24, 24, 24, 0.897);
+    background: #191c22;
     box-shadow: 0 5px 20px rgba(0, 0, 0, .026);
 }
 .action-item .txt button:hover{
@@ -405,6 +354,7 @@ export default {
 }
 .action-item .txt h2{
     font-size: 1.5rem;
+    color: #020202;
 }
 @media only screen and (max-height: 700px) {
     .top-banner{
@@ -414,18 +364,74 @@ export default {
     height:40vh;
 }
 }
-/*.fontTitle{
-  font-family: "font-1", sans-serif;
-  font-size: 2em;
+@media only screen and (max-width:600px){
+    .top-banner .img .txt{
+        padding: 1% 5% 0 0;
+        width: 90%;
+        height: 100%;
+    }
+    .top-banner .img .txt h1{
+        text-align: right;
+        font-weight: 700;
+        color: white;
+        font-size: 2rem;
+    }
+    .top-banner .img .txt p{
+        font-weight: 500;
+        width: 90%;
+    }
+    .top-banner .img .txt p b{
+        font-weight: 800;
+        color: #00D1FF;
+    }
+    .top-banner .summary{
+        display: none;
+    }
+    .action-container > div{
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+        width: 100%;
+        height: auto;
+    }
+    .action-container > div .action-item{
+        margin-top:3rem;
+        flex-direction: column;
+        width:90%;
+        height:60vh;
+        min-height: 250px;
+        border-radius: 5px;
+    }
+    .action-item .img{
+        display:flex;
+        width:100%;
+        height:50%;
+        border-radius:5px 5px 0 0;
+    }
+    .action-item .img img{
+        border-radius:5px 5px 0 0;
+    }
+    .action-item .txt{
+        margin-top: 1.5rem;
+        padding: 5% 5% 0;
+        flex-direction: column;
+        align-items: flex-end;
+        width:100%;
+        height:calc(50% - 1.5rem);
+    }
+    .action-item .txt p{
+        text-align: right;
+    }
+    .action-item .txt button{
+        height: 40px;
+        border-radius: 2px;
+        width: 50%;
+        border: none;
+        font-weight: 600;
+        transition: .3s ease;
+        color: white;
+        background: #020202;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, .026);
+    }
 }
- .text-form-bien{
-  font-family: "font-2", sans-serif;
-  font-size: 3em;
- }
- .diposition{
-    float:right;
- }
- .display-image{
-     max-height: 100%;
- }*/
 </style>

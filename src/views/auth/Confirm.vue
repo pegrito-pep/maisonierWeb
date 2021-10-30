@@ -3,76 +3,84 @@
         <div class="container-fluid h-100">
             <b-row class="flex-row h-100 bg-white">
                 <b-col xl="8" lg="6" md="5" class="d-md-block d-lg-block d-none p-0">
-                <b-carousel :interval="8000" controls indicators background="#ababab">
+                <b-carousel :interval="4000" indicators background="#ababab">
                     <b-carousel-slide class="responsive border-0">
                     <template #img>
                         <div class="titre-overlay">
-                        <h1 class="titre"><blockquote class="">N’attendez pas pour acheter l’immobilier, achetez l’immobilier et attendez.</blockquote></h1>
+                        <h1 class="titre"><blockquote class="">Gérer facilement vos biens immobiliers</blockquote></h1>
                         <p class="description">
-                            L’immobilier ne peut pas être perdu ou volé, et il ne peut pas être emporté. Acheté avec bon sens, payé en totalité et géré avec raison, il est le placement le plus sûr du monde.
+                            Prenez votre envole et découvrez une nouvelle façon de gerer vos biens. Plus besoin d'une assistance quelconque. Tout se fait en un clic.
                         </p>
                         </div>
+                        <div class="overlay"></div>
                         <img class="w-100 image" src="/img/cites.jpeg" />
                     </template>
                     </b-carousel-slide>
                     <b-carousel-slide class="responsive border-0">
                     <template #img>
                         <div class="titre-overlay">
-                        <h1 class="titre">Propriété moderne avec vue sur ...</h1>
+                        <h1 class="titre"><blockquote class="">Ne perdez plus aucune information</blockquote></h1>
                         <p class="description">
-                            Grande propriété de style moderne avec vue imprenable sur la ville au sept collines.
+                            Le Maisonnier rassemble, traite et stocke toutes vos informations et vous permet d'utiliser votre memoire pour autre chose.
                         </p>
                         </div>
+                        <div class="overlay"></div>
                         <img class="w-100 image" src="/img/villa1.jpg" />
                     </template>
                     </b-carousel-slide>
                     <b-carousel-slide class="responsive border-0">
                     <template #img>
                         <div class="titre-overlay">
-                        <h1 class="titre">Appartement moderne près de Yaoundé</h1>
+                        <h1 class="titre"><blockquote class="">Optimiser la valeur de vos biens</blockquote></h1>
                         <p class="description">
-                            Appartement constitué d'un espace nuit comprenant 3 chambres et un espace cuisine
+                            Decouvrer la rentabilité de vos biens, observer vos bénéfices en continue, interagisser avec vos locataires et bien plus encore...
                         </p>
                         </div>
-                        <img class="w-100 image" src="/img/appartement.jpg" />
-                    </template>
-                    </b-carousel-slide>
-                    <b-carousel-slide class="responsive border-0">
-                    <template #img>
-                        <div class="titre-overlay">
-                        <h1 class="titre">Chambre moderne à Yaoundé</h1>
-                        <p class="description">
-                            Idéalement situé sur le rempart ouest de la ville de Yaoundé
-                        </p>
-                        </div>
-                        <img class="w-100 image" src="/img/chambre2.jpg" />
+                        <div class="overlay"></div>
+                        <img class="w-100 image" src="/img/appart-sejour (2).jpg" />
                     </template>
                     </b-carousel-slide>
                 </b-carousel>
-        </b-col>
+                </b-col>
                 <div class="col-xl-4 col-lg-6 col-md-7 my-auto p-0">
-                    <div class="authentication-form mx-auto">
-                        <div class="mt-n5 mb-4 d-flex justify-content-center align-items-center flex-column">
-                            <b-link :to="{name: 'home'}"><b-img src="/img/logo-m0.png" style="width: 4em; height: 4em"/></b-link>
-                            <!--<h3 class="text-center mt-2 mb-0">Confirmer votre email</h3>-->
-                             
-                                <span class="defineFont">Veuillez consulter votre boîte mail pour avoir votre code d'activation</span>
-                           
-                        </div>
-                        
-                        <form action="" @submit.prevent="sendForm">
-                            <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Code d'activation" required="" v-model="code">
-                                <i class="fa fa-key"></i>
+                    <b-overlay :show="showOverlay" rounded="sm">
+                        <div class="authentication-form mx-auto">
+                            <div class="mt-n5 mb-4 d-flex justify-content-center align-items-center flex-column">
+                                <b-link :to="{name: 'home'}"><b-img src="/img/logo-m0.png" style="width: 4em; height: 4em"/></b-link>
+                                <!--<h3 class="text-center mt-2 mb-0">Confirmer votre email</h3>-->
+                                
+                                    <span class="defineFont">Veuillez consulter votre boîte mail pour avoir votre code d'activation à 6 chiffres</span>
+                            
                             </div>
-                            <div class="sign-btn text-center">
-                                <b-button type="submit" :disabled="submitted" class="btn-theme">Valider <b-spinner v-if="submitted" small></b-spinner></b-button>
+                            
+                            <form action="" @submit.prevent="sendForm">
+                                <!-- <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Code d'activation" required="" v-model="code">
+                                    <i class="fa fa-key"></i>
+                                </div> -->
+                                <div id="otp" class="row code">
+                                    <b-form-input type="text" maxlength="1" id="first" v-model="number1" class="form-control text-center"/>
+                                    <b-form-input type="text" maxlength="1" id="second" v-model="number2" class="form-control text-center"/>
+                                    <b-form-input type="text" maxlength="1" id="third" v-model="number3" class="form-control text-center"/>
+                                    <b-form-input type="text" maxlength="1" id="fourth" v-model="number4" class="form-control text-center"/>
+                                    <b-form-input type="text" maxlength="1" id="fifth" v-model="number5" class="form-control text-center"/>
+                                    <b-form-input type="text" maxlength="1" id="sixth" v-model="number6" class="form-control text-center"/>
+                                </div>
+                                    <div class="sign-btn text-center">
+                                        <b-button type="submit" :disabled="submitted" class="btn-theme">Valider <b-spinner class="ml-3" v-if="submitted" small></b-spinner></b-button>
+                                    </div>
+                                <!-- <div v-if="submitted" class="d-flex justify-content-center my-3">
+                                    <b-spinner large></b-spinner>
+                                </div> -->
+                            </form>
+                            <div class="register">
+                                <p>Pas de compte? <b-link :to="{name: 'register'}"><span class="signup">Créer un compte maintenant</span></b-link></p>
                             </div>
-                        </form>
-                        <div class="register">
-                            <p>Pas de compte? <b-link :to="{name: 'register'}"><span class="signup">Créer un compte maintenant</span></b-link></p>
+                            <div class="register">
+                                <p>Je n'ai pas reçu de code ?</p> <b-button  @click="reSendMail" :disabled="submittedmail" class="btn-theme">Ré-envoyer<b-spinner v-if="submittedmail" class="ml-3" small></b-spinner></b-button>
+                            </div>
                         </div>
-                    </div>
+                    </b-overlay>
                 </div>
             </b-row>
         </div>
@@ -84,20 +92,82 @@ export default {
     name: 'Login',
     data: () => ({
         submitted: false,
+        submittedmail: false,
+        number1: null,
+        number2: null,
+        number3: null,
+        number4: null,
+        number5: null,
+        number6: null,
         code: null,
-    }), 
+        showOverlay: false,
+    }),
+
+    watch: {
+        number6() {
+            if (this.number6) {
+                this.sendForm();
+            }
+        },
+    
+    },
+    mounted() {
+        this.OTPInput();
+    },
+    
+
     methods: {
         sendForm() {
-            this.submitted = true
-
+            this.showOverlay = true;
+            this.code = this.number1 + this.number2 + this.number3 + this.number4 + this.number5 + this.number6;
             axios.post('check-otp', {login: storage.get('user-email'), code: this.code}).then(response => {
                 storage.remove('user-email')
                 this.$router.push({name: 'login'})
+                this.submitted = false
+                this.showOverlay = false;
             }).catch(error => {
+                 this.showOverlay = false;
                 this.submitted = false
                 App.notifyError(error.message)
             })
-        }
+        },
+        reSendMail(){
+            this.submittedmail = true
+            axios
+                .post("resend-otp", { login: storage.get("user-email"), type: 'otp'})
+                .then((response) => {
+                App.notifySuccess(response.message);
+                this.submittedmail = false;
+            })
+            .catch((error) => {
+                this.submittedmail = false;
+                App.notifyError(error.message);
+            });
+        },
+        OTPInput() {
+            const inputs = document.querySelectorAll('#otp > *[id]');
+            for (let i = 0; i < inputs.length; i++) { 
+                inputs[i].addEventListener('keydown', function(event) { 
+                    if (event.key==="Backspace" ) { 
+                        inputs[i].value='' ;
+                        if (i !==0) inputs[i - 1].focus(); 
+                    }
+                    else { 
+                        if (i===inputs.length - 1 && inputs[i].value !=='' ) { 
+                            return true;
+                        } 
+                        else if (event.keyCode> 47 && event.keyCode < 58) { 
+                            inputs[i].value=event.key;
+                            if (i !==inputs.length - 1) inputs[i + 1].focus(); event.preventDefault();
+                        } 
+                        else if (event.keyCode> 64 && event.keyCode < 91) {
+                            inputs[i].value=String.fromCharCode(event.keyCode); 
+                            if (i !==inputs.length - 1) inputs[i + 1].focus(); event.preventDefault();
+                        }
+                    }
+                });
+            } 
+        }        
     }
 }
 </script>
@@ -109,10 +179,10 @@ export default {
         text-align: center;
         margin-top: 20px;
     }
-    .signup{
+    .signup, .endmail{
         color: #ee3a5b;
     }
-    .signup:hover{
+    .signup:hover, .endmail:hover{
         color: #ee3a5b;
         font-weight: bold;
     }
@@ -154,6 +224,29 @@ export default {
     }
     .image {
     height: 100vh;
+    }
+    .form-group{
+      height: 60px;
+    }
+
+    .form-group i{
+      margin-top: 12px;
+    }
+    .form-control{
+      height: 100%;
+      border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.028);
+    }
+    .code{
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+    .code .form-control{
+        margin: 3px;
+        height: 60px;
+        width: 60px;
+        font-size: 22px;
     }
     
 </style>

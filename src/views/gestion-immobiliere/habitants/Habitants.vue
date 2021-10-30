@@ -1,22 +1,15 @@
 <template>
     <div class="container-fluid">
         <!--page header start -->
-        <page-description title="Habitants" description="Gestion de vos résidents" icon="fas fa-users" :path="['Patrimoine immobilier', 'Mes Habitants']" />
-        
         <div class="row">
             <div class="col-md-12">
                 <div class="mb-2 clearfix">
                     <div class="collapse d-md-block display-options" id="displayOptions">               
                         <div class="d-block d-md-inline-block">
-                            <div class="search-sm d-inline-block float-md-left mr-1 mb-1 align-top">
-                                <form action="" onSubmit="return false">
-                                    <input type="text" class="form-control" placeholder="Recherche..." v-model="search">
-                                    <button type="submit" class="btn btn-icon"><i class="ik ik-search"></i></button>
-                                </form>
-                            </div>
+                            <SearchForm v-model="search" />
                         </div>
-                        <div class="float-md-right">
-                            <b-button variant="danger" v-b-modal.habitantForm><i class="fa fa-plus-circle"></i> Créer un habitant</b-button>
+                        <div class="float-md-right"> 
+                            <btnAdd  message="Ajouter un habitant" v-b-modal.habitantForm ref="buttonAdd"/>
                         </div>
                     </div>
                 </div>
@@ -26,43 +19,28 @@
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
                         <span class="h4 d-inline-flex ml-2">Aucun habitant crée pour l'instant</span>
                     </b-alert> 
-                    <b-row v-else class="layout-wrap">
-                        <!--<b-col v-for="(habitant, i) in habitants" :key="habitant.idHabitant || i" cols="6" class="animated flipInX mb-4">
-                            <habitant-component @makeUpdate="updateHabitant" @deleted="removeHabitant" :habitant="habitant" @showDetails="showDetails" />
-                            ok
-                        </b-col>-->
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover table-bordered table-striped" id="sampleTable">
-                                <thead>
-                                    <tr>
-                                    <th>id</th>
-                                    <th>Avatar</th>
-                                    <th>Nom</th>
-                                    <th>E-Mail</th>
-                                    <th>N° Téléphone</th>
-                                    <th>Proféssion</th>
-                                    <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="locataire in habitants" :key="locataire.idLocataire">
-                                    <td>{{locataire.idLocataire}}</td>
-                                    <td><b-avatar :src="locataire.avatar" /></td>
-                                    <td>{{locataire.nomLocataire}}</td>
-                                    <td>{{locataire.email}}</td>
-                                    <td>{{locataire.tel}}</td>
-                                    <td>{{locataire.profession}}</td>
-                                    <td>
-                                        <a href="#!" v-b-tooltip.top="'Modifier'"><i class="ik ik-edit f-16 mr-15 text-green"></i></a>
-                                        <a href="#!" v-b-tooltip.top="'Supprimer'"><i class="ik ik-trash-2 f-16 mr-15 text-red"></i></a>
-                                        <a href="#!" v-b-tooltip.top="'Détails'" @click.prevent="showDetails(locataire)"><i class="ik ik-eye f-16 text-blue"></i></a>
-                                    </td>
-                                    </tr>
-                                </tbody>
-                                </table>
+                    <b-row v-else>
+                        <b-col xs="12" sm="6" md="3" v-for="locataire in habitants" :key="locataire.idLocataire"> 
+                            <div class="card">
+                                <div class="text-center">
+                                    <div class="card-body pb-0">
+                                        <b-avatar :src="locataire.avatar" size="8em" />
+                                    </div>
+                                    <div class="card-body mt-0 px-0">
+                                        <h4 class="truncate card-title blue">{{ locataire.nomLocataire + ' ' + locataire.prenomLocataire }}</h4>
+                                        <h6 class="truncate card-subtitle text-muted">{{ locataire.tel }}</h6>
+                                        <h6 class="truncate small card-subtitle text-muted">{{ locataire.profession }}</h6>
+                                        <div class="mt-3 d-flex justify-content-center">
+                                            <b-button-group>
+                                                <b-button size="sm" v-b-tooltip.top="'Détails'" @click.prevent="showDetails(locataire)"><i class="ik f-16 ik-eye"></i></b-button>
+                                                <b-button size="sm" v-b-tooltip.top="'Modifier'"><i class="ik f-16 ik-edit"></i></b-button>
+                                                <b-button size="sm" v-b-tooltip.top="'Supprimer'"><i class="ik f-16 ik-trash-2"></i></b-button>
+                                            </b-button-group>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        </b-col>
                     </b-row>
                     <paginator hr="top" :offset="offset" :total="habitants.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" />                   
                 </b-overlay>
@@ -70,7 +48,7 @@
         </div>
         
         <!-- MODALE POUR AFFICHER LES DETAILS D'UN HABITANT -->
-        <div v-if="locataire" class="modal fade edit-layout-modal" id="editLayoutItem" tabindex="-1" role="dialog" aria-labelledby="editLayoutItemLabel" aria-hidden="true">
+            <div v-if="locataire" class="modal fade edit-layout-modal" id="editLayoutItem" tabindex="-1" role="dialog" aria-labelledby="editLayoutItemLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -95,7 +73,8 @@
 
 <script>
    import HabitantForm from "@/views/gestion-immobiliere/habitants/HabitantForm.vue";
-   import DetailsHabitant from '@/views/gestion-immobiliere/habitants/DetailsHabitant.vue'
+   import DetailsHabitant from '@/views/gestion-immobiliere/habitants/DetailsHabitant.vue';
+   import SearchForm from '@/components/parts/SearchForm.vue';
 
   const php  = require ( 'phpjs' ) ; 
 
@@ -104,6 +83,7 @@ export default {
   components: {
     HabitantForm,
     DetailsHabitant,
+    SearchForm,
   },
   data: () => ({
      action:"add",
@@ -149,8 +129,8 @@ export default {
          * ceci est utilisé lorsqu'on est arrivé ici en provenant de la homepage
          */
         autoAddTarget() {
-            const target = this.$route.query.target || null;
-            if (target) {
+            const formHabitant = this.$route.query.formHabitant || null;
+            if (formHabitant) {
                 this.$refs['habitant-form'].show();
                 window.history.replaceState(
                     {},
@@ -162,9 +142,10 @@ export default {
         //recupération de la liste des locataires
         getHabitants() {
             axios.get('locataires').then(response => response.result || []).then(habitants => {
-                this.habitants = this.habitants = habitants
+                this.habitants = this.trueHabitants = habitants
                 this.autoAddTarget();
                 this.showOverlay = false
+                this.autoDetailsTarget();
             })
             
         },
@@ -190,7 +171,27 @@ export default {
         },
         showOccupation(){
             $('#editLayoutItem').modal('hide')
+        },
+         /**
+     * Affiche automatiquement les details d'un logement au chargement
+     * ceci est utilise dans le cas où on a cliqué sur le batiment en etant sur le details d'une cité
+     */
+    autoDetailsTarget() {
+      const target = this.$route.query.target || null;
+      if (target) {
+        const locataire =  this.habitants .filter(
+          elt => elt.idLocataire == target
+        )[0];
+        if (locataire) {
+          this.showDetails(locataire);
+          window.history.replaceState(
+            {},
+            "",
+            window.location.href.split("?")[0]
+          );
         }
+      }
+    },
       
     
     

@@ -1,21 +1,15 @@
 <template>
 <div class="container-fluid">
 <!-- page hearder start -->
-    <page-description title="Articles" description="Gestion de vos articles pour vos contrat de baux" icon="newspaper" :path="['Configuration et aide ', 'Mes Articles']" />
       <div class="row">
             <div class="col-md-12">
                 <div class="mb-2 clearfix">
                     <div class="collapse d-md-block display-options" id="displayOptions">               
                         <div class="d-block d-md-inline-block">
-                            <div class="search-sm d-inline-block float-md-left mr-1 mb-1 align-top">
-                                <form action="" onSubmit="return false">
-                                    <input type="text" class="form-control" placeholder="Recherche..." v-model="search">
-                                    <button type="submit" class="btn btn-icon"><i class="ik ik-search"></i></button>
-                                </form>
-                            </div>
+                            <SearchForm v-model="search" />
                         </div>
                         <div class="float-md-right">
-                            <b-button variant="danger" @click.prevent="() => {modal.action = 'add'; $bvModal.show('modal-article')}"><i class="fa fa-plus-circle"></i> Créer un article</b-button>
+                            <btnAdd  message="Créer un article" @click="() => {modal.action = 'add'; $bvModal.show('modal-article')}"/>
                         </div>
                     </div>
                 </div>
@@ -82,6 +76,7 @@
 <script>
 import AppArticle from '@/components/_configuration-aide/Article.vue'
 import DetailsArticle from '@/components/_configuration-aide/DetailsArticle.vue'
+import SearchForm from "@/components/parts/SearchForm.vue";
 
 const php  = require ( 'phpjs' ) ; 
 
@@ -90,6 +85,7 @@ export default {
     components: {
         AppArticle,
         DetailsArticle,
+        SearchForm,
     },
     computed: {
         /**

@@ -1,51 +1,39 @@
 <template>
-    <div class=" list-item list-item-grid">
-       <div class="owl-container">
-            <div class="owl-carousel basic">
-                    <div class="card flex-row" style="display: flex !important;">
-                        <div class="w-50 position-relative p-0">
-                            <img class="card-img-left d-block w-100" src="@/assets/img/contratDebail.jpg" alt="Card image cap">
-                                <span class="badge badge-pill badge-primary position-absolute badge-top-left">New</span>
+     <b-container>
+            <b-row>
+                <b-col md="3">
+                    <div class="contratLocationBailContainer">
+                        <div class="cardImageBailContainer img-top"  @click.prevent="showDetails">
+                             <b-skeleton-img card-img="top" v-if="showOverlay" aspect="8:9"></b-skeleton-img>
+                            <img src="../../assets/img/c.png" v-else alt="template de contrat de bail ou de location">
                         </div>
-                        <div class="w-50">
-                            <div class="card-body">
-                                <h6 class="mb-0 card-title font-weight-bold titre">{{contrat.libelleModele}}</h6>
-                                <a href="#" @click.prevent="showDetails" class="mb-4 card-subtitle sous-titre">Contrat de bail</a>
-                                <div class="list-actions my-1">
-                                    <a href="#" @click.prevent="showDetails"><i class="ik ik-eye"></i></a>
-                                    <a href="#" @click.prevent="showDetails"><i class="fas fa-link"></i></a>
-                                    <a href="#" @click.prevent="$emit('makeUpdate', article)"><i class="ik ik-edit-2"></i></a>
-                                    <a href="#" @click.prevent="remove" class="list-delete"><i class="ik ik-trash-2"></i></a>
-                                </div>
-                                <footer>
-                                    <p class="text-muted text-small mb-0 font-weight-light">Crée le: {{ contrat.createdAt.split('').slice(0,10).join('') }}</p>
-                                </footer>
-                            </div>
+                        <div class="footerBailContainer">
+                            <span>
+                                {{contrat.typeContrat}}
+                            </span>
+                        </div>
+                         <div class="list-actions">
+                            <a href="#" @click.prevent="showDetails"><i class="ik ik-eye"></i></a>
+                            <!-- <a href="#" @click.prevent="$emit('makeUpdate', article)"><i class="ik ik-edit-2"></i></a> -->
                         </div>
                     </div>
-            </div>
-       </div>
-    </div>
+                </b-col>
+            </b-row>
+    </b-container>
 </template>
 
 <script>
+
 export default {
     props: {
         contrat: { type: Object, required: true },
         isSub: {type: Boolean, default: false}
     },
-        computed: {
-        
-        dateCreation() {
-            const day = this.$date(this.contrat.createdAt)
-            return `Créée le ${day.format("dddd, DD MMMM YYYY")} à ${day.format("HH:mm")}`
-        },
-        /**
-         * Verifie si c'est une cité nouvellement ajoutée
-         */
-        isNew() {
-            return dayjs().diff(this.contrat.createdAt, 'hour') <= 1
+    data (){
+        return {
+            showOverlay:true
         }
+
     },
     methods: {
         /**
@@ -58,33 +46,83 @@ export default {
             this.$emit('showDetails', this.contrat)
             console.log(this.contrat)
         },
-        /**
-         * Suppression de l'article
-         */
-        remove() {
-            App.confirm(`Voullez vous vraiment supprimer le modèle " <b>${this.contrat.libelleModele}</b> " ?`, { confirm: () => {
-                axios.delete(`articles/${this.contrat.idModele}`).then(response => {
-                    if (!response.success) {
-                        return App.notifyError(response.message)
-                    }
-                    this.$emit('deleted', this.contrat.idModele)
-                    return App.notifySuccess(response.message)
-                })
-            }})
-        }
+    },
+    mounted(){
+        /*let data = [
+            {
+                id:"1",
+                typeContrat:"CONTRAT TYPE - LOCATION DE LOGEMENT VIDE"
+            },
+             {
+                id:"2",
+                typeContrat:"B A I L D ' U N E M A I S O N U N I F A M I L I A L E"
+            },
+             {
+                id:"3",
+                typeContrat:"CONTRAT TYPE - LOCATION DE LOGEMENT MEUBLE"
+            },
+             {
+                id:"4",
+                typeContrat:"CONTRAT TYPE - LOCATION  COMMERCIAL"
+            },
+            {
+                id:"5",
+                typeContrat:"CONTRAT TYPE - LOCATION MEUBLE-COMMERCIAL"
+            }
+        ]
+
+        localStorage.setItem("contrats",JSON.stringify(data))*/
+        setTimeout(() => {
+            this.showOverlay = false
+        }, 800);
     }
 }
 </script>
 
 <style>
-.date{
-    cursor: pointer;
-}
-.titre::first-letter{
-    text-transform: capitalize;
-}
-.sous-titre{
-    text-transform: capitalize;
-    color: #ee3a5b !important;
-}
+
+    .ContratcontainerMessage{
+        height: 180px;
+        background:#0FC286;
+        border-left: 15px solid #0C6D4D;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        align-items:center;
+        font-weight: bold;
+        color: #F0F0F0;
+        font-size: 20px;
+        opacity: 0;
+        transition:  ease-in-out 1.5s;
+    }
+    .activeDefinition{
+        opacity: 1;
+    }
+    .contratLocationBailContainer{
+        height: 260px;
+        width: 180px;
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+        padding-top: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .cardImageBailContainer{
+        height: 200px;
+        width: 100%;
+    }
+    .cardImageBailContainer img{
+        width: 100%;
+        height: 100%;
+    }
+    .footerBailContainer{
+        background: #191c22;
+        height: 50px;
+        width: 100%;
+        border-left: #f5365c solid;
+        border-right: #f5365c solid;
+        color: #fff;
+        text-align: center;
+        font-size: 12px;
+        padding: 5px;
+    }
 </style>

@@ -146,13 +146,23 @@
                     <p>{{ myCoordinates.lat }} Latitude, {{ myCoordinates.lng }} Longitude</p>
                 </div>
                 <div>
+                    <!--<b-button @click="drawMarker">placer le marker</b-button>-->
                     <GmapMap
                         :center="myCoordinates"
                         :zoom="zoom"
                         style="width:100%; height:360px; margin: 32px auto;"
                         ref="mapRef"
                         @dragend="handleDrag"
-                    ></GmapMap>
+                    >
+                        <GmapMarker
+                            :key="index"
+                            v-for="(m, index) in markers"
+                            :position="m.position"
+                            :clickable="true"
+                            :draggable="true"
+                            @click="myCoordinates=m.position"
+                        />
+                    </GmapMap>
                 </div>
             </tab-content>
             <tab-content title="Caractéristiques approfondies du logement" icon="fa fa-list">
@@ -294,6 +304,9 @@ import {FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 const php = require('phpjs')
 
+
+//const home={lat:3.865974061463822, lng:  }
+
 export default {
     name: 'add-logement',
     props: {
@@ -332,7 +345,7 @@ export default {
             lat: 0,
             lng: 0
         },
-        zoom: 14,
+        zoom: 17,
         telUser:null,
         passUser:null,
         avatarSmUser:null,
@@ -359,6 +372,7 @@ export default {
         idBatiment:null,
         images: [],
         photos:[],
+        markers:[],
         tousLesPays:{
   "AF": "Afghanistan",
   "ZA": "Afrique du Sud",
@@ -638,16 +652,23 @@ export default {
                 }
 
                 return {
-                   lat: this.map.getCenter().lat().toFixed(4),
-                    lng: this.map.getCenter().lng().toFixed(4)
+                   lat: this.map.getCenter().lat().toFixed(14),
+                    lng: this.map.getCenter().lng().toFixed(14)
                 }
-                console.log("lat",mapCoordinates.lat,"lng",mapCoordinates )
             },
             repeaterId() {
                 return `repeat-added-logement-form-${php.empty(this.logement) ? php.uniqid() : this.logement.idLogement}`
             },
     },
     methods:{
+        /**methode pour placer ule marker */
+        drawMarker(){
+            this.markers= [
+                {
+                    position: this.myCoordinates,
+                }
+            ]
+        },
         makeRepeater() {
             setTimeout(() => {
                 $(`#${this.repeaterId}`).repeater({ isFirstItemUndeletable: true  })
@@ -1003,6 +1024,8 @@ export default {
            }*/
            this.$refs['logementForm'].activateAll();
        }
+       //difénition automatique du marker en fonction de la position de l'utilisateur
+       this.drawMarker();
     }
 }
 </script>

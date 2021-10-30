@@ -1,20 +1,14 @@
 <template>
     <div>
-        <page-description title="Cités" description="Gestion de vos cités" icon="city" :path="['Patrimoine immobilier', 'Mes cités']" />
         <div class="row">
             <div class="col-md-12">
                 <div class="mb-2 clearfix">
                     <div class="collapse d-md-block display-options" id="displayOptions">               
                         <div class="d-block d-md-inline-block">
-                            <div class="search-sm d-inline-block float-md-left mr-1 mb-1 align-top">
-                                <form action="" onSubmit="return false">
-                                    <input type="text" class="form-control" placeholder="Recherche..." v-model="search">
-                                    <button type="submit" class="btn btn-icon"><i class="ik ik-search"></i></button>
-                                </form>
-                            </div>
+                            <SearchForm v-model="search" />
                         </div>
                         <div class="float-md-right">
-                            <b-button variant="danger" @click.prevent="() => {modal.action = 'add'; $bvModal.show('modal-cite')}"><i class="fa fa-plus-circle"></i> Nouvelle cité</b-button>
+                            <btnAdd  message="Ajouter une cité" @click="() => {modal.action = 'add'; $bvModal.show('modal-cite')}"/>
                         </div>
                     </div>
                 </div>
@@ -43,7 +37,7 @@
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body pt-2">
-                        <details-cite @batimentsChanged="changeBatiments" :cite="cite" />
+                        <details-cite @batimentsChanged="changeBatiments" :cite="cite" :source="source"/>
                     </div>
                 </div>
             </div>
@@ -75,14 +69,16 @@
 // Je renome le composant Cite en AppCite parcequ'il existe une balise <cite>. Du coup le composant n'allait pas etre prise en compte
 import AppCite from '@/components/_patrimoine/Cite.vue'
 import DetailsCite from '@/components/_patrimoine/DetailsCite.vue'
+import SearchForm from "@/components/parts/SearchForm.vue";
 
 const php  = require ( 'phpjs' ) ; 
 
 export default {
-    name: 'Cites',
+    name: 'cites',
     components: {
         AppCite,
         DetailsCite,
+        SearchForm,
     },
     computed: {
         /**
@@ -106,7 +102,9 @@ export default {
         modal: {
             action: '', submitted: false,
             nom: '', ref: '', idCite: '', photo: ''
-        }
+        },
+        source:0
+
     }),
     watch: {
         search(value) {
@@ -122,7 +120,7 @@ export default {
         this.getCities()
     },
     mounted(){
-         this.autoAddTarget();
+        // this.autoAddTarget();
     },
     methods: {
         showModal(){
@@ -148,7 +146,9 @@ export default {
         getCities() {
             axios.get('cites').then(response => response.result || []).then(cites => {
                 this.cites = this.trueCites = cites
+                this.autoAddTarget()
                 this.showOverlay = false
+
             })
         },
 
@@ -157,8 +157,8 @@ export default {
          * ceci est utilisé lorsqu'on est arrivé ici en provenant de la homepage
          */
         autoAddTarget() {
-            const target = this.$route.query.target || null;
-            if (target) {
+            const formCite = this.$route.query.formCite || null;
+            if (formCite) {
                  this.showModal()
                 window.history.replaceState(
                     {},
@@ -176,6 +176,7 @@ export default {
          */
         showDetails(cite) {
             this.cite = cite
+            this.source=2
             setTimeout(() => {
                 $('#editLayoutItem').modal('show')
                 $('#editLayoutItem').on('hide.bs.modal', (e) => {

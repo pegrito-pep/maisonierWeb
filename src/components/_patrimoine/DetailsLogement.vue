@@ -10,24 +10,6 @@
           @click.prevent="section = 'caracteristiques'"
         >Caractéristiques</a>
       </li>
-      <!--<li class="nav-item">
-        <a
-          data-toggle="tab"
-          href="#"
-          class="nav-link"
-          :class="{'active' : section == 'details'}"
-          @click.prevent="section = 'details'"
-        >Localisation</a>
-      </li>-->
-      <!--<li class="nav-item">
-        <a
-          data-toggle="tab"
-          href="#"
-          class="nav-link"
-          :class="{'active' : section == 'photos'}"
-          @click.prevent="section = 'photos'"
-        >Photos</a>
-      </li>-->
       <li class="nav-item">
         <a
           data-toggle="tab"
@@ -42,18 +24,9 @@
           data-toggle="tab"
           href="#"
           class="nav-link"
-          :class="{'active' : section == 'depenses'}"
+          :class="{'active' : (section == 'depenses' || section == 'add-depense')}"
           @click.prevent="section = 'depenses'"
-        >Dépenses liées au logement</a>
-      </li>
-      <li class="nav-item">
-        <a
-          data-toggle="tab"
-          href="#"
-          class="nav-link"
-          :class="{'active' : section == 'add-depense'}"
-          @click.prevent="section = 'add-depense'"
-        >Attribuer une dépense à ce logement</a>
+        >Dépenses</a>
       </li>
            <li class="nav-item">
         <a
@@ -62,7 +35,7 @@
           class="nav-link"
           :class="{'active' : section == 'locataire'}"
           @click.prevent="section = 'locataire'"
-        >Locataire</a>
+        >Locataires</a>
       </li>
     </ul>
     <div class="tab-content mt-3">
@@ -183,10 +156,14 @@
           <b-container class="mt-4 p-0">
             <GmapMap
               :center="{lat: parseFloat(logement.adresse.lat), lng: parseFloat(logement.adresse.lon)}"
-              :zoom="14"
+              :zoom="16"
               class="w-100"
               style="height:340px;"
-            />
+            >
+            <gmap-custom-marker :marker="marker">
+              <img src="/img/mapMarker.png" />
+            </gmap-custom-marker>
+            </GmapMap>  
           </b-container>
           <hr />
             <h2 class="text-center text-capitalize font-weight-bold fs-4">Photos</h2>
@@ -277,10 +254,11 @@
           <hr />
          
         </b-container>
-        <div
-          v-if="section == 'annonces'"
-          style="height: 75vh; overflow-y: auto; overflow-x: hidden"
-        >
+        <div v-if="section == 'annonces'" style="height: 75vh; overflow-y: auto; overflow-x: hidden">
+             <b-alert variant="info" show class="text-center" v-if="!logement.annonces.length">
+                <i class="fa fa-exclamation-triangle fa-3x float-left"></i>
+                <span class="h4 d-inline-flex ml-2">Aucune annonce enregistrée pour le moment</span>
+            </b-alert>
           <b-row>
             <b-col
               cols="12"
@@ -314,114 +292,70 @@
             </b-col>
           </b-row>
         </div>
-        <div v-if="section == 'depenses'">
-          <b-alert variant="info" show v-if="!logement.depenses.length">
-            <i class="fa fa-exclamation-triangle fa-3x float-left"></i>
-            <span class="h4 d-inline-flex ml-2">Aucune dépense enregistrée pour le moment</span>
-          </b-alert>
-          <div v-if="logement.depenses.length>0" style="height: 75vh;">
-            <b-row>
-              <paginator
-                no-control
-                hr="bottom"
-                :total="logement.depenses.length"
-                :limit="perPage"
-                :page="currentPage"
-                @pageChanged="(page) => {currentPage = page}"
-                @limitChanged="(limit) => {perPage = limit}"
-              />
-            </b-row>
-            <div style="height: 90%; overflow-y: auto; overflow-x: hidden">
-              <b-row class="layout-wrap">
-                <b-col v-for="(depense, i) in itemsDepenses" :key="depense.idDepense || i" cols="6">
-                  <depense @deleted="removeDepense" :depense="depense" :source="source" is-sub />
-                </b-col>
-              </b-row>
-            </div>
-            <!--<depense-form
-              @depenseAdded="pushDepense"
-              v-if="commandeDepense"
-              :action="action"
-              :logement="logement"
-              @closeDepenseModal="onCloseSet"
-            />-->
-          </div>
-        </div>
-        <div v-show="section == 'add-depense'">
-          <depense-form :logement="logement"  @depenseAdded="addedDepense" :provenance="provenance" :action="action"/>
-        </div> 
-        <div v-if="section == 'locataire'">
-          <div class="card-deck">
-           <div class="card mb-2" >
-                <div class="card-body">
-                    <div class="d-flex justify-content-between"> 
-                        <div class="w-40">
-                            <!--<b-card img-width="300" img-height="300" :img-src="locataire.avatar" img-alt="Card image" img-left class="mb-3"></b-card>-->
-                            <b-card img-width="300" img-height="300" img-src="/img/profile-picture.jpg" img-alt="Card image" img-left class="mb-3"></b-card>
-                        </div>
-                        <div class="w-60 ml-4 globalcont2">
-                            <!--DEBUT COMPOSANT DE DROP DOWN -->
-                            <!--<div class=" display-top-right">
-                               <div>
-                                <b-dropdown id="dropdown-1" text="gestion du compte" class="m-md-2">
-                                    <b-dropdown-item>
-                                        <b-button v-b-modal.modal_recharge size="sm" block variant="outline-success"><i class="fa fa-credit-card"></i>Recharge</b-button>
-                                    </b-dropdown-item>
-                                    <b-dropdown-item>
-                                        <b-button v-b-modal.modal_transfert size="sm" block variant="outline-secondary"><i class="fas fa-money-bill-alt"></i>Transfert</b-button>
-                                        </b-dropdown-item>
-                                    <b-dropdown-item>
-                                        <b-button to="#" size="sm" block variant="outline-danger"><i class="fas fa-times-circle"></i>Annulation</b-button>
-                                    </b-dropdown-item>
-                                </b-dropdown>
-                                </div>
-                          
-                            </div>-->
-                      
-                       
-                            <!--FIN COMPOSANT DE DROP DOWN -->
-                            <!--<dl class="row text-muted">
-                                <dd class="mt-1 mb-2 col-1" v-if="locataire.cniLocataire"><i class="fa fa-id-card"></i></dd>
-                                <dt class="mt-1 mb-2 col-11 truncate" v-b-tooltip="'Numéro de CNI'" v-if="locataire.cniLocataire">{{ locataire.cniLocataire }}</dt>
-                                <dd class="mt-1 mb-2 col-1"><i class="fa fa-phone"></i></dd>
-                                <dt class="mt-1 mb-2 col-11 truncate" v-b-tooltip="'Numéro de téléphone'">{{ locataire.tel }}</dt>
-                                <dd class="mt-1 mb-2 col-1"><i class="fa fa-envelope"></i></dd>
-                                <dt class="mt-1 mb-2 col-11 truncate" v-b-tooltip="'Email'">{{ locataire.email }}</dt>
-                                <dd class="mt-1 mb-2 col-1" v-if="locataire.dateNaiss"><i class="fas fa-birthday-cake"></i></dd>
-                                <dt class="mt-1 mb-2 col-11 truncate" v-b-tooltip="'Date de naissance'" v-if="locataire.dateNaiss">{{ $date(locataire.dateNaiss).format('DD MMMM YYYY') }}</dt>
-                                <dd class="mt-1 mb-2 col-5">Solde principal</dd>
-                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="'Solde du compte principal'">198000 FCFA</dt>
-                                <dd class="mt-1 mb-2 col-5">Solde compte loyer</dd>
-                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="'Solde du compte principal'">102000 FCFA</dt>
-                                <dd class="mt-1 mb-2 col-5">Solde compte eau</dd>
-                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="'Solde du compte principal'">0 FCFA</dt>
-                                <dd class="mt-1 mb-2 col-5">Solde compte électricité</dd>
-                                <dt class="mt-1 mb-1 col-3 truncate" v-b-tooltip="'Solde du compte principal'">0 FCFA</dt>
-                            </dl>-->
-                            <dl class="row text-muted">
-                                <dd class="mt-2 mb-2 col-1" ><i class="fa fa-user"></i></dd>
-                                <dt class="mt-2 mb-2 col-11 truncate" v-b-tooltip="'nom et prénom'">Tagne Sipeuwo Miguel</dt>
-                                <dd class="mt-2 mb-2 col-1"><i class="fa fa-phone"></i></dd>
-                                <dt class="mt-2 mb-2 col-11 truncate" v-b-tooltip="'Numéro de téléphone'">670125445</dt>
-                                <dd class="mt-2 mb-2 col-1"><i class="fa fa-envelope"></i></dd>
-                                <dt class="mt-2 mb-2 col-11 truncate" v-b-tooltip="'Email'">tagnemiguel@gmail.com</dt>
-                                <dd class="mt-2 mb-2 col-1" ><i class="fa fa-id-card"></i></dd>
-                                <dt class="mt-2 mb-2 col-11 truncate" v-b-tooltip="'Numéro de CNI'">114989896</dt>
-                                <dd class="mt-2 mb-2 col-1"><i class="fas fa-birthday-cake"></i></dd>
-                                <dt class="mt-2 mb-2 col-11 truncate" v-b-tooltip="'Date de naissance'">08 Mars 1996</dt>
-                                <dd class="mt-2 mb-2 col-5"><i class="fa fa-calendar mr-15 pr-2" aria-hidden="true"></i><span class="ml-1"> Durée du bail :</span></dd>
-                                <dt class="mt-2 mb-2 col-7 truncate" v-b-tooltip="'Durée du bail'"><b-badge variant="light">02 Ans</b-badge></dt>
-                                <dd class="mt-2 mb-2 col-6"><i class="fas fa-clock mr-15"></i><span class="ml-15">Fin de bail prévue pour le</span></dd>
-                                <dt class="mt-2 mb-2 col-5 truncate ml-4" v-b-tooltip="'Date de fin du bail'"><b-badge variant="secondary">16 Octobre 2022</b-badge></dt>
-                                <dd class="mt-2 mb-2 col-6"><i class="fas fa-calendar-day mr-15 pr-3"></i><span class="ml-1">Nombre de jours restants</span></dd>
-                                <dt class="mt-2 mb-2 col-5 truncate" v-b-tooltip="'Nombre de jours restants'"><b-badge variant="warning">372</b-badge></dt>
-                            </dl>
-                            <div class="float-right"><b-button @click.prevent="seeDetails" variant="primary" v-b-tooltip.top="'détails'">Voir le détail</b-button></div>
-                        </div>
+        <b-container v-if="section == 'depenses' || section == 'add-depense'">
+            <div v-if="section == 'depenses'">
+                <div class="d-flex justify-content-between border-bottom pb-1 mb-2">
+                    <div><paginator  v-if="logement.depenses.length" no-control
+                        :total="logement.depenses.length"
+                        :limit="perPage"
+                        :page="currentPage"
+                        @pageChanged="(page) => {currentPage = page}"
+                        @limitChanged="(limit) => {perPage = limit}"
+                    /></div>
+                    <b-button size="sm" variant="outline-secondary" @click.prevent="section = 'add-depense'">Ajouter une dépense</b-button>
+                </div>
+                <b-alert variant="info" show v-if="!logement.depenses.length">
+                    <i class="fa fa-exclamation-triangle fa-3x float-left"></i>
+                    <span class="h4 d-inline-flex ml-2">Aucune dépense enregistrée pour le moment</span>
+                </b-alert>
+                <div v-else style="height: 75vh;">
+                    <div style="height: 90%; overflow-y: auto; overflow-x: hidden">
+                        <b-row class="layout-wrap">
+                            <div v-for="(depense, i) in itemsDepenses" :key="depense.idDepense || i" class="col-12 list-item list-item-thumb">
+                                <depense @deleted="removeDepense" :depense="depense" :source="source" is-sub />
+                            </div>
+                        </b-row>
                     </div>
                 </div>
-            </div> 
-        </div>
+            </div>
+            <div v-show="section == 'add-depense'">
+                <depense-form :logement="logement" @cancel="section = 'depenses'"  @depenseAdded="addedDepense" :provenance="provenance" :action="action"/>
+            </div>
+        </b-container>
+         
+        <div v-if="section == 'locataire'" style="height: 38em; overflow-y: auto">
+            <b-alert variant="info" show class="text-center" v-if="!logement.occupations.length">
+                <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
+                <span class="h4 d-inline-flex ml-2">Aucun locataire n'a occupé ce logement pour le moment</span>
+            </b-alert>
+            <b-card v-for="(occupation, i) in logement.occupations" :key="occupation.idOccupation || i" img-fluid :img-src="occupation.locataire.avatar || '/img/profile-picture.jpg'" img-height="250em" img-width="200em" img-left class="mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <b-badge class="w-90" variant="success" v-if="occupation.dateFin == null">Bail en cours</b-badge>
+                    <b-badge class="w-90" variant="danger" v-else>Bail terminé le {{ $date(occupation.dateFin).format('DD MMMM YYYY') }}</b-badge>
+                    <b-dropdown size="sm" right variant="link" toggle-class="text-decoration-none" no-caret>
+                        <template #button-content><i class="fa fa-ellipsis-h"></i></template>
+                        <!--<b-dropdown-item :to="{name: 'habitants', query: {target: occupation.locataire.idLocataire}}">Détails du locataire</b-dropdown-item>
+                        <b-dropdown-item :to="{name: 'details-occupation', params: {id: occupation.idOccupation}}">Détails de l'occupation</b-dropdown-item>-->
+                        <b-dropdown-item @click.prevent="goToDetailLocataire(occupation)">Détails du locataire</b-dropdown-item>
+                        <b-dropdown-item @click.prevent="goToDetaiOccupation(occupation)">Détails de l'occupation</b-dropdown-item>
+                    </b-dropdown>
+                </div>
+                <hr class="mt-1">
+                <dl class="row text-muted">
+                    <dd class="my-1 col-1" ><i class="fa fa-user"></i></dd>
+                    <dt class="my-1 col-11 truncate" v-b-tooltip.left="'nom et prénom'">{{ occupation.locataire.titre + ' ' + occupation.locataire.nomLocataire + ' ' + occupation.locataire.prenomLocataire }}</dt>
+                    <dd class="my-1 col-1"><i class="fa fa-phone"></i></dd>
+                    <dt class="my-1 col-11 truncate" v-b-tooltip.left="'Numéro de téléphone'">{{ occupation.locataire.tel }}</dt>
+                    <dd class="my-1 col-1"><i class="fa fa-envelope"></i></dd>
+                    <dt class="my-1 col-11 truncate" v-b-tooltip.left="'Email'">{{ occupation.locataire.email }}</dt>
+                    <dd class="my-1 col-1" ><i class="fa fa-id-card"></i></dd>
+                    <dt class="my-1 col-11 truncate" v-b-tooltip.left="'Numéro de CNI'">{{ occupation.locataire.cniLocataire }}</dt>
+                    <dd class="my-1 col-1"><i class="fas fa-birthday-cake"></i></dd>
+                    <dt class="my-1 col-11 truncate" v-b-tooltip.left="'Date de naissance'">{{ $dayjs(occupation.locataire.dateNaiss).format('DD MMMM YYYY') }}</dt>
+                    <dd class="my-1 col-1"><i class="fa fa-calendar"></i></dd>
+                    <dt class="my-1 col-11 truncate" v-b-tooltip.left="'Date de début du bail'">{{ $dayjs(occupation.dateDeb).format('dddd, DD MMMM YYYY') }}</dt>
+                </dl>
+            </b-card>  
         </div> 
       </div>
     </div>
@@ -433,13 +367,15 @@ import VueEasyLightbox from "vue-easy-lightbox";
 import VueUploadMultipleImage from "vue-upload-multiple-image";
 import Depense from "@/views/gestion-immobiliere/depenses/Depense.vue";
 import DepenseForm from "@/views/gestion-immobiliere/depenses/DepenseForm.vue";
+import GmapCustomMarker from 'vue2-gmap-custom-marker';
 const php = require("phpjs");
 export default {
   components: {
     VueEasyLightbox,
     VueUploadMultipleImage,
     Depense,
-    DepenseForm
+    DepenseForm,
+    GmapCustomMarker
   },
   props: {
     logement: { type: Object, required: true }
@@ -460,7 +396,11 @@ export default {
     currentPage: 1,
     perPage: 10,
     source: 2,
-    provenance:"2"
+    provenance:"2",
+    marker:{
+      lat:'',
+      lng:''
+    }
   }),
   computed: {
     photos() {
@@ -484,16 +424,32 @@ export default {
     }
   },
   mounted() {
-    console.log(this.logement);
+    console.log('logement',this.logement);
+    this.marker.lat=this.logement.adresse.lat;
+    this.marker.lng=this.logement.adresse.lon;
   },
   methods: {
-    /**Méthode permettant de voir le détails du locataire
-     * directement à partir du logement
+     /**Méthode permettant de voir le détails du locataire
+     * directement à partir du détail du logement
      */
-    seeDetails(){
+    goToDetailLocataire(occupation){
+      console.log("locataire", occupation)
       $('#editLayoutItem').modal('hide')
-            this.$router.push({name: 'locataires', query: {target: this.locataire.idLogement}})
+      setTimeout(() => {
+        this.$router.push({name: 'habitants', query: {target: occupation.locataire.idLocataire}})
+      }, 100);
     },
+    /**Méthode permettant de voir l'occupation
+     * directement à partir du détail du logement
+     */
+    goToDetaiOccupation(occupation){
+      console.log("locataire", occupation)
+      $('#editLayoutItem').modal('hide')
+      setTimeout(() => {
+        this.$router.push({name: 'occupations', query: {target: occupation.idOccupation}})
+      }, 100);
+    },
+
 
           /**
          * réponse à l'évènement d'ajout d'une dépense

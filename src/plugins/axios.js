@@ -8,12 +8,13 @@ import axios from "axios";
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 const env = process.env.NODE_ENV || 'development'
+//let baseURL = 'http://192.168.100.19:4002/api'
 let baseURL = 'https://fse-le-maisonier.herokuapp.com/api'
 if (env === 'production') {
     baseURL = 'https://fse-le-maisonier.herokuapp.com/api'
 }
 else if (env === 'test') {
-    
+
 }
 
 let config = {
@@ -29,7 +30,7 @@ const _api = {
 const _axios = axios.create(config);
 
 _axios.interceptors.request.use(
-    function(config) {
+    function (config) {
         // Do something before request is sent
 
         const token = storage.get('access_token')
@@ -39,7 +40,7 @@ _axios.interceptors.request.use(
 
         return config;
     },
-    function(error) {
+    function (error) {
         // Do something with request error
         return Promise.reject(error);
     }
@@ -47,11 +48,11 @@ _axios.interceptors.request.use(
 
 // Add a response interceptor
 _axios.interceptors.response.use(
-    function(response) {
+    function (response) {
         // Do something with response data
         return response.data;
     },
-    function(error) {
+    function (error) {
         // Do something with response error
 
         let response = error.response || null
@@ -71,7 +72,7 @@ _axios.interceptors.response.use(
 );
 
 Vue.use({
-    install: function(Vue, options) {
+    install: function (Vue, options) {
         Vue.axios = _axios;
         window.axios = _axios;
 

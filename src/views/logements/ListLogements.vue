@@ -1,24 +1,19 @@
 <template>
   <div class="container-fluid">
     <!--page header start -->
-    <page-description
-      title="Logements"
-      description="Gestion de vos logements"
-      icon="home"
-      :path="['Patrimoine immobilier', 'Mes Logements']"
-    />
     <div class="row">
       <div class="col-md-12">
         <div class="mb-2 clearfix">
           <div class="collapse d-md-block display-options" id="displayOptions">
             <div class="d-block d-md-inline-block">
-              <div class="btn-group float-md-left mr-1 mb-1">
-                <b-form-select v-model="filtre_categories" size="sm" style="box-shadow: none">
+              <div class="btn-group d-inline-block float-md-left mr-1 mb-1 ">
+                <b-form-select v-model="filtre_categories"  style="height: 40px; width: 260px; border-radius: 5px; box-shadow: none">
                   <b-form-select-option :value="null">Filtre de catégories</b-form-select-option>
                   <b-form-select-option-group
                     v-for="(tl, i) in typesLogements"
                     :key="i"
                     :label="tl.libelleType"
+                  
                   >
                     <b-form-select-option
                       v-for="(stl, j) in tl.sousTypesLogement"
@@ -28,31 +23,19 @@
                   </b-form-select-option-group>
                 </b-form-select>
               </div>
-              <div class="search-sm d-inline-block float-md-left mr-1 mb-1 align-top">
-                <form action onsubmit="return false">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Recherche..."
-                    v-model="search"
-                  />
-                  <button type="submit" class="btn btn-icon">
-                    <i class="ik ik-search"></i>
-                  </button>
-                </form>
-              </div>
+              <SearchForm v-model="search" />
             </div>
 
             <div class="float-md-right">
-              <b-button variant="danger" v-b-modal.logementForm>
-                <i class="fa fa-plus-circle"></i> Nouveau Logement
-              </b-button>
+              
+              <btnAdd  message="Ajouter un logement" v-b-modal.logementForm/>
 
               <b-button
                 v-b-tooltip.top="'Télécharger un fichier modèle pour l\'import de logements en masse'"
                 v-b-modal.modal-prevent-closing
                 @click.prevent="loadCsv"
                 class="btn btn-info ml-4 dispose"
+                style="height:45px;"
               >
                 <i class="fa fa-download"></i>
               </b-button>
@@ -191,18 +174,20 @@ import AddLogement from "@/views/logements/LogementForm.vue";
 import LoadCsv from "@/views/logements/LoadCsv.vue";
 import Logement from "@/components/_patrimoine/Logement.vue";
 import DetailsLogement from "@/components/_patrimoine/DetailsLogement.vue";
+import SearchForm from "@/components/parts/SearchForm.vue";
 
 import { FlatfileButton } from "@flatfile/vuejs";
 const php = require("phpjs");
 
 export default {
-  name: "listlogements",
+  name: "logements",
   components: {
     AddLogement,
     Logement,
     DetailsLogement,
     FlatfileButton,
-    LoadCsv
+    LoadCsv,
+    SearchForm,
   },
   data: () => ({
     //début données liées à l'import de plusieurs logements
@@ -325,7 +310,7 @@ export default {
     search(value) {
       this.logements = !php.empty(value)
         ? this.trueLogements.filter(elt =>
-            elt.nomLogement.toLowerCase().includes(value.toLowerCase())
+            elt.refLogement.toLowerCase().includes(value.toLowerCase())
           )
         : this.trueLogements;
     }
@@ -356,7 +341,6 @@ export default {
         addedLogement() {
             this.getHousing(false);
             this.$bvModal.hide('logementForm')
-            this.autoAddTarget();
 
         },
         editSuccessfull(){
@@ -376,30 +360,25 @@ export default {
     //recupération de la liste des logements
     async getHousing(begin) {
         this.showOverlay = true;
-        if(storage.get('logements')!= null && storage.get('logements').length>0){
-          console.log('entrée 1 pas de requète en bd')
-          this.logements = this.trueLogements=storage.get('logements')
-        }else{
-          console.log('entrée 2 requète en bd')
+   
           this.logements = this.trueLogements = await axios.get("logements").then(response => response.result || []);
-          storage.set('logements',this.logements)
-        }
+          this.autoAddTarget();
         this.showOverlay = false;
       
         if (begin !== false) {
             this.typesLogements = await axios.get("types-logements?all=true").then(response => response.result || []);
             this.cites = (await axios.get("cites").then(response => response.result || [])).filter(elt => elt.batiments.length > 0);
         }
-        this.autoAddTarget();
+        
         this.autoDetailsTarget();
     },
-    /**
-         * Affiche le modal de création d'une cité directement au chargement de la page
-         * ceci est utilisé lorsqu'on est arrivé ici en provenant de la homepage
-         */
+       /**
+       * Affiche le modal de création d'un= logement directement au chargement de la page
+       * ceci est utilisé lorsqu'on est arrivé ici en provenant de la homepage
+       */
         autoAddTarget() {
-            const target = this.$route.query.target || null;
-            if (target) {
+            const formLogement = this.$route.query.formLogement || null;
+            if (formLogement) {
                  this.$refs['logement-form'].show();
                 window.history.replaceState(
                     {},

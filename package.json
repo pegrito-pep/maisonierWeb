@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@flatfile/vuejs": "^0.3.1",
+    "@innologica/vue-stackable-modal": "^0.1.10",
     "bootstrap": "^4.5.2",
     "bootstrap-icons-vue": "^0.7.0",
     "bootstrap-vue": "^2.17.3",
@@ -27,6 +28,7 @@
     "vue-datetime": "^1.0.0-beta.14",
     "vue-easy-lightbox": "^0.16.1",
     "vue-form-wizard": "^0.8.4",
+    "vue-html-to-paper": "^1.4.3",
     "vue-img-inputer": "^2.1.6",
     "vue-js-toggle-button": "^1.3.3",
     "vue-json-excel": "^0.3.0",
@@ -37,6 +39,8 @@
     "vue-slider-component": "^3.2.14",
     "vue-upload-multiple-image": "^1.1.6",
     "vue2-datepicker": "^3.10.1",
+    "vue2-editor": "^2.10.3",
+    "vue2-gmap-custom-marker": "^6.0.1",
     "vuetable-2": "^2.0.0-beta.4",
     "vuex": "^3.4.0",
     "weekstart": "^1.1.0"

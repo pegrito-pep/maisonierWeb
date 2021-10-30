@@ -1,19 +1,14 @@
 <template>
   <div class="container-fluid">
     <!--page header start -->
-    <page-description
-      title="Dépenses"
-      description="Gestion de vos dépenses"
-      icon="home"
-      :path="['Statistiques', 'Mes Dépenses']"
-    />
+    <page-description :path="[{label: 'Mes depenses', route: 'depenses'},]" />
     <div class="row">
       <div class="col-md-12">
         <div class="mb-2 clearfix">
           <div class="collapse d-md-block display-options" id="displayOptions">
             <div class="d-block d-md-inline-block">
               <div class="btn-group float-md-left mr-1 mb-1">
-                <b-form-select v-model="filtre_categories" size="sm" style="box-shadow: none">
+                <b-form-select v-model="filtre_categories" style="box-shadow: none; height: 40px; width: 260px;">
                   <b-form-select-option :value="null">Filtre de catégories</b-form-select-option>
                   <b-form-select-option-group
             
@@ -24,25 +19,11 @@
                   </b-form-select-option-group>
                 </b-form-select>
               </div>
-              <div class="search-sm d-inline-block float-md-left mr-1 mb-1 align-top">
-                <form action onsubmit="return false">
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Recherche..."
-                    v-model="search"
-                  />
-                  <button type="submit" class="btn btn-icon">
-                    <i class="ik ik-search"></i>
-                  </button>
-                </form>
-              </div>
+              <SearchForm v-model="search" />
             </div>
 
             <div class="float-md-right">
-              <b-button variant="danger" v-b-modal.depenseForm>
-                <i class="fa fa-plus-circle"></i> Nouvelle dépense
-              </b-button>
+              <btnAdd  message="Ajouter une dépense" v-b-modal.depenseForm/>
 
             </div>
           </div>
@@ -55,22 +36,15 @@
             <span class="h4 d-inline-flex ml-2">Aucune dépense enregistrée pour le moment</span>
           </b-alert>
           <b-row v-else class="layout-wrap">
-            <b-col
-              v-for="(depense, i) in depenses"
-              :key="depense.idDepense || i"
-              lg="4"
-              cols="12"
-              sm="6"
-              class="animated flipInX mb-4"
-            >
-              <depense
+            <div v-for="(depense, i) in depenses" :key="depense.idDepense || i" class="col-6 list-item list-item-thumb animated flipInX mb-2">
+                <depense
                 @makeUpdate="updateDepense"
                 @deleted="removeDepense"
                 :depense="depense"
                 :soure="source"
                 @showDetails="showDetails"
               />
-            </b-col>
+            </div>
           </b-row>
           <paginator
             hr="top"
@@ -127,6 +101,7 @@
 import DepenseForm from "@/views/gestion-immobiliere/depenses/DepenseForm.vue";
 import Depense from "@/views/gestion-immobiliere/depenses/Depense.vue";
 /*import DetailsLogement from "@/components/_patrimoine/DetailsLogement.vue";*/
+import SearchForm from "@/components/parts/SearchForm.vue";
 
 const php = require("phpjs");
 
@@ -134,7 +109,8 @@ export default {
   name: "depenses",
   components: {
     DepenseForm,
-    Depense
+    Depense,
+    SearchForm,
   },
   data: () => ({
     //données liées au composant dépense
@@ -177,9 +153,10 @@ export default {
         : this.trueDepenses;
     },
     search(value) {
+      console.log(this.depenses);
       this.depenses = !php.empty(value)
         ? this.trueDepenses.filter(elt =>
-            elt.nomLogement.toLowerCase().includes(value.toLowerCase())
+            elt.motif.toLowerCase().includes(value.toLowerCase())
           )
         : this.trueDepenses;
     }

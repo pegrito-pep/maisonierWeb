@@ -4,33 +4,13 @@
            <div class="card mb-2" >
                 <div class="card-body">
                     <div class="d-flex justify-content-between"> 
-                        <div class="w-40">
-                                <b-card img-width="300" img-height="300" :img-src="locataire.avatar" img-alt="Card image" img-left class="mb-3">
+                        <div class="w-20">
+                                <b-card img-width="200" img-height="200" :img-src="locataire.avatar" img-alt="Card image" img-left class="mb-3">
                                
                                 </b-card>
                         </div>
                         <div class="w-60 ml-4 globalcont2">
-                            <!--DEBUT COMPOSANT DE DROP DOWN -->
-                            <div class=" display-top-right">
-                               <div>
-                                <b-dropdown id="dropdown-1" text="gestion du compte" class="m-md-2">
-                                    <b-dropdown-item>
-                                        <!--<b-button @click.prevent="callRechargeForm(locataire)" size="sm" block variant="outline-success"><i class="fa fa-credit-card"></i>Recharge</b-button>-->
-                                        <b-button v-b-modal.modal_recharge size="sm" block variant="outline-success"><i class="fa fa-credit-card"></i>Recharge</b-button>
-                                    </b-dropdown-item>
-                                    <b-dropdown-item>
-                                        <b-button v-b-modal.modal_transfert size="sm" block variant="outline-secondary"><i class="fas fa-money-bill-alt"></i>Transfert</b-button>
-                                        </b-dropdown-item>
-                                    <b-dropdown-item>
-                                        <b-button to="#" size="sm" block variant="outline-danger"><i class="fas fa-times-circle"></i>Annulation</b-button>
-                                    </b-dropdown-item>
-                                </b-dropdown>
-                                </div>
-                          
-                            </div>
-                      
-                       
-                            <!--FIN COMPOSANT DE DROP DOWN -->
+                            
                             <dl class="row text-muted">
                                 <dd class="mt-1 mb-2 col-1" v-if="locataire.cniLocataire"><i class="fa fa-id-card"></i></dd>
                                 <dt class="mt-1 mb-2 col-11 truncate" v-b-tooltip="'Numéro de CNI'" v-if="locataire.cniLocataire">{{ locataire.cniLocataire }}</dt>
@@ -40,14 +20,14 @@
                                 <dt class="mt-1 mb-2 col-11 truncate" v-b-tooltip="'Email'">{{ locataire.email }}</dt>
                                 <dd class="mt-1 mb-2 col-1" v-if="locataire.dateNaiss"><i class="fas fa-birthday-cake"></i></dd>
                                 <dt class="mt-1 mb-2 col-11 truncate" v-b-tooltip="'Date de naissance'" v-if="locataire.dateNaiss">{{ $date(locataire.dateNaiss).format('DD MMMM YYYY') }}</dt>
-                                <dd class="mt-1 mb-2 col-5">Solde principal</dd>
-                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="'Solde du compte principal'">198000 FCFA</dt>
-                                <dd class="mt-1 mb-2 col-5">Solde compte loyer</dd>
-                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="'Solde du compte principal'">102000 FCFA</dt>
-                                <dd class="mt-1 mb-2 col-5">Solde compte eau</dd>
-                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="'Solde du compte principal'">0 FCFA</dt>
-                                <dd class="mt-1 mb-2 col-5">Solde compte électricité</dd>
-                                <dt class="mt-1 mb-1 col-3 truncate" v-b-tooltip="'Solde du compte principal'">0 FCFA</dt>
+                                <dd class="mt-1 mb-2 col-5">Impayés en loyer</dd>
+                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="'Solde du compte principal'">198 000 F CFA</dt>
+                                <dd class="mt-1 mb-2 col-5">Impayés en eau </dd>
+                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="'Impayés en eau'">36 000 F CFA</dt>
+                                <dd class="mt-1 mb-2 col-5">Impayés en électricité </dd>
+                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="'impayés en électricité'">70 0000 F CFA</dt>
+                                <dd class="mt-1 mb-2 col-5">Total des impayés</dd>
+                                <dt class="mt-1 mb-1 col-3 truncate" v-b-tooltip="'Total impayés'"><b-badge variant="danger">304 000 F CFA</b-badge></dt>
                             </dl>
                         </div>
                     </div>
@@ -162,20 +142,27 @@
                             <div class="card-body">
                                 <b-table-simple hover small responsive>
                                     <b-thead head-variant="light">
-                                        <b-tr>
+                                        <!--<b-tr>
                                             <b-th>N°</b-th>
                                             <b-th>Logement</b-th>
                                             <b-th>Loyer de base</b-th>
                                             <b-th>Facturation en eau</b-th>
                                             <b-th>Facturation en energie</b-th>
                                             <b-th>Action</b-th>
+                                        </b-tr>-->
+                                        <b-tr>
+                                            <b-th>N°</b-th>
+                                            <b-th>Logement</b-th>
+                                            <b-th>Facture Loyer</b-th>
+                                            <b-th>Facture Eau</b-th>
+                                            <b-th>Facture électricité</b-th>
+                                            <b-th class="d-flex justify-content-center align-items-center">Action</b-th>
                                         </b-tr>
                                     </b-thead>
                                     <b-tbody>
-                                        <b-tr v-for="occupation in itemsOccupations" :key="occupation.idOccupation">
+                                        <!--<b-tr v-for="occupation in itemsOccupations" :key="occupation.idOccupation">
                                             <b-td class="p-2">{{ occupation.idOccupation }}</b-td>
-                                            <b-td class="p-2">
-                                                <!--<span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.logement.refLogement }}</span>-->    
+                                            <b-td class="p-2"> 
                                                 <span class="d-inline-block w-100 mt-1 text-muted" v-if="occupation.modePaiement == 'prepayer'">
                                                     Paiement loyer avant consommation
                                                 </span>
@@ -185,17 +172,12 @@
                                             </b-td>
                                             <b-td class="p-2">
                                                 <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.loyerBase}}</span>    
-                                                <!--<span class="d-inline-block w-100 mt-1 text-muted">{{ occupation.locataire.tel + ' / ' + occupation.locataire.email }}</span>-->    
                                             </b-td>
                                             <b-td class="p-2">
                                                 <span class="d-inline-block w-100 mb-1"><b>{{ occupation.modeEau }}</b> / 
                                                     <small v-if="occupation.modeEau =='index'">{{ occupation.puEau }} le KW</small>
                                                     <small v-if="occupation.modeEau =='forfait'">{{ occupation.puEau }} par mois</small>
                                                 </span>     
-                                                <!--<span class="d-inline-block w-100 mt-1">
-                                                    <span class="text-success" v-if="occupation.dateFin == null">Bail en cours</span>
-                                                    <span class="text-danger" v-else>Bail terminé</span>
-                                                </span>-->    
                                             </b-td>
                                             <b-td class="p-2">
                                                 <span class="d-inline-block w-100 mb-1"><b>{{ occupation.modeEnergie }}</b> / 
@@ -204,7 +186,42 @@
                                                 </span>       
                                             </b-td>
                                             <b-td>
-                                                <b-button id="accessOccupation"  @click.prevent="viewOccupationDetail(occupation)"  :to="{name: 'details-occupation', params: {id: occupation.idOccupation}}" v-b-tooltip.left="'Accéder à l\'occupation'"><i class="fa fa-eye"></i></b-button>
+                                                <b-button id="accessOccupation"  @click.prevent="viewOccupationDetail(occupation)"  :to="{name: 'details-occupation', params: {id: occupation.idOccupation}}" v-b-tooltip.bottom="'Accéder à l\'occupation'"><i class="fa fa-eye"></i></b-button>
+                                                <b-button id="accessOccupation"  @click.prevent="viewOccupationDetail(occupation)"  class="ml-1" v-b-tooltip.bottom="'Payer'"><i class="fa fa-user"></i></b-button>
+                                                <b-button id="accessOccupation"  @click.prevent="viewOccupationDetail(occupation)"  class="ml-1" v-b-tooltip.bottom="'Recharger le compte'"><i class="fa fa-user"></i></b-button>
+                                            </b-td>
+                                        </b-tr>-->
+                                        <b-tr v-for="occupation in itemsOccupations" :key="occupation.idOccupation">
+                                            <b-td class="p-2">{{ occupation.idOccupation }}</b-td>
+                                            <b-td class="p-2">
+                                                <span class="d-inline-block w-100 mt-1 text-muted" v-if="occupation.modePaiement == 'prepayer'">
+                                                    L-01
+                                                    <b-badge pill variant="secondary">Prépayé</b-badge>
+                                                </span>
+                                                <span class="d-inline-block w-100 mt-1 text-muted" v-if="occupation.modePaiement == 'postpayer'">
+                                                    L-01
+                                                     <b-badge pill variant="danger">Postpayé</b-badge>
+                                                </span>     
+                                            </b-td>
+                                            <b-td class="p-2">
+                                                <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.loyerBase}}</span> 
+                                                 <b-badge variant="success">réglé</b-badge>   
+                                            </b-td>
+                                            <b-td class="p-2">
+                                                <span class="d-inline-block w-100 mb-1">
+                                                    <span class="d-inline-block w-100 mb-1 font-weight-bold">2600</span> 
+                                                    <b-badge variant="danger">Non réglé</b-badge> 
+                                                </span>     
+                                            </b-td>
+                                            <b-td class="p-2">
+                                                 <span class="d-inline-block w-100 mb-1">
+                                                    <span class="d-inline-block w-100 mb-1 font-weight-bold">5000</span> 
+                                                    <b-badge variant="danger">Non réglé</b-badge> 
+                                                </span>      
+                                            </b-td>
+                                            <b-td>
+                                                <b-button id="accessOccupation"  @click.prevent="viewOccupationDetail(occupation)"  :to="{name: 'occupation', params: {id: occupation.idOccupation}}" v-b-tooltip.bottom="'Accéder à l\'occupation'"><i class="fa fa-eye"></i></b-button>
+                                                <b-button id="accessOccupation"  @click.prevent="viewOccupationDetail(occupation)"  class="ml-1" v-b-tooltip.bottom="'Payer'"><i class="fab fa-amazon-pay"></i></b-button>
                                             </b-td>
                                         </b-tr>
                                     </b-tbody>
@@ -288,21 +305,47 @@
                         
                     </div>
                     <div v-show="section == 'add-occupation'">
+                        <!--<occupation-form :locataire="locataire"  @occupationAdded="addedOccupation" :provenance="provenance" :action="action"/>-->
                         <occupation-form :locataire="locataire"  @occupationAdded="addedOccupation" :provenance="provenance" :action="action"/>
+
                     </div>  
                 </div>
             </div>
         </div>
+        <!--TEST MODAL CENTRAL-->
+         <!--<modal name="my-first-modal">
+              <div>
+                    <button @click="$modal.hide('my-first-modal')">
+                        ❌
+                    </button>
+              </div>
+                <b-form-group description="Entrez le montant de la recharge" label="Montant à créditer">
+                <b-form-input
+                    v-model="recharge.montant"
+                    type="number"
+                    :min="1000"
+                    :class="{'is-invalid' : recharge.error}"
+                />
+                 </b-form-group>
+                 <div class="float-right"><b-button @click.prevent="validateRecharge" variant="primary">Valider<b-spinner v-if="recharge.submitted" small></b-spinner></b-button></div>
+         </modal>-->
+            
     </div>
 </template>
 
 <script>
 
-import OccupationForm from "@/components/_gestion-immobiliere/OccupationForm.vue";
+import ModalRecharge from '@/views/gestion-immobiliere/habitants/Modal.vue'
+//import OccupationForm from "@/components/_gestion-immobiliere/OccupationForm.vue";
+import OccupationForm from "@/views/gestion-immobiliere/occupations/OccupationForm.vue"
+
+
 const php = require('phpjs')
 export default {
     components: {
-        OccupationForm
+        OccupationForm,
+        ModalRecharge
+     
     },
     props: {
         locataire: {type: Object, required: true}
@@ -332,6 +375,8 @@ export default {
             montant: null,
             pay:false
         },
+        show:false,
+         modalClass: '',
         /**données manipulées pour afficher le modal de recharge
          * du compte du locataire
         */
@@ -374,6 +419,7 @@ export default {
 
     },
     methods: {
+
        /**
          * réponse à l'évènement d'ajout d'une occupation
          * dans le détail d'un habitant, la réponse consiste juste à mettre à jour la liste des occupations de l'habitant

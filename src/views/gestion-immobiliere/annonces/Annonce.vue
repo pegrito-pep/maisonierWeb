@@ -1,34 +1,61 @@
 <template>
-    <div class=" list-item list-item-grid">
-        <div class="card mb-3">
-            <div class="d-flex mb-3">
-                <a class="w-90 d-flex card-img" @click.prevent="showDetails" href="#">
-                    <b-carousel :interval="4000" controls indicators>
-                        <b-carousel-slide style="height: 24em" class="fluid w-100 responsive border-0" v-for="(photo,i) in annonce.photos" :key="i" :img-src="photo"/>
+    <div class="list-item list-item-grid">
+        <div class="card mb-3 ">
+            <div class="d-flex">
+                <a class="w-100 d-flex card-img" @click.prevent="showDetails" href="#">
+                    <b-carousel :interval="4000" indicators >
+                        <b-carousel-slide style="height: 15em; overflow: hidden; border-radius: 10px; background: rgba(128, 128, 128, 0.233);" v-for="(photo,i) in annonce.photos" :key="i" :img-src="photo"/>
                     </b-carousel>
                     <b-badge pill class="position-absolute badge-top-left" :variant="annonce.publish ? 'success' : 'danger'">{{ annonce.publish ? 'Déja publiée' : 'Pas encore publiée' }}</b-badge>
                     <b-badge pill class="position-absolute badge-top-left-2" variant="secondary" v-b-tooltip.bottom="dateCreation"><i class="fa fa-clock"></i> {{ $date(annonce.createdAt).format("DD.MM.YYYY") }} </b-badge>
                 </a>
-                <div class="w-10 d-flex flex-column justify-content-center align-items-center">
-                    <b-button v-if="!annonce.publish" class="btn-icon my-1" variant="primary" v-b-tooltip.left="'Publier'" @click="publier(annonce)"><i class="fas fa-share"></i></b-button>
+                <!-- <div class="w-10 d-flex flex-column justify-content-center align-items-center"> -->
+                    <!-- <b-button v-if="!annonce.publish" class="btn-icon my-1" variant="primary" v-b-tooltip.left="'Publier'" @click="publier(annonce)"><i class="fas fa-share"></i></b-button>
                     <b-button class="btn-icon my-1" variant="warning" v-b-tooltip.left="'Modifier'"><i class="ik ik-edit-2"></i></b-button>
                     <b-button class="btn-icon my-1" variant="danger" v-b-tooltip.left="'Supprimer'"><i class="ik ik-trash-2"></i></b-button>
                     <b-button class="btn-icon my-1" variant="info" v-b-tooltip.left="'Faire un commentaire'"><i class="fa fa-comments"></i></b-button>
                     <b-button class="btn-icon my-1" :variant="annonce.nbrPropostions > 0 ? 'success' : 'secondary'" id="button-nombre-propositions"><i class="fas fa-sticky-note"></i></b-button>               
                     <b-tooltip target="button-nombre-propositions" placement="left" noninteractive variant="secondary">Vous avez déjà reçu {{ annonce.nbrPropostions }} propositions</b-tooltip>
-                    <b-button class="btn-icon my-1" variant="dark" v-b-tooltip.left="'Accéder au logement'" @click.prevent="accessTo"><i class="fa fa-share-square"></i></b-button>
-                </div>
+                    <b-button class="btn-icon my-1" variant="dark" v-b-tooltip.left="'Accéder au logement'" @click.prevent="accessTo"><i class="fa fa-share-square"></i></b-button> -->
+                <!-- </div> -->
             </div>
-            <div class="d-flex flex-grow-1 min-width-zero card-content py-3">
-                <div style="height: 15em; overflow-y: auto" class="card-body align-self-center d-flex flex-column flex-md-row justify-content-between min-width-zero align-items-md-center">
-                    <div class="text-center">
-                        <h5 class="text-red">{{ php.ucfirst(annonce.titreAnnonce.toLowerCase()) }}</h5>
+            <div class="d-flex flex-grow-1 min-width-zero card-content">
+                <div style="height: 11em; overflow-y: hidden" class="card-body align-self-center d-flex flex-column flex-md-row justify-content-between min-width-zero align-items-md-center">
+                    <div class="max-lines-1">
+                        <h5 class="text-dark font-weight-bold">{{ php.ucfirst(annonce.titreAnnonce.toLowerCase()) }}</h5>
                         <b-badge v-for="(tag, i) in annonce.tags.split(',')" :key="i" variant="secondary">{{ tag }}</b-badge>
                     </div>
                     <hr>
-                    <p class="text-muted text-small">{{ annonce.descAnnonce }}</p>
+                    <p class="text-muted text-small max-lines-3">{{ annonce.descAnnonce }}</p>
+                </div>
+                <div class="d-flex justify-content-between p-3 mb-5">
+                    <div><i class="fas fa-money-bill-wave"></i><strong class="price"> {{ (annonce.logement.prixMax + annonce.logement.prixMin)/2 }} FCFA</strong></div>
+
+                    <div class="btn-actions d-flex justify-content-between">
+                        <a href="#" @click.prevent="$emit('makeUpdate', annonce)" v-if="!isSub" v-b-tooltip.bottom="'Editer'"><i class="fas fa-pen"></i></a>
+                        <a href="#" @click.prevent="showDetails" v-if="!isSub" v-b-tooltip.bottom="'Détails'"><i class="ik ik-eye"></i></a>
+                        <a href="#" @click.prevent="showMenu(annonce.idAnnonce)" class="show-list" v-b-tooltip.bottom="'Menu'"><i class="fa fa-ellipsis-v"></i></a>
+                    </div>
+
+                    <div :class="'py-4 animated bounceIn showModal s' + annonce.idAnnonce">
+                        <button @click.prevent="closeMenu(annonce.idAnnonce)" v-b-tooltip.bottom="'Fermer'"  class="btn close text-dark border-0 closebtn" style="font-size: 36px; color: red;">&times;</button><br>
+                        <a href="#" @click.prevent="$emit('makeUpdate', logement)" v-if="!isSub" v-b-tooltip.left="'Acceder au logement'" class="d-block"><b-button class="btn-icon my-1 mr-2" variant="dark" style="width: 25px; height: 25px; "><i class="fa fa-share-square" style="display: flex; justify-content: center; align-items: center"></i></b-button>Acceder au logement </a>
+                        <a href="#" v-b-tooltip.left="'Publier'" v-if="!annonce.publish" @click="publier(annonce)" class="d-block"><b-button class="btn-icon my-1 mr-2" variant="primary" style="width: 25px; height: 25px; "><i class="fas fa-share"  style="display: flex; justify-content: center; align-items: center"></i></b-button>Publier l'annonce</a>
+                        <a href="#" @click.prevent="$emit('makeDuplication', annonce)" v-b-tooltip.left="'Dupliquer l\'annonce'" v-if="!isSub" class="d-block"><b-button class="btn-icon my-1 mr-2" variant="primary" style="width: 25px; height: 25px; "><i class="ik ik-copy"  style="display: flex; justify-content: center; align-items: center"></i></b-button>Dupliquer l'annonce</a>
+                        <a href="#" v-b-tooltip.left="'Propositions'" class="d-block"><b-button class="btn-icon my-1 mr-2" :variant="annonce.nbrPropostions > 0 ? 'success' : 'secondary'" id="button-nombre-propositions" style="width: 25px; height: 25px; "><i class="fas fa-sticky-note" style="display: flex; justify-content: center; align-items: center"></i></b-button>Propositions</a>
+                        <a href="#" v-b-tooltip.left="'Faire un commentaire'" class="d-block"><b-button class="btn-icon my-1 mr-2" variant="info" style="width: 25px; height: 25px; "><i class="fa fa-comments"  style="display: flex; justify-content: center; align-items: center"></i></b-button>Faire un commentaire</a>
+                        <a href="#" @click.prevent="remouve" v-b-tooltip.left="'Supprimer l\'annonce'" class="d-block"><b-button class="btn-icon my-1 mr-2" variant="danger" style="width: 25px; height: 25px; "><i class="ik ik-trash-2"  style="display: flex; justify-content: center; align-items: center"></i></b-button>Supprimer l'annonce</a>
+                                   
+                    
+                    </div>
+                    
+                    <!-- <a href="#" @click.prevent="accessTo" v-if="isSub" v-b-tooltip.bottom="'Accéder aux détails'"><i class="ik ik-link"></i></a>
+                    <a href="#" @click.prevent="$emit('makeDuplication', annonce)" v-if="!isSub" v-b-tooltip.bottom="'Dupliquer'"><i class="ik ik-copy"></i></a>
+                    <a href="#" @click.prevent="$emit('makeUpdate', logement)" v-if="!isSub" v-b-tooltip.bottom="'Editer'" ><i class="ik ik-edit-2"></i></a>
+                    <a href="#" @click.prevent="remove" class="list-delete" v-b-tooltip.bottom="'Supprimer'"><i class="ik ik-trash-2"></i></a> -->
                 </div>
             </div>
+           
         </div>
     </div>
 </template>
@@ -64,6 +91,20 @@ export default {
          /**
          * Publier une annonce
          */
+        //**suppréssion d'une annonce */
+        remouve(){
+             App.confirm(`Voullez vous vraiment supprimer l'annonce " <b>${this.annonce.titreAnnonce}</b> " ?`, { confirm: () => {
+                axios.delete(`annonces/${this.annonce.idAnnonce}`).then(response => {
+                    if (!response.success) {
+                        return App.notifyError(response.message)
+                    }
+                    this.$emit('deleted', this.annonce.idAnnonce)
+                    return App.notifySuccess(response.message)
+                }).catch(error => {
+                    App.notifyError(error.message)
+                })
+            }})
+        },
         publier(item) {
             let url="annonces/" + item.idAnnonce + "/publish";
             axios.put(url).then(response => {
@@ -72,8 +113,87 @@ export default {
 		    }).catch(error => {
 			      notif.error(error.message);
 		    })
-        }
+        },
+        showMenu(id){
+            document.querySelector(`.showModal.s${id}`).style.display = "block";
+        },
+        closeMenu(id){
+            document.querySelector(`.showModal.s${id}`).style.display = "none";
+        },
+/**
+         * Affiche la modale avec les details de l'element
+         */
+        showDetails() {
+            if (this.isSub) {
+                return false
+            }
+            this.$emit('showDetails', this.annonce)
+        },
 
     }
 }
 </script>
+
+<style scoped>
+    .max-lines-3 {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* number of lines to show */
+        -webkit-box-orient: vertical; 
+    }
+    .max-lines-1 {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 1; /* number of lines to show */
+        -webkit-box-orient: vertical; 
+    }
+
+    .btn-actions{
+        width: 90px;
+        margin-top: 10px;
+    }
+
+    .btn-actions i{
+        font-size: 18px;
+        border-radius: 50%;
+        padding: 6px;
+    }
+    .btn-actions i:hover{
+        background: grey;
+    }
+    .btn-actions i:nth-child(1){
+        margin-top: -5px;
+    }
+    .closebtn{
+        margin-top: -20px;
+    }
+    
+    .price{
+        font-weight: 600;
+        font-size: 16px;
+        color: #f5365c;
+    }
+    .btn-action:hover{
+        color: #f5365c;
+    }
+    .showModal{
+        display: none;
+        height: auto;
+        width: 13rem;
+        border: 1px solid rgba(128, 128, 128, 0.171);
+        background: #fff;
+        border-radius: 8px;
+        position: absolute;
+        bottom: 5rem;
+        right: -2em;
+        padding: 0 10px;
+    }
+    
+    .card{
+        border-radius: 15px;
+    }
+</style>
