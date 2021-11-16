@@ -1,41 +1,46 @@
 <template>
     <div>
         <link rel="stylesheet" href="">
-        <div class="top-banner">
-            <div class="img">
-                <div class="bg"></div>
-                <div class="txt">
-                    <h1>Bienvenu sur la plateforme maisonnier</h1>
-                    <p>Ici vous pourrez créer des: cités, batiments, logements et habitants. Mais avant, veuillez completer votre profil <br> Profil complet à <b>15%</b></p>
-                    <button @click.prevent="gotToProfile">Terminer votre profil</button>
-                </div>
-            </div>
-            <div class="summary">
-                <div class="stat">
-                    <div class="stat-item">
-                        <i class="fa fa-building"></i>
-                        <div>
-                            <h3>Batiments</h3>
-                            <span>Pas de batiment pour le moment</span>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <i class="fas fa-home"></i>
-                        <div>
-                            <h3>Logements</h3>
-                            <span>Pas de logements pour le moment</span>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <i class="fas fa-users"></i>
-                        <div>
-                            <h3>Habitants</h3>
-                            <span>Pas d'habitant pour le moment</span>
-                        </div>
+         <b-overlay :show="showOverlay" rounded="sm">   
+            <div class="top-banner">
+                <div class="img">
+                    <div class="bg"></div>
+                    <div class="txt">
+                        <h1>Bienvenu sur la plateforme maisonnier</h1>
+                        <p>Ici vous pourrez créer des: cités, batiments, logements, habitants. Mais avant, veuillez completer votre profil <br> Profil complet à <b>{{ pourcentage }}%</b></p>
+                        <button @click.prevent="gotToProfile" v-if="compteur!=0">Terminer votre profil</button>
                     </div>
                 </div>
-            </div>
-        </div>
+                <div class="summary">
+                    <div class="stat">
+                        <div class="stat-item">
+                            <i class="fa fa-building"></i>
+                            <div>
+                                <h3>Batiments</h3>
+                                <span v-if="batiments.length ==0">Aucun batiment pour le moment</span>
+                                <span v-else>{{ batiments.length }} batiments crées</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-home"></i>
+                            <div>
+                                <h3>Logements</h3>
+                                <span v-if="logements.length ==0">Pas d'habitant pour le moment</span>
+                                <span v-else>{{ logements.length }} logements crées</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-users"></i>
+                            <div>
+                                <h3>Habitants</h3>
+                                <span v-if="locataires.length ==0">Pas d'habitant pour le moment</span>
+                                <span v-else>{{ locataires.length }} locataires crées</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+         </b-overlay> 
         <div class="action-container">
             <span>Actions rapides</span>
             <div>
@@ -85,62 +90,29 @@
 </template>
 
 <script>
-import VueSlider from 'vue-slider-component'
-import 'vue-slider-component/theme/default.css'
+
 export default {
     name: 'Home',
-    components: {
-        VueSlider
-    },
+
     data: () => ({
         pourcentage:15,
-        disabled: true
+        disabled: true,
+        showOverlay: true,
+        logements:[],
+        locataires:[],
+        batiments:[],
+        userData:null,
+        compteur:0
     }),
-    mounted() {
+    async mounted() {
         setTimeout(() => {
         $('button.nav-toggle').click()
             
         }, 100);
-
-           let data = [
-            {
-                id:"1",
-                typeContrat:"CONTRAT TYPE - LOCATION DE LOGEMENT VIDE"
-            },
-             {
-                id:"2",
-                typeContrat:"B A I L D ' U N E M A I S O N U N I F A M I L I A L E"
-            },
-             {
-                id:"3",
-                typeContrat:"CONTRAT TYPE - LOCATION DE LOGEMENT MEUBLE"
-            },
-             {
-                id:"4",
-                typeContrat:"CONTRAT TYPE - LOCATION  COMMERCIAL"
-            },
-            {
-                id:"5",
-                typeContrat:"CONTRAT TYPE - LOCATION MEUBLE-COMMERCIAL"
-            }
-        ]
-
-        localStorage.setItem("contrats",JSON.stringify(data))
-
-        let data2 = [
-            {
-                idModele:"1",
-                titre:"contrat à but commercial",
-                contenu:"<p>Un blog contribue à renforcer le SEO, à fidéliser une communauté sur les réseaux sociaux, à attirer prospects et clients, et à multiplier les call-to-action en vue de générer des leads inbound.</p><p>En dépit de ces avantages, de nombreux marketeurs hésitent à se lancer. Certains doutent de leurs qualités rédactionnelles, d'autres ne savent pas par quoi commencer. Tenir un blog est pourtant plus simple qu'il n'y parait.</p><div style=\"border: 1px solid #ccc; background: #efefef; border-radius: 5px; padding: 20px;\"><p style=\"text-align: center;\"><strong>Sommaire</strong></p>"
-            },
-             {
-                idModele:"2",
-                titre:"contrat de bail maisons",
-                contenu:"<p>Le terme blog est un condensé de «&nbsp;web log&nbsp;», autrement dit, «&nbsp;journal en ligne&nbsp;». Les blogs sont apparus au début des années&nbsp;1990. À la manière d'un journal, ils permettaient à leurs auteurs de publier pensées et anecdotes sur un site web personnel, en vue de les partager une communauté de lecteurs virtuelle. Les premiers blogs étaient donc beaucoup plus intimistes qu'aujourd'hui.</p>"
-            }
-        ]
-        localStorage.setItem("modelescontrats",JSON.stringify(data2))
+        await this.getStatistiquesData()
+           
     },
+
     methods:{
         createCite() {
             this.$router.push({name: 'cites', query: {formCite: "call-cite"}})
@@ -156,7 +128,51 @@ export default {
         },
         gotToProfile(){
             this.$router.push({name: 'profil', query: {target: "call-profile"}}) 
-        }
+        },
+        //données statistiques
+        async getStatistiquesData(){
+            this.showOverlay = true
+        try {
+                this.logements = await axios.get("logements").then(response => response.result || []);
+           
+                } catch (error) {
+                    notif.error(error.message);
+                }
+                try {
+                    this.locataires=await axios.get("locataires").then(response => response.result || []);
+                } catch (error) {
+                notif.error(error.message);
+                }
+                try {
+                    this.userData=await axios.get("utilisateurs/"+storage.get('access_token')).then(response => response.result || []);
+                } catch (error) {
+                notif.error(error.message);
+                }
+                if(!this.userData.nom){this.compteur++}
+                if(!this.userData.prenom){this.compteur++}
+                if(!this.userData.avatar){this.compteur++}
+                if(!this.userData.email){this.compteur++}
+                if(!this.userData.tel){this.compteur++}
+                 if(!this.userData.genre){this.compteur++}
+                if(!this.userData.dateNaiss){this.compteur++}
+                if(!this.userData.profil.cni){this.compteur++}
+                if(!this.userData.profil.titre){this.compteur++}
+                if(!this.userData.profil.profession){this.compteur++}
+                if(this.compteur>6){
+                    this.pourcentage=15
+                }
+                if(this.compteur>=4&&this.compteur<6){
+                    this.pourcentage=50
+                }
+                if(this.compteur<3){
+                    this.pourcentage=75
+                }
+                 if(this.compteur==0){
+                    this.pourcentage=100
+                }
+
+            this.showOverlay = false
+    }
     }
 }
 </script>

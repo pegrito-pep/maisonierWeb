@@ -1,16 +1,18 @@
 <template>
     <div >
-        <page-description :path="[ {label: 'Mes articles et rubriques', route: 'articles'}, {label: 'Templates de  contrat', route: 'contrat'}, {label: 'Documentation', route: 'boum'}]" />
-        <Article v-show="path == ''" />
-        <router-view />
+        <page-description :path="[{label: 'contrats', route: 'contrats',}, {label: 'documentation', route: 'doc',}]" />
+        <Contrats v-if=" path == ''" />
+        <router-view v-else />
     </div>
 </template>
 
 <script>
-import Article from './article.vue'
+
+import Contrats from '@/views/configuration-aide/Contrats/Contrats.vue'
+
 export default {
     components : {
-        Article
+        Contrats
     },
     data: () => ({
         path: ""
@@ -22,7 +24,7 @@ export default {
         this.getPath()
     },
     updated() {
-        console.log('fgff');
+
         this.getPath()
     },
     methods: {

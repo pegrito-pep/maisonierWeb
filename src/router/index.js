@@ -9,6 +9,11 @@ const routes = [{
         name: 'home',
         component: Home
     },
+    {
+        path: '/dashbord',
+        name: 'dashbord',
+        component: () => import('@/views/accueil/Dashbord.vue')
+    },
     { path: '/', redirect: { name: 'home' } },
     {
         path: '/profil',
@@ -95,12 +100,6 @@ const routes = [{
                         import ('@/views/gestion-immobiliere/annonces/Annonces.vue')
                 },
                 {
-                    path: 'habitants',
-                    name: 'habitants',
-                    component: () =>
-                        import ('@/views/gestion-immobiliere/habitants/Habitants.vue')
-                },
-                {
                     path: 'occupations',
                     name: 'occupations',
                     component: () =>
@@ -130,18 +129,6 @@ const routes = [{
         component: () =>
             import ('@/views/configuration-aide/configuration.vue'),
             children : [
-                {
-                    path: 'articles',
-                    name: 'articles',
-                    component: () =>
-                        import ('@/views/configuration-aide/article.vue')
-                },
-                {
-                    path: 'contrat',
-                    name: 'contrat',
-                    component: () =>
-                        import ('@/views/configuration-aide/contrat.vue')
-                },
                 {
                     path: 'contrats',
                     name: 'contrats',
@@ -184,6 +171,30 @@ const routes = [{
                 component: () => import('@/views/finances/Loyers.vue')
             }
         ]
+    },
+
+    /**
+     * Locations
+     */
+     {
+        path: '/locations',
+        name: 'locations',
+        component: () =>
+            import ('@/views/locations/locations.vue'),
+            children : [
+                {
+                    path: 'insolvables',
+                    name: 'insolvables',
+                    component: () =>
+                        import ('@/views/locations/Insolvables.vue')
+                },
+                {
+                    path: 'habitants',
+                    name: 'habitants',
+                    component: () =>
+                        import ('@/views/gestion-immobiliere/habitants/Habitants.vue')
+                }
+            ]
     },
 
 ]

@@ -182,7 +182,8 @@ export default {
           }
           storage.set("access_token", response.result.access_token);
           storage.set("refresh_token", response.result.refresh_token);
-          this.$router.push({ name: "home" });
+          window.location.href = '/'
+          // this.$router.push({ name: "home" });
         })
         .catch((error) => {
           this.submitted = false;

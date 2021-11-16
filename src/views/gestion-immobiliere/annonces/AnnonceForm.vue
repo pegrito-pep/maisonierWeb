@@ -33,7 +33,7 @@
             <b-form-group label="description">
               <b-form-textarea
                 class="mb-2"
-                placeholder="Caractériser votre annonce afin d'etre bien reférencé"
+                placeholder="Caractériser votre annonce afin d'être bien reférencé"
                 rows="8"
                 v-model="annonce.description"
               ></b-form-textarea>
@@ -67,7 +67,8 @@
         <b-row>
           <b-col>
             <b-form-checkbox v-model="annonce.publish" switch>
-
+                <span class="fa-lg" v-if="annonce.publish">Directement publier cette annonce ?</span>
+                <span class="fa-lg" v-else>Spécifier la durée de validité</span>
             </b-form-checkbox>
           </b-col>
           <b-col>

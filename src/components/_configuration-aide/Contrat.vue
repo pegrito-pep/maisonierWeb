@@ -1,6 +1,6 @@
 <template>
      <b-container>
-            <b-row>
+            <b-row class="w-100 h-100">
                 <b-col md="3">
                     <div class="contratLocationBailContainer">
                         <div class="cardImageBailContainer img-top"  @click.prevent="showDetails">
@@ -9,7 +9,7 @@
                         </div>
                         <div class="footerBailContainer">
                             <span>
-                                {{contrat.typeContrat}}
+                                {{contrat.libelleModele}}
                             </span>
                         </div>
                          <div class="list-actions">
@@ -43,35 +43,13 @@ export default {
             if (this.isSub) {
                 return false
             }
+
             this.$emit('showDetails', this.contrat)
             console.log(this.contrat)
         },
     },
     mounted(){
-        /*let data = [
-            {
-                id:"1",
-                typeContrat:"CONTRAT TYPE - LOCATION DE LOGEMENT VIDE"
-            },
-             {
-                id:"2",
-                typeContrat:"B A I L D ' U N E M A I S O N U N I F A M I L I A L E"
-            },
-             {
-                id:"3",
-                typeContrat:"CONTRAT TYPE - LOCATION DE LOGEMENT MEUBLE"
-            },
-             {
-                id:"4",
-                typeContrat:"CONTRAT TYPE - LOCATION  COMMERCIAL"
-            },
-            {
-                id:"5",
-                typeContrat:"CONTRAT TYPE - LOCATION MEUBLE-COMMERCIAL"
-            }
-        ]
-
-        localStorage.setItem("contrats",JSON.stringify(data))*/
+      
         setTimeout(() => {
             this.showOverlay = false
         }, 800);
@@ -94,17 +72,20 @@ export default {
         font-size: 20px;
         opacity: 0;
         transition:  ease-in-out 1.5s;
+       
     }
     .activeDefinition{
         opacity: 1;
     }
+
     .contratLocationBailContainer{
         height: 260px;
-        width: 180px;
+        width: 12rem !important;
         box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
         padding-top: 10px;
         border-radius: 8px;
         cursor: pointer;
+        position: relative;
     }
     .cardImageBailContainer{
         height: 200px;
@@ -118,11 +99,20 @@ export default {
         background: #191c22;
         height: 50px;
         width: 100%;
-        border-left: #f5365c solid;
-        border-right: #f5365c solid;
         color: #fff;
         text-align: center;
         font-size: 12px;
         padding: 5px;
+         border-left: #f5365c solid;
+        border-right: #f5365c solid;
     }
+    .list-actions{
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        padding: 5px 8px;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+        
 </style>

@@ -10,7 +10,8 @@
                             <SearchForm v-model="search" />
                         </div>
                         <div class="d-flex align-items-center justify-content-end">
-                            <btnAdd  message="Définir une occupation" v-b-modal.occupationForm/>
+                      
+                            <btnAdd  message="Créer un bail" v-b-modal.occupationForm/>
                             <b-button-group  class="mt-n1">
                                 <b-button variant="outline-light" class="text-danger" @click.prevent="goTo('prev')"><i class="fa fa-2x fa-chevron-left"></i></b-button>
                                 <b-button variant="outline-light" class="text-danger" @click.prevent="goTo('next')"><i class="fa fa-2x fa-chevron-right"></i></b-button>
@@ -26,7 +27,7 @@
                         <span class="h4 d-inline-flex ml-2">Vous n'avez défini aucune occupation pour le moment</span>
                     </b-alert> 
                     <div v-else>
-                        <occupation :occupation="occupation" @change="getOccupations"/>
+                        <occupation :occupation="occupation" @change="getOccupations" @makeUpdate="setUpdateOccupation" @showDetails="showDetails"/>
                     </div>
                 </b-overlay>
             </div>
@@ -48,8 +49,8 @@
                                 <dd class="col-11 pl-1 truncate">{{ item.locataire.titre + ' ' + item.locataire.nomLocataire + ' ' + item.locataire.prenomLocataire }}</dd>
                             </dl>
                             <div class="text-center">
-                                <span class="small text-success" v-if="item.dateFin == null">Bail en cours</span>
-                                <span class="small text-danger" v-else>Bail terminé le {{ $date(occupation.dateFin).format('DD MMMM YYYY') }}</span>
+                                <b-badge variant="success" v-if="item.dateFin == null">Bail en cours</b-badge>
+                                <b-badge variant="danger" v-else>Bail terminé le {{ $date(occupation.dateFin).format('DD MMMM YYYY') }}</b-badge>
                             </div>
                         </b-list-group-item>
                     </b-list-group>
@@ -72,21 +73,51 @@
             </div>
         </b-modal>-->
         
-        <!--MODAL POUR AJOUTER OU MODIFIER UN LOGEMENT-->
-        <b-modal id="occupationForm" ref="occupation-form" size="lg" :title="title" ok-title="Fermer" ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
+        <!--MODAL POUR AJOUTER OU MODIFIER UNE OCCUPATION-->
+        <b-modal id="occupationForm" ref="occupation-form" size="xl" :title="title" hide-footer no-close-on-backdrop hide-header-close>
             <template #modal-title>
                 <span class="ml-4 text-form-occupation">{{ title }}</span>
             </template>
             <div>
-                <occupation-form  @occupationAdded="addedOccupation" :action="action" :provenance="provenance"   @createLogementSecond="goToLogement" @createLocataire="gotToLocataire"/>
+                <occupation-form  @occupationAdded="addedOccupation" :action="action" :provenance="provenance"   @createLogementSecond="goToLogement" @createLocataire="gotToLocataire" @closeOccupationModal="resetOccupationFormProps"/>
             </div>
         </b-modal>
+
+
+        <!--MODAL POUR AFFICHER LE CONTRAT DE BAIL-->
+        <div
+            v-if="occupation"
+            class="modal fade edit-layout-modal"
+            id="editLayoutItem"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="editLayoutItemLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editLayoutItemLabel">
+                        Contrat de l'occupation :
+                        <b>{{ occupation.idOccupation }}</b>.
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body pt-2">
+                        <contrat-occupation :occupation="occupation" />
+                    </div>
+                </div>
+            </div>
+        </div>
   </div>
 </template>
 <script>
   //import OccupationForm from "@/components/_gestion-immobiliere/OccupationForm.vue";
   import OccupationForm from "@/views/gestion-immobiliere/occupations/OccupationForm.vue";
 
+import contratOccupation from './occupations/contratOccupation.vue';
 import Occupation from './occupations/Occupation.vue';
 import SearchForm from "@/components/parts/SearchForm.vue";
 
@@ -99,9 +130,10 @@ export default {
   //  DetailsOccupation,
     Occupation,
     SearchForm,
+    contratOccupation
   },
   data: () => ({
-     title:"Affecter une occupation",
+     title:"Ouverture du contrat de bail",
      action:"add",
      search: null,
      showOverlay: true,
@@ -244,25 +276,49 @@ export default {
                 this.autoDetailsTarget()
             })
      },
-     updateOccupation(occupation) {
-           console.log("occupation",occupation)
-      },
+
       removeOccupation(occupation) {
            console.log("occupation",occupation)
       },
-      showDetails(occupation) {
-        this.occupation = occupation
-        setTimeout(() => {
-            $('#editLayoutItem').modal('show')
-            $('#editLayoutItem').on('hide.bs.modal', (e) => {
-                this.occupation = null
-            })
-            $('#editLayoutItem').on('hidden.bs.modal', (e) => {
-                this.occupation = null
-            })
-        }, 100)          
-      },
-  
+
+
+      /**
+     * Affiche les details d'un logement
+     *
+     * @param {Object} occupation
+     */
+    showDetails(occupation) {
+      this.occupation = occupation;
+      setTimeout(() => {
+        $("#editLayoutItem").modal("show");
+        $("#editLayoutItem").on("hide.bs.modal", e => {
+          this.occupation = null;
+        });
+        $("#editLayoutItem").on("hidden.bs.modal", e => {
+          this.occupation = null;
+        });
+      }, 100);
+    },
+     //edit de l'occupation
+     setUpdateOccupation(occupation){
+        this.action='edit'
+        console.log("occupation", occupation);
+        this.occupation=occupation
+        this.$refs['occupation-form'].show();
+        this.title="Edition du contrat de bail"
+     },
+     //methode pour fermer le modal de creation / edit d'une occupation
+     resetOccupationFormProps(){
+          this.action='add'
+          this.title="Ouverture du contrat de bail"
+          this.$bvModal.hide('occupationForm')
+          this.occupation = {
+                loyer: null, mode: null, energie: "index", eau: "index",
+                puEnergie: null, puEau: null, idLogement: null, idLocataire: null, debut: null, indexEnergie: 0,
+                indexEau: 0, endLastBail: false, avance: 1, contrats: null, dureeBail: 0,
+                caution: 1
+            }
+     }
       
     
     
@@ -303,14 +359,34 @@ html, body {
         cursor: pointer;
         background-color: rgba(255, 255, 255, 0.8);
     }
+    .occupations-sidenav .list-group-item.active {
+        background: #f5365c;
+        border-color: #f5365c;
+    }
 
 
 .occupations-sidenav a:hover {
   color: #f1f1f1;
 }
+.list-group-item.active {
+    background: rgb(245, 54, 92) !important;
+    border: none;
+}
+.list-group-item.active .text-muted {
+    color: #fff !important;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: red !important;
+    color: #fff;
+}
+
 
 @media screen and (max-height: 450px) {
   .occupations-sidenav {padding-top: 15px;}
   .occupations-sidenav a {font-size: 18px;}
+}
+.modal-dialog {
+    max-width: 75%!important;
 }
 </style>

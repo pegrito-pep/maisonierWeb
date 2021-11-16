@@ -97,6 +97,17 @@ export default {
      title:"Ajouter un locataire"
 
   }),
+
+  watch: {
+      search(value) {
+      this.habitants = !php.empty(value)
+        ? this.trueHabitants.filter(elt =>
+            elt.nomLocataire.toLowerCase().includes(value.toLowerCase()) || elt.prenomLocataire.toLowerCase().includes(value.toLowerCase())
+          )
+        : this.trueHabitants;
+    
+    }
+  },
   computed: {
         /**
          * Elements affichés avec prise en charge de la pagination
@@ -113,10 +124,10 @@ export default {
         this.getHabitants()
     },
     mounted(){
-
      this.$root.$on('show-detail-occupation', (occupation) => {
          $('#editLayoutItem').modal('hide')
      })
+
     },
     methods: {
         //traitement de l'évènement émis d'ajout d'un locataire

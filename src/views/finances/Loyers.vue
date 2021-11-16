@@ -46,7 +46,7 @@
                                             </span>    
                                         </b-td>
                                         <b-td class="p-1">
-                                            <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.locataire.titre + ' ' + occupation.locataire.nomLocataire + ' ' + occupation.locataire.prenomLocataire }}</span>    
+                                            <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ /*occupation.locataire.titre + ' ' +*/ occupation.locataire.nomLocataire + ' ' + occupation.locataire.prenomLocataire }}</span>    
                                             <span class="d-inline-block w-100 mt-1 text-muted">{{ occupation.locataire.tel + ' / ' + occupation.locataire.email }}</span>    
                                         </b-td>
                                         <b-td class="p-1" v-html="_display_loyer(occupation)"></b-td>
@@ -267,6 +267,17 @@ export default {
      printList: false,
      printSingle: false
   }),
+  watch: {
+       search(value) {
+      this.occupations = !php.empty(value)
+        ? this.trueOccupations.filter(elt =>
+            elt.locataire.nomLocataire.toLowerCase().includes(value.toLowerCase()) ||
+            elt.locataire.prenomLocataire.toLowerCase().includes(value.toLowerCase()) ||
+            elt.logement.refLogement.toLowerCase().includes(value.toLowerCase())
+          )
+        : this.trueOccupations;
+    }
+  },
   computed: {
         /**
          * Elements affichés avec prise en charge de la pagination
@@ -519,17 +530,17 @@ export default {
         _check_if_buy_consommation(occupation, type) {
             const consommation = this._calcul_consommation(occupation, type)
             if (consommation == 0) {
-                return [-1, consommation, null]
+                return [-1, consommation, 0]
             }
             const indexes = occupation.indexes.filter(elt => elt.typeIndexe == type)
             if (!php.empty(indexes)) {
                 let indexeMois = this.getIndexesPeriode(this.periodeCourante, indexes)[0]
                 if (!php.empty(indexeMois)) {
                     if (consommation > indexeMois.avance) {
-                        return [2, consommation, indexeMois.avance]
+                        return [2, consommation, indexeMois.avance || 0]
                     }
                     if (consommation <= indexeMois.avance) {
-                        return [1, consommation, indexeMois.avance]
+                        return [1, consommation, indexeMois.avance || 0]
                     }   
                 }
             }

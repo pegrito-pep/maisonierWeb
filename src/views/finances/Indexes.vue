@@ -23,9 +23,15 @@
                         <span class="h4 d-inline-flex ml-2">Vous n'avez enregistré aucun index pour le moment</span>
                     </b-alert> 
                     <b-row v-else>
-                        <b-col cols="3" v-for="logement in items" :key="logement.idLogement"> 
+                        <b-col cols="3" v-for="logement in items" :key="logement.idLogement" > 
                             <b-card :title="logement.refLogement" :sub-title="logement.sousTypeLogement.libelleSousType">
+                                <div class="row text-white py-1 rounded" style="background: #191c22;">
+                                    <p class="col-12 h6">Index du mois de {{ $dayjs(periodeCourante).subtract(1, 'month').format('MMMM YYYY') }}</p>
+                                    <div class="col-lg-6 col-md-6 col-sm-12">Eau: <span class="font-weight-bold" style="font-size: 16px"> {{ logement.indexeMois.eau }} </span> </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12">Electricité: <span class="font-weight-bold" style="font-size: 16px"> {{ logement.indexeMois.energie }} </span></div>
+                                </div>
                                 <hr>
+                                <h6 class="font-weight-bold">Entrez les nouveaux index</h6>
                                 <b-form-group label="Indexe eau">
                                     <b-input-group>
                                         <b-form-input size="sm" type="number" min="0" v-model="logement.indexeMois.eau" />
@@ -34,7 +40,7 @@
                                         </b-input-group-append>
                                     </b-input-group>
                                 </b-form-group>
-                                <b-form-group label="Indexe électricité">
+                                <b-form-group label="Indexe électricité" style="margin-top: -25px;">
                                     <b-input-group>
                                         <b-form-input type="number" min="0" v-model="logement.indexeMois.energie" />
                                         <b-input-group-append>
@@ -144,10 +150,17 @@ export default {
                 limit = current == this.periode.annee ? date.getMonth() : 11
             for (let i = 0; i <= limit; i++) {
                 date.setMonth(i)
-                mois.push({ value: i, text: php.ucfirst(this.$dayjs(date).format('MMMM')) })
+                mois.push({ value: i, text: this.$dayjs(date).format('MMM') })
             }
 
             return mois
+        },
+        periodeCourante() {
+            let periode = this.periode.mois + 1
+            if (periode < 10) {
+                periode = '0'+periode
+            }
+            return this.periode.annee + '-' +  periode + '-01'
         }
     },
 

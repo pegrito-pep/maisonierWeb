@@ -99,7 +99,6 @@
             :index="section_photo.index"
             @hide="section_photo_handleHide"
           />
-          <hr />
           <h2 class="text-capitalize font-weight-bold fs-4 my-4">
             Caractéristiques approfondies
           </h2>
@@ -182,7 +181,7 @@
                 <td>Etat du logement</td>
                 <td>
                   <b-badge
-                    v-if="!annonce.logement.etatLogement"
+                    v-if="annonce.logement.etatLogement"
                     class="mt--1 mr-2 btn bg-badge background rounded-pill"
                   >
                     <small class="fa-sm">Logement occupé</small>
@@ -374,10 +373,6 @@ p.description::first-letter {
 }
 .background {
   background: #f5365c;
-}
-.current-picture {
-  width: 24rem;
-  height: 24rem;
 }
 
 

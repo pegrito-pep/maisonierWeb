@@ -8,10 +8,10 @@ import axios from "axios";
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 const env = process.env.NODE_ENV || 'development'
-//let baseURL = 'http://192.168.100.19:4002/api'
-let baseURL = 'https://fse-le-maisonier.herokuapp.com/api'
+let baseURL = 'https://fse-le-maisonier.herokuapp.com/api';
+// let baseURL = 'http://localhost:4002/api'
 if (env === 'production') {
-    baseURL = 'https://fse-le-maisonier.herokuapp.com/api'
+    baseURL = 'https://fse-le-maisonier.herokuapp.com/api';
 }
 else if (env === 'test') {
 

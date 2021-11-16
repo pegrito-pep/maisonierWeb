@@ -15,9 +15,10 @@
             <div class="nav-container">
                 <nav id="main-menu-navigation" class="navigation-main">
                     <div class="nav-item"><b-link :to="{name: 'home'}"><i style="color:whitesmoke;font-size:.9rem;" class="ik ik-monitor"></i><span>Accueil</span></b-link></div>
+                    <div class="nav-item"><b-link :to="{name: 'dashbord'}"><i style="color:whitesmoke;font-size:.9rem;" class="fa fa-tachometer-alt"></i><span>Tableau de bord</span></b-link></div>
                     
                     <div class="nav-item has-sub">
-                        <b-link :to="{name: 'patrimoine'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-city"></i><span>Patrimoine immobilier</span></b-link>
+                        <b-link :to="{name: 'cites'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-city"></i><span>Patrimoine immobilier</span></b-link>
                         <div class="submenu-content" style="background:#f3f3f32c;">
                             <b-link :to="{name: 'cites'}" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="fas fa-city"></i><span>Mes cités</span></b-link>
                             <b-link :to="{name: 'batiments'}" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="fa fa-building"></i><span>Mes batiments</span></b-link>
@@ -26,11 +27,18 @@
                     </div>
 
                     <div class="nav-item has-sub">
-                        <b-link :to="{name: 'gestion'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-ad"></i><span>Gestion immobilière</span></b-link>
+                        <b-link :to="{name: 'annonces'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-ad"></i><span>Gestion immobilière</span></b-link>
                         <div class="submenu-content" style="background:#f3f3f32c;">
                             <b-link :to="{name: 'annonces'}" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="fas fa-ad"></i><span>Mes annonces</span></b-link>
                             <b-link :to="{name: 'occupations'}" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="fa fa-building"></i><span>Mes occupations</span></b-link>
-                            <b-link :to="{name: 'habitants'}" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="fas fa-users"></i><span>Mes habitants</span></b-link>
+                        </div>
+                    </div>
+
+                     <div class="nav-item has-sub">
+                        <b-link :to="{name: 'habitants'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-ad"></i><span>Locations</span></b-link>
+                        <div class="submenu-content" style="background:#f3f3f32c;">
+                            <b-link :to="{name: 'habitants'}" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="fas fa-user-tie"></i><span>Mes habitants</span></b-link>
+                            <b-link :to="{name: 'insolvables'}" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="fa fa-users"></i><span>Insolvables</span></b-link>
                         </div>
                     </div>
 
@@ -46,12 +54,13 @@
                     </div>
                     
                     <div class="nav-item has-sub">
-                        <b-link :to="{name: 'articles'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-city"></i><span>Configuration et Aide</span></b-link>
+                        <b-link :to="{name: 'contrats'}"><i style="color:whitesmoke;font-size:.9rem;" class="fas fa-city"></i><span>Configuration et Aide</span></b-link>
                         <div class="submenu-content" style="background:#f3f3f32c;">
-                            <b-link :to="{name: 'articles'}" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="fas fa-newspaper"></i><span>Mes Articles et Rubriques</span></b-link>
-                            <b-link :to="{name: 'contrat'}" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="fas fa-file-signature"></i><span>Templates Contrats</span></b-link>
-                            <b-link :to="{name: 'contrats'}" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="ik ik-feather"></i><span>Mes contrats</span></b-link>
-                            <a href="javascript:void(0)" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="ik ik-monitor"></i><span>Documentation</span></a>
+                           <!-- <b-link :to="{name: 'articles'}" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="fas fa-newspaper"></i><span>Mes Articles et Rubriques</span></b-link>
+                            <b-link :to="{name: 'contrat'}" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="fas fa-file-signature"></i><span>Templates Contrats</span></b-link>-->
+                            <b-link :to="{name: 'contrats'}" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="ik ik-feather"></i><span>Modèles de contrats</span></b-link>
+                            <!--<a href="javascript:void(0)" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="ik ik-monitor"></i><span>Documentation</span></a>-->
+                            <b-link :to="{name: 'doc'}" class="menu-item"><i style="color:#f5365c;font-size:.9rem;" class="ik ik-monitor"></i><span>Documentation</span></b-link>
                         </div>
                     </div>
                     

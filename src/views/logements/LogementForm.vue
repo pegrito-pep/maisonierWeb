@@ -50,40 +50,43 @@
                             v-model="logement.description"
                             placeholder="Ajouter une description à votre logement"
                             size="sm"
+                            rows="6"
                             ></b-form-textarea>
                         </div>
                     </b-col>
+                     <b-col> 
+                        <b-row>
+                            <label for="exampleInputUsername1">Prix Minimal</label>
+                            <input type="number" step="1000" min="1000" class="form-control" id="prixMin" required placeholder="Prix Minimal Ex:18500" v-model="logement.prixMin">
+                            <span v-if="!requiredPrixMin" style="color:red;">Le prix minimal est obligatoire</span>
+                        </b-row>
+                        <b-row class="pt-2">
+                            <label for="exampleInputUsername1">Prix Maximal</label>
+                            <input type="number" step="1000" min="1000" class="form-control" id="prixMax" required placeholder="Prix Maximal Ex:21000" v-model="logement.prixMax">
+                            <span v-if="!requiredPrixMax" style="color:red;">Le prix maximal est obligatoire</span>
+                        </b-row>
+                    </b-col>
                 </b-row>
                 <b-form-checkbox :disabled="batiment != null" v-model="showSelectBatiment" switch class="mb-2">
-                    <span class="fa-lg">Votre logement est-il associé à un batiment ?</span>
+                    <!--<span class="fa-lg">Votre logement est-il associé à un batiment ?</span>-->
+                    <span class="fa-lg" v-if="!showSelectBatiment">Votre logement est-il associé à un batiment ?</span>
+                    <span class="fa-lg" v-if="showSelectBatiment">Bien vouloir choisir le batiment concerné</span>
                 </b-form-checkbox>
                 <transition enter-active-class="animated zoomIn">
-                    <b-form-group label="Batiment associé" v-if="showSelectBatiment">
-                        <v-select :disabled="batiment != null" :options="tousLesBatiments" v-model="idBatiment" :reduce="batiment => batiment.idBatiment" label="nomBatiment">
-                            <template #option="{ nomBatiment, refBatiment, cite }">
-                                {{ nomBatiment }}
-                                <br />
-                                <span class="text-muted">Reference: {{ refBatiment }}</span><br />
-                                <small class="text-muted" v-if="cite != null">Cité: {{ cite.nomCite }}</small>
-                                <hr class="m-0">
-                            </template>
-                        </v-select>
-                    </b-form-group>
+                    <b-row v-if="showSelectBatiment">
+                        <b-col class="col-6">
+                            <v-select :disabled="batiment != null" :options="tousLesBatiments" v-model="idBatiment" :reduce="batiment => batiment.idBatiment" label="nomBatiment" @input="selectAdresseBatiment">
+                                <template #option="{ nomBatiment, refBatiment, cite }">
+                                    {{ nomBatiment }}
+                                    <br />
+                                    <span class="text-muted">Reference: {{ refBatiment }}</span><br />
+                                    <small class="text-muted" v-if="cite != null">Cité: {{ cite.nomCite }}</small>
+                                    <hr class="m-0">
+                                </template>
+                            </v-select>
+                        </b-col>
+                    </b-row>
                 </transition>
-            </tab-content>
-            <tab-content title="Informations sur le coût"
-                        icon="fas fa-money-check-alt"
-                        :before-change="validateSecond">
-                <div class="form-group">
-                    <label for="exampleInputUsername1">Prix Minimal</label>
-                    <input type="number" step="1000" min="1000" class="form-control" id="prixMin" required placeholder="Prix Minimal Ex:18500" v-model="logement.prixMin">
-                        <span v-if="!requiredPrixMin" style="color:red;">Le prix minimal est obligatoire</span>
-                    </div>
-                <div class="form-group">
-                    <label for="exampleInputUsername1">Prix Maximal</label>
-                    <input type="number" step="1000" min="1000" class="form-control" id="prixMax" required placeholder="Prix Maximal Ex:21000" v-model="logement.prixMax">
-                    <span v-if="!requiredPrixMax" style="color:red;">Le prix maximal est obligatoire</span>
-                    </div>
             </tab-content>
             <tab-content title="Photos du logement" icon="fas fa-image" :before-change="validateThird">
                 <div
@@ -103,50 +106,47 @@
                 </div>
             </tab-content>
             <tab-content title="Localisation du logement" icon="fa fa-map-marker" :before-change="validateFour">
-                <div class="form-group">
-                    <label>Pays </label>
-                    <b-form-select
-                        v-model="logement.pays"
-                        :options="tousLesPays"
-                        class="mb-3"
-                        value-field="name"
-                        text-field="name"
-                    ></b-form-select>
-                    <span v-if="!requiredPays" style="color:red;">Vous devez selectionner un pays</span>
-                </div>
-                <div class="form-group">
-                    <label>Ville </label>
-                    <input type="text" class="form-control" id="ville" required placeholder="Ville Ex:Yaoundé" v-model="logement.ville">
-                    <span v-if="!requiredVille" style="color:red;">Ville obligatoire</span>
-                </div>
-                <div class="form-group">
-                    <label>Quartier </label>
-                    <input type="text" class="form-control" id="quartier" required placeholder="Quartier Ex:Nsam" v-model="logement.quartier">
-                    <span v-if="!requiredQuartier" style="color:red;">Quartier obligatoire</span>
-                </div>
-            </tab-content>
-            <tab-content title="Coordonnées du logement" icon="ik ik-map-pin" :before-change="validateFive">
-                
                 <b-row>
-                    <b-col> 
-                        <div class="form-group">
+                    <b-col>
+                        <b-row>
+                            <div class="form-group">
+                                <label>Pays </label>
+                                 <b-form-select
+                                    v-model="logement.pays"
+                                    :options="tousLesPays"
+                                    class="mb-3"
+                                    value-field="name"
+                                    text-field="name"
+                                    :disabled="idBatiment!=null&&showSelectBatiment==true"
+                                ></b-form-select>
+                                <span v-if="!requiredPays" style="color:red;">Vous devez selectionner un pays</span>
+                            </div>
+                        </b-row>
+                        <b-row>
+                            <b-col>
+                                <label>Ville </label>
+                                <input type="text" class="form-control" id="ville" required placeholder="Ville Ex:Yaoundé" v-model="logement.ville" :disabled="idBatiment!=null&&showSelectBatiment==true">
+                                <span v-if="!requiredVille" style="color:red;">Ville obligatoire</span>
+                            </b-col>
+                            <b-col>
+                                <label>Quartier </label>
+                                <input type="text" class="form-control" id="quartier" required placeholder="Quartier Ex:Nsam" v-model="logement.quartier">
+                                <span v-if="!requiredQuartier" style="color:red;">Quartier obligatoire</span>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                    <b-col>
+                        <b-row class="ml-4 mt-2">
                             <label>Latitude </label>
                             <input type="text" class="form-control" id="lat" v-model="mapCoordinates.lat">
-                        </div>
-                    </b-col>
-                    <b-col> 
-                        <div class="form-group">
+                        </b-row>
+                        <b-row class="ml-4  mt-4">
                             <label>Longitude </label>
                             <input type="text" class="form-control" id="longitude" v-model="mapCoordinates.lng">
-                        </div>
+                        </b-row>
                     </b-col>
                 </b-row>
                 <div>
-                    <h1>Coordonnées de ma position:</h1>
-                    <p>{{ myCoordinates.lat }} Latitude, {{ myCoordinates.lng }} Longitude</p>
-                </div>
-                <div>
-                    <!--<b-button @click="drawMarker">placer le marker</b-button>-->
                     <GmapMap
                         :center="myCoordinates"
                         :zoom="zoom"
@@ -166,128 +166,97 @@
                 </div>
             </tab-content>
             <tab-content title="Caractéristiques approfondies du logement" icon="fa fa-list">
-        
-            
-            <b-row>
-                <b-col> 
-                    <label>Nombre de chambre<span v-if="logement.nbchambre >1">(s)</span></label>
-                    <b-input-group>
-                        <b-input-group-prepend>
-                            <b-btn variant="outline-info" @click="logement.nbchambre--">-</b-btn>
-                        </b-input-group-prepend>
-                            <b-form-input type="number" min="0.00" v-model="logement.nbchambre"></b-form-input>
-                        <b-input-group-append>
-                            <b-btn variant="outline-secondary" @click="logement.nbchambre++">+</b-btn>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-col>
-                <b-col> 
-                    <label>Nombre de cuisine<span v-if="logement.nbcuisine >1">(s)</span></label>
-                    <b-input-group>
-                        <b-input-group-prepend>
-                            <b-btn variant="outline-info" @click="logement.nbcuisine--">-</b-btn>
-                        </b-input-group-prepend>
-                            <b-form-input type="number" min="0.00" v-model="logement.nbcuisine"></b-form-input>
-                        <b-input-group-append>
-                            <b-btn variant="outline-secondary" @click="logement.nbcuisine++">+</b-btn>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-col>
-                <b-col> 
-                    <label>Nombre de Salon<span v-if="logement.nbsalon >1">(s)</span></label>
-                    <b-input-group>
-                        <b-input-group-prepend>
-                            <b-btn variant="outline-info" @click="logement.nbsalon--">-</b-btn>
-                        </b-input-group-prepend>
-                            <b-form-input type="number" min="0.00" v-model="logement.nbsalon"></b-form-input>
-                        <b-input-group-append>
-                            <b-btn variant="outline-secondary" @click="logement.nbsalon++">+</b-btn>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-col>
-                <b-col> 
-                    <label>Nombre de douche<span v-if="logement.nbdouche >1">(s)</span></label>
-                    <b-input-group>
-                        <b-input-group-prepend>
-                            <b-btn variant="outline-info" @click="logement.nbdouche--">-</b-btn>
-                        </b-input-group-prepend>
-                            <b-form-input type="number" min="0.00" v-model="logement.nbdouche"></b-form-input>
-                        <b-input-group-append>
-                            <b-btn variant="outline-secondary" @click="logement.nbdouche++">+</b-btn>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-col>
-            </b-row>
-            <!--<b-row>
-                <b-col> 
-                    <label>Nombre de douche<span v-if="logement.nbdouche >1">(s)</span></label>
-                    <b-input-group>
-                        <b-input-group-prepend>
-                            <b-btn variant="outline-info" @click="logement.nbdouche--">-</b-btn>
-                        </b-input-group-prepend>
-                            <b-form-input type="number" min="0.00" v-model="logement.nbdouche"></b-form-input>
-                        <b-input-group-append>
-                            <b-btn variant="outline-secondary" @click="logement.nbdouche++">+</b-btn>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-col>
-            </b-row>-->
-            <!--<b-row>
-                <b-col> 
-                    <label>Nombre de Garage<span v-if="logement.nbgarage >1">(s)</span></label>
-                    <b-input-group>
-                        <b-input-group-prepend>
-                            <b-btn variant="outline-info" @click="logement.nbgarage--">-</b-btn>
-                        </b-input-group-prepend>
-                            <b-form-input type="number" min="0.00" v-model="logement.nbgarage"></b-form-input>
-                        <b-input-group-append>
-                            <b-btn variant="outline-secondary" @click="logement.nbgarage++">+</b-btn>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-col>
-                <b-col> 
-                    <label>Nombre de Sona<span v-if="logement.nbsona >1">(s)</span></label>
-                    <b-input-group>
-                        <b-input-group-prepend>
-                            <b-btn variant="outline-info" @click="logement.nbsona--">-</b-btn>
-                        </b-input-group-prepend>
-                            <b-form-input type="number" min="0.00" v-model="logement.nbsona"></b-form-input>
-                        <b-input-group-append>
-                            <b-btn variant="outline-secondary" @click="logement.nbsona++">+</b-btn>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-col>
-            </b-row>-->
-
-                <div :id="repeaterId">
-                    <div class="d-flex flex-column justify-content-between" style="height: 95%; overflow-y: auto; overflow-x: hidden">
-                        <div data-repeater-list="group">
-                            <b-row data-repeater-item>
-                                <b-col>
-                                    <b-form-group label="Libellé">
-                                        <b-form-input name="libelle" v-model="libelle" placeholder="Ex: Sona" trim></b-form-input>
-                                    </b-form-group>
-                                </b-col> 
-                                <b-col>
-                                    <b-form-group label="Valeur">
-                                        <b-form-input name="valeur" v-model="valeur" placeholder="Ex: 2" trim></b-form-input>
-                                    </b-form-group>
-                                </b-col> 
-                                <b-col cols="1" class="m-0 p-0 mr-2">
-                                    <b-form-group label="">
-                                        <b-button data-repeater-delete variant="outline-danger" class="mt-4"><i class="ik ik-trash-2"></i></b-button>
-                                    </b-form-group>
-                                </b-col>   
-                            </b-row>   
+                <b-row>
+                    <b-col> 
+                        <label>Nombre de chambre<span v-if="logement.nbchambre >1">(s)</span></label>
+                        <b-input-group>
+                            <b-input-group-prepend>
+                                <b-btn variant="outline-info" @click="logement.nbchambre--">-</b-btn>
+                            </b-input-group-prepend>
+                                <b-form-input type="number" min="0.00" v-model="logement.nbchambre"></b-form-input>
+                            <b-input-group-append>
+                                <b-btn variant="outline-secondary" @click="logement.nbchambre++">+</b-btn>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </b-col>
+                    <b-col> 
+                        <label>Nombre de cuisine<span v-if="logement.nbcuisine >1">(s)</span></label>
+                        <b-input-group>
+                            <b-input-group-prepend>
+                                <b-btn variant="outline-info" @click="logement.nbcuisine--">-</b-btn>
+                            </b-input-group-prepend>
+                                <b-form-input type="number" min="0.00" v-model="logement.nbcuisine"></b-form-input>
+                            <b-input-group-append>
+                                <b-btn variant="outline-secondary" @click="logement.nbcuisine++">+</b-btn>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </b-col>
+                    <b-col> 
+                        <label>Nombre de Salon<span v-if="logement.nbsalon >1">(s)</span></label>
+                        <b-input-group>
+                            <b-input-group-prepend>
+                                <b-btn variant="outline-info" @click="logement.nbsalon--">-</b-btn>
+                            </b-input-group-prepend>
+                                <b-form-input type="number" min="0.00" v-model="logement.nbsalon"></b-form-input>
+                            <b-input-group-append>
+                                <b-btn variant="outline-secondary" @click="logement.nbsalon++">+</b-btn>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </b-col>
+                    <b-col> 
+                        <label>Nombre de douche<span v-if="logement.nbdouche >1">(s)</span></label>
+                        <b-input-group>
+                            <b-input-group-prepend>
+                                <b-btn variant="outline-info" @click="logement.nbdouche--">-</b-btn>
+                            </b-input-group-prepend>
+                                <b-form-input type="number" min="0.00" v-model="logement.nbdouche"></b-form-input>
+                            <b-input-group-append>
+                                <b-btn variant="outline-secondary" @click="logement.nbdouche++">+</b-btn>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </b-col>
+                    <b-col> 
+                        <label>Nombre de parking<span v-if="logement.nbparking >1">(s)</span></label>
+                        <b-input-group>
+                            <b-input-group-prepend>
+                                <b-btn variant="outline-info" @click="logement.nbparking--">-</b-btn>
+                            </b-input-group-prepend>
+                                <b-form-input type="number" min="0.00" v-model="logement.nbparking"></b-form-input>
+                            <b-input-group-append>
+                                <b-btn variant="outline-secondary" @click="logement.nbparking++">+</b-btn>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </b-col>
+                </b-row>
+                <b-card bg-variant="light">
+                      <div style="text-align:center">
+                          <h6 class="text-capitalize font-weight-bold fs-3 mt-2"> Autre(s) caractéristique(s)</h6>
+                        <div :id="repeaterId">
+                            <!--<div class="d-flex flex-column justify-content-between" style="height: 95%; overflow-y: auto; overflow-x: hidden">-->
+                                <div data-repeater-list="group">
+                                    <b-row data-repeater-item class="mb-1 justify-content-center">
+                                       
+                                        <b-col cols="3"  class="p-0">
+                                            <b-form-input list="my-list-id" placeholder=" Ex: Sona" name="libelle" v-model="libelle"></b-form-input>
+                                            <datalist id="my-list-id">
+                                            <option v-for="(caract,i) in caracteristiques" :key="i">{{ caract }}</option>
+                                            </datalist>
+                                        </b-col> 
+                                        <b-col cols="3" class="p-0 ml-2">
+                                            <b-form-input name="valeur" v-model="valeur" placeholder="Quantité Ex: 1" trim></b-form-input>
+                                        </b-col> 
+                                        <b-col cols="1" class="m-0 p-0 ">
+                                            <b-form-group label="">
+                                                <b-button data-repeater-delete variant="outline-danger"><i class="ik ik-trash-2"></i></b-button>
+                                            </b-form-group>
+                                        </b-col>   
+                                    </b-row>   
+                                </div>
+                            <!--</div>-->
+                            <b-button data-repeater-create class="btn btn-success btn-icon mt-2"><i class="ik ik-plus"></i></b-button>
                         </div>
-                    </div>
-                    <b-button data-repeater-create class="btn btn-success btn-icon ml-2 mb-2"><i class="ik ik-plus"></i></b-button>
-                    <!--<div class="w-100 d-flex justify-content-end align-items-center mt-4">
-                         <b-button data-repeater-create class="btn btn-success btn-icon ml-2 mb-2"><i class="ik ik-plus"></i></b-button>
-                        <b-button variant="outline-primary" data-repeater-create>Ajouter une caractéristique</b-button>
-                    </div>-->
-                </div>
-         
+                      </div>
+                </b-card>
             </tab-content>
             <div v-if="action == 'edit'&& indexForm!=5">
                 <hr>
@@ -295,6 +264,9 @@
             </div>
             <div class="leloader" v-if="loadingWizard"></div>
         </form-wizard>
+           <div class="float-right">
+                <b-button @click.prevent="resetModal" variant="secondary">Fermer</b-button>
+            </div>
     </b-overlay> 
 </template>
 <script>
@@ -325,7 +297,7 @@ export default {
             description:"",
             prixMin:"",
             prixMax:"",
-            pays:"",
+            pays:"Cameroun",
             ville:"",
             quartier:"",
             lat:"",
@@ -634,7 +606,8 @@ export default {
         showSelectBatiment:false,
         //cette propriété est utilisée pour controler la bouton de vaidatation lors de l'edit
         indexForm:0,
-        editCaracteristiques:[]
+        editCaracteristiques:[],
+        caracteristiques: ['Jacousi', 'Piscine', 'Sona', 'Buanderie'],
     }),
     components: {
         FormWizard,
@@ -661,7 +634,7 @@ export default {
             },
     },
     methods:{
-        /**methode pour placer ule marker */
+        /**methode pour placer un marker */
         drawMarker(){
             this.markers= [
                 {
@@ -709,7 +682,7 @@ export default {
         validateAsync:function() {
             return new Promise((resolve, reject) => {
                 
-                if(!this.logement.ref || !this.sousType){
+                if(!this.logement.ref || !this.sousType || !this.logement.prixMin || !this.logement.prixMax){
                     this.check=false
                     if(!this.logement.ref){
                         this.reference=""
@@ -717,6 +690,10 @@ export default {
                     else{this.requiredRef=true;}
                     if(!this.sousType){this.requiredSousType=false;}
                     else{this.requiredSousType=true;}
+                    if(!this.logement.prixMin){this.requiredPrixMin=false;}
+                    else {this.requiredPrixMin=true;}
+                    if(!this.logement.prixMax){this.requiredPrixMax=false;}
+                    else{this.requiredPrixMax=true;}
                 }else{
                     this.check=true
                 }
@@ -725,24 +702,8 @@ export default {
             }, 1000)
             })
         },
-            validateSecond:function() {
-            return new Promise((resolve, reject) => {
-                
-                if(!this.logement.prixMin || !this.logement.prixMax){
-                    this.check2=false
-                    if(!this.logement.prixMin){this.requiredPrixMin=false;}
-                    else {this.requiredPrixMin=true;}
-                    if(!this.logement.prixMax){this.requiredPrixMax=false;}
-                    else{this.requiredPrixMax=true;}
-                }else{
-                    this.check2=true
-                }
-            setTimeout(() => {
-                resolve(this.check2)
-            }, 1000)
-            })
-        },
-            validateThird:function() {
+
+        validateThird:function() {
             return new Promise((resolve, reject) => {
 
                     this.check3=true
@@ -807,14 +768,22 @@ export default {
                     {
                         libelle: "douche",
                         valeur: this.logement.nbdouche
+                    },
+                    {
+                        libelle: "parking",
+                        valeur: this.logement.nbparking
                     }
                 ]
 
             }
             let caracteristiquesSupplementaires = $(`#${this.repeaterId}`).repeaterVal().group
-            for(let i=0; i<caracteristiquesSupplementaires.length; i++){
-                data.caracteristiques.push(caracteristiquesSupplementaires[i])
+            if(caracteristiquesSupplementaires!=null&&caracteristiquesSupplementaires.length>0){
+                 for(let i=0; i<caracteristiquesSupplementaires.length; i++){
+                    data.caracteristiques.push(caracteristiquesSupplementaires[i])
+                }
+                console.log('caracteristiquesSupplementaires',caracteristiquesSupplementaires)
             }
+           
 
             if(this.action=='add'){
                 axios.post("logements",data).then(response =>{
@@ -890,18 +859,17 @@ export default {
             console.log("edit data", fileList);
         },
         //liste de tous les pays
-        async getAllCountries(){
+        /*async getAllCountries(){
             let url = 'https://restcountries.eu/rest/v2/all';
             try {
                this.tousLesPays = await fetch(url).then(res =>res.json());
             } catch (error) {
                 console.log(error);
             }
-        },
+        },*/
         //chargement des catégories en focntion du type de logement sélectionné
         changeType(a) {
             this.sousType=[];
-            console.log("type sélectionné ",this.type)
             let data = [];
             for (let i = 0; i < this.sousTypesLogements.length; i++) {
                 data.push(this.sousTypesLogements[i]);
@@ -934,6 +902,21 @@ export default {
                 reader.onload = () => resolve(reader.result);
                 reader.onerror = (error) => reject(error);
             });
+        },
+        /**
+         * Permet de preremplir automatiquement les coordonnées du logement a partir du batiment selectionné
+         */
+        selectAdresseBatiment(idBatiment) {
+            const batiment = this.tousLesBatiments.find(elt => elt.idBatiment == idBatiment)
+            if (batiment) {
+                if (!php.empty(batiment.adresse)) {
+                    this.logement.pays = batiment.adresse.pays || ''            
+                    this.logement.ville = batiment.adresse.ville || ''            
+                    this.logement.quartier = batiment.adresse.quartier || ''            
+                    this.logement.lon = batiment.adresse.lon || ''            
+                    this.logement.lat = batiment.adresse.lat || '' 
+                }
+            }
         }
 
     },
@@ -1073,5 +1056,8 @@ export default {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
   }
+}
+.centered-element{
+    margin-left:27%
 }
 </style>

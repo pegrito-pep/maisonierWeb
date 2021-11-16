@@ -14,15 +14,13 @@ export default {
     name: "SearchForm",
     props: {
         placeholder: { type: String, default: "Rechercher..."},
-        value: { default: null, },
+        value: { required: true, default: ""},
     },
     data: () => ({
         val: null,
     }),
-    mounted: () => {
-        console.log("ldldldld: "+ " this.value")
-        console.log(JSON.parse(JSON.stringify(this.value)))
-        
+    mounted() {
+        this.val = this.value
     }
 }
 </script>

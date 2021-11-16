@@ -27,7 +27,7 @@
                         <h6>{{ user.email }}</h6> 
                         <small class="text-muted d-block pt-10">N° Téléphone</small>
                         <h6>{{ user.tel }}</h6> 
-                        <small class="text-muted d-block pt-30">Le maisonier sur les reseaux sociaux</small>
+                        <small class="text-muted d-block pt-30">Le maisonier sur les réseaux sociaux</small>
                         <br>
                         <button class="btn btn-icon btn-facebook" id="facebook-maisonier"><i class="fab fa-facebook-f"></i></button>
                         <b-tooltip target="facebook-maisonier" placement="top" noninteractive variant="primary">Accéder à la page Facebook du Maisonier</b-tooltip>
@@ -285,6 +285,18 @@ export default {
         ...mapGetters(['user'])
     },
     ...mapState(['user']),
+    mounted() {
+        console.log("==================================================");
+        console.log(this.user);
+        console.log("==================================================");
+        this.updateUser.nom = this.user.nom;
+        this.updateUser.prenom = this.user.prenom;
+        this.updateUser.email = this.user.email;
+        this.updateUser.dateNaiss = this.user.dateNaiss;
+        this.updateUser.profession = this.user.profil.profession;
+        this.updateUser.tel = this.user.tel;
+        this.updateUser.tel2 = this.user.profil.tel2;
+    },
     methods: {
         /**
          * Selection avatar utilisateur conncecté

@@ -1,8 +1,8 @@
 <template>
     <div >
         <page-description :path="[{label: 'Mes cités', route: 'cites',}, {label: 'Mes batiments', route: 'batiments',}, {label: 'Mes logements', route: 'logements',}]" />
-        <Cites v-show=" path == ''" />
-        <router-view />
+        <Cites v-if=" path == ''" />
+        <router-view v-else />
     </div>
 </template>
 

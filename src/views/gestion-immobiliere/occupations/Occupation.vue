@@ -1,7 +1,9 @@
 <template>
     <div>
-        <div class="card-deck">
-            <div class="card col-3">
+        <div class="row justify-content-between positionner">
+                <b-button variant="outline-info" class="mr-1 positionner1" @click.prevent="showContrat"><i class="ik ik-eye"></i>Consulter le contrat</b-button>
+                <b-button variant="outline-warning" class="mr-1 positionner2" @click.prevent="$emit('makeUpdate', occupation)"><i class="ik ik-edit-1"></i>Editer l'occupation</b-button>
+            <div class="card col-lg-3 col-md-12 col-sm-12">
                 <div class="card-body">
                     <div class="text-center"> 
                         <h4 class="card-title">Occupation n° {{ occupation.idOccupation }}</h4>
@@ -10,7 +12,7 @@
                             <b-badge variant="success" v-else>Bail en cours</b-badge>
                         </div>
                         <div v-else>
-                            <b-badge variant="danger">Bail terminé le {{ $date(occupation.dateFin).format('DD MMMM YYYY') }}</b-badge>
+                            <b-badge variant="danger">Bail terminé le <br> {{ $date(occupation.dateFin).format('DD MMMM YYYY') }}</b-badge>
                         </div>
                     </div>
                 </div>
@@ -39,95 +41,110 @@
                     <span class="d-inline-block w-100 mb-1 text-center text-muted">{{ occupation.locataire.profession }}</span>    
                     <div class="jumbotron pt-10 pb-10 px-2">
                         <dl class="row text-muted">
-                            <dd class="mt-1 col-1"><i class="fa fa-id-card"></i></dd>
-                            <dt class="mt-1 col-10 truncate" v-b-tooltip="'Numéro de CNI'">{{ occupation.locataire.cniLocataire }}</dt>
-                            <dd class="mt-1 col-1"><i class="fa fa-phone"></i></dd>
-                            <dt class="mt-1 col-10 truncate" v-b-tooltip="'Numéro de téléphone'">{{ occupation.locataire.tel + ' / ' + occupation.locataire.tel2 }}</dt>
-                            <dd class="mt-1 col-1"><i class="fa fa-envelope"></i></dd>
-                            <dt class="mt-1 col-10 truncate" v-b-tooltip="'Email'">{{ occupation.locataire.email + ' / ' + occupation.locataire.email2 }}</dt>
-                            <dd class="mt-1 col-1"><i class="fas fa-calendar-alt"></i></dd>
-                            <dt class="mt-1 col-10 truncate" v-b-tooltip="'Date de naissance'">{{ $date(occupation.locataire.dateNaiss).format('DD MMMM YYYY') }}</dt>
+                            <div class="d-flex pl-3 w-100">
+                                <dd class="mt-1"><i class="fa fa-id-card"></i></dd>
+                                <dt class="mt-1 ml-3 truncate" v-b-tooltip="'Numéro de CNI'">{{ occupation.locataire.cniLocataire }}</dt>
+                            </div>
+                            <div class="d-flex pl-3 w-100">
+                                <dd class="mt-1"><i class="fa fa-phone"></i></dd>
+                                <dt class="mt-1 ml-3 truncate" v-b-tooltip="'Numéro de téléphone'">{{ occupation.locataire.tel + ' / ' + occupation.locataire.tel2 }}</dt>
+                            </div>
+                            <div class="d-flex pl-3 w-100">
+                                <dd class="mt-1"><i class="fa fa-envelope"></i></dd>
+                                <dt class="mt-1 ml-3 truncate" v-b-tooltip="'Email'">{{ occupation.locataire.email + ' / ' + occupation.locataire.email2 }}</dt>
+                            </div>
+                            <div class="d-flex pl-3 w-100">
+                                <dd class="mt-1"><i class="fas fa-calendar-alt"></i></dd>
+                                <dt class="mt-1 ml-3 truncate" v-b-tooltip="'Date de naissance'">{{ $date(occupation.locataire.dateNaiss).format('DD MMMM YYYY') }}</dt>
+                            </div>
                         </dl>
-                        <b-button to="#" size="sm" block variant="outline-secondary">Voir le dossier</b-button>
+                        <b-button :to="{name: 'habitants', query: {target: occupation.locataire.idLocataire}}" size="sm" block variant="outline-secondary">Voir le dossier</b-button>
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
-                        <hr class="w-25 bg-danger"> Logement <hr class="w-25 bg-danger">
+                        <hr class="w-25 bg-danger">Logement<hr class="w-25 bg-danger">
                     </div>
                     <span class="d-inline-block w-100 mb-1 text-center">{{ occupation.logement.refLogement }}</span>    
                     <span class="d-inline-block w-100 mb-1 text-center text-muted">{{ occupation.logement.sousTypeLogement.libelleSousType }}</span>    
                     <div class="jumbotron pt-10 pb-10 px-2">
                         <dl class="row text-muted">
-                            <dd class="mt-1 col-1"><i class="fa fa-dollar-sign"></i></dd>
-                            <dt class="mt-1 col-10 truncate" v-b-tooltip="'Plage de loyer'">{{ occupation.logement.prixMin + 'F' }} - {{ occupation.logement.prixMax + 'F' }}</dt>
-                            <dd class="mt-1 col-1"><i class="fa fa-map-marker-alt"></i></dd>
-                            <dt class="mt-1 col-10 truncate" v-b-tooltip="'Localisation'">{{ occupation.logement.adresse.ville + ' ' + occupation.logement.adresse.pays }}</dt>
-                            <dd v-if="occupation.logement.batiment" class="mt-1 col-1"><i class="fa fa-building"></i></dd>
-                            <dt v-if="occupation.logement.batiment" class="mt-1 col-10 truncate" v-b-tooltip="'Batiment'">{{ occupation.logement.batiment.nomBatiment }}</dt>
-                            <dd v-if="occupation.logement.batiment" class="mt-1 col-1"><i class="fas fa-city"></i></dd>
-                            <dt v-if="occupation.logement.batiment" class="mt-1 col-10 truncate" v-b-tooltip="'Cité'">{{ occupation.logement.batiment.cite.nomCite }}</dt>
+                            <div class="d-flex pl-3 w-100">
+                                <dd class="mt-1"><i class="fa fa-dollar-sign"></i></dd>
+                                <dt class="mt-1 ml-3 truncate" v-b-tooltip="'Plage de loyer'">{{ occupation.logement.prixMin + 'F' }} - {{ occupation.logement.prixMax + 'F' }}</dt>
+                            </div>
+                            <div class="d-flex pl-3 w-100">
+                                <dd class="mt-1"><i class="fa fa-map-marker-alt"></i></dd>
+                                <dt class="mt-1 ml-3 truncate" v-b-tooltip="'Localisation'">{{ occupation.logement.adresse.ville + ' ' + occupation.logement.adresse.pays }}</dt>
+                            </div>
+                            <div class="d-flex pl-3 w-100">
+                                <dd v-if="occupation.logement.batiment" class="mt-1"><i class="fa fa-building"></i></dd>
+                                <dt v-if="occupation.logement.batiment" class="mt-1 ml-3 truncate" v-b-tooltip="'Batiment'">{{ occupation.logement.batiment.nomBatiment }}</dt>
+                            </div>
+                            <div class="d-flex pl-3 w-100">
+                                <dd v-if="occupation.logement.batiment" class="mt-1"><i class="fas fa-city"></i></dd>
+                                <dt v-if="occupation.logement.batiment" class="mt-1 ml-3 truncate" v-b-tooltip="'Cité'">{{ occupation.logement.batiment.cite.nomCite }}</dt>
+                            </div>
                         </dl>
                         <b-button :to="{name: 'logements', query: {target: occupation.logement.idLogement}}" size="sm" block variant="outline-secondary">Voir les details</b-button>
                     </div>
                 </div>
             </div>
-            
-            <div class="card">
-                <ul class="nav nav-pills custom-pills" id="pills-tab" role="tablist">
+            <div class="card col-lg-9 col-md-12 col-sm-12">
+                <ul class="nav nav-pills custom-pills" id="pills-tab" role="tablist" >
                     <li class="nav-item">
-                        <a class="nav-link active" data-toggle="pill" href="#generalites">Généralités</a>
+                        <a class="nav-link active font-weight-bold h6" data-toggle="pill" href="#generalites">Généralités</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="pill" href="#loyers">Loyers</a>
+                        <a class="nav-link font-weight-bold h6" data-toggle="pill" href="#loyers">Loyers</a>
                     </li>
                       <li class="nav-item">
-                        <a class="nav-link" data-toggle="pill" href="#charges">charges</a>
+                        <a class="nav-link font-weight-bold h6" data-toggle="pill" href="#charges">charges</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="pill" href="#indexes">Indexes</a>
+                        <a class="nav-link font-weight-bold h6" data-toggle="pill" href="#indexes">Indexes</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" data-toggle="pill" href="#comptes">Comptes</a></li>
+                    <li class="nav-item"><a class="nav-link font-weight-bold h6" data-toggle="pill" href="#comptes">Comptes</a></li>
                 </ul>
                 <div class="tab-content" id="pills-tabContent">
                     <div class="tab-pane fade show active" id="generalites">
                         <div class="card-body">
-                            <h4 class="border-bottom">Information</h4>
-                            <b-row class="mb-1">
-                                <b-col>
-                                    <dl class="row text-muted">
-                                        <dd class="mt-1 col-5">Loyer</dd>
-                                        <dt class="mt-1 col-7">{{ occupation.loyerBase + ' F' }}</dt>
-                                        <dd class="mt-1 col-5">Mode de paiement</dd>
-                                        <dt class="mt-1 col-7">{{ occupation.modePaiement }}</dt>
-                                        <dd class="mt-1 col-5">Date de debut du bail</dd>
-                                        <dt class="mt-1 col-7">{{ $date(occupation.dateDeb).format('dddd, DD MMMM YYYY') }}</dt>
-                                        <dd class="mt-1 col-5" v-if="occupation.dateFin">Date de fin du bail</dd>
-                                        <dt class="mt-1 col-7" v-if="occupation.dateFin">{{ $date(occupation.dateFin).format('dddd, DD MMMM YYYY') }}</dt>
-                                        <dd class="mt-1 col-5">Occupation créée le</dd>
-                                        <dt class="mt-1 col-7">{{ $date(occupation.createdAt).format('dddd, DD MMMM YYYY HH:mm') }}</dt>
+                            <h4 class="border-bottom h1">Informations</h4>
+                            <b-row class="mb-1 row">
+                                <div class="text-dark pt-2 rounded col-lg-6 col-md-12 col-sm-12 my-2" style="background: #fff;">
+                                    <dl class="row" >
+                                        <dd class="mt-1 col-6 h6 font-weight-bold ">Loyer</dd>
+                                        <dt class="mt-1 col-6"> <span class="" style="">{{ occupation.loyerBase + ' FCFA' }}</span> </dt>
+                                        <dd class="mt-1 col-6 h6 font-weight-bold">Mode de paiement</dd>
+                                        <dt class="mt-1 col-6"><span class="" style=""> {{ occupation.modePaiement }}</span></dt>
+                                        <dd class="mt-1 col-6 h6 font-weight-bold">Date de début du bail</dd>
+                                        <dt class="mt-1 col-6">{{ $date(occupation.dateDeb).format('dddd, DD MMMM YYYY') }}</dt>
+                                        <dd class="mt-1 col-6 h6 font-weight-bold" v-if="occupation.dateFin">Date de fin du bail</dd>
+                                        <dt class="mt-1 col-6" v-if="occupation.dateFin">{{ $date(occupation.dateFin).format('dddd, DD MMMM YYYY') }}</dt>
+                                        <dd class="mt-1 col-6 h6 font-weight-bold">Occupation créée le</dd>
+                                        <dt class="mt-1 col-6">{{ $date(occupation.createdAt).format('dddd, DD MMMM YYYY HH:mm') }}</dt>
                                     </dl>
-                                </b-col>
-                                <b-col>
-                                    <dl class="row text-muted">
-                                        <dd class="mt-1 col-5">Nombre de mois d'avance</dd>
-                                        <dt class="mt-1 col-7">{{ occupation.loyerBase + ' F' }}</dt>
-                                        <dd class="mt-1 col-5">Caution payé</dd>
-                                        <dt class="mt-1 col-7">{{ occupation.modePaiement }}</dt>
-                                        <dd class="mt-1 col-5">Facturation d'energie</dd>
-                                        <dt class="mt-1 col-7">{{ occupation.puEnergie + 'F' }} par {{ occupation.modeEnergie == 'index' ? 'kw' : 'mois' }}</dt>
-                                        <dd class="mt-1 col-5">Facturation d'eau</dd>
-                                        <dt class="mt-1 col-7">{{ occupation.puEau + 'F' }} par <span v-if="occupation.modeEau == 'index'">m<sup>3</sup></span><span v-else>mois</span></dt>
+                                </div>
+                                <div class="text-dark pt-2 rounded col-lg-6 col-md-12 col-sm-12 my-2" style="background: #fff;">
+                                    <dl class="row">
+                                        <dd class="mt-1 col-6 h6 font-weight-bold">Nombre de mois d'avance</dd>
+                                        <dt class="mt-1 col-6"> <span class="" style="">{{ occupation.loyerBase + ' FCFA' }}</span></dt>
+                                        <dd class="mt-1 col-6 h6 font-weight-bold">Caution payée</dd>
+                                        <dt class="mt-1 col-6"><span class="" style=""> {{ occupation.modePaiement }}</span></dt>
+                                        <dd class="mt-1 col-6 h6 font-weight-bold">Facturation d'energie</dd>
+                                        <dt class="mt-1 col-6">{{ occupation.puEnergie + 'F' }} par {{ occupation.modeEnergie == 'index' ? 'kw' : 'mois' }}</dt>
+                                        <dd class="mt-1 col-6 h6 font-weight-bold">Facturation d'eau</dd>
+                                        <dt class="mt-1 col-6">{{ occupation.puEau + 'F' }} par <span v-if="occupation.modeEau == 'index'">m<sup>3</sup></span><span v-else>mois</span></dt>
                                     </dl>
-                                </b-col>
+                                </div>
                             </b-row>
                             <div class="border-bottom d-flex justify-content-between mb-2">
-                                <h4>Comptes</h4>
+                                <h4 class="h1">Comptes</h4>
                                 <b-button-group>
                                     <b-button class="float-right btn-icon" v-b-tooltip="'Effectuer une recharge'" @click.prevent="$bvModal.show('rechargeCompte')"><i class="fa fa-charging-station"></i></b-button>
                                     <b-button class="float-right btn-icon" v-b-tooltip="'Créer compte'" @click.prevent="$bvModal.show('creerCompte')"><i class="fa fa-plus"></i></b-button>
                                 </b-button-group>
                             </div>
                             <dl class="row my-2" v-for="(compte, i) in occupation.comptes" :key="compte.idCompte || i">
-                                <dd class="col-5">Compte {{ compte.typeCompte }}</dd>
+                                <dd class="col-5 h6">Compte : <span class="font-weight-bold" style="color: #f5365c;">{{ compte.typeCompte }}</span></dd>
                                 <dt class="col-7 fa-lg text-primary">{{ compte.solde }} F</dt>
                             </dl>
                         </div>
@@ -273,7 +290,7 @@
             <div>
                 <charge-form :action="action" :occupation="occupation"/>
             </div>
-    </b-modal>
+        </b-modal>
 
         <!--MODAL RECHARGER UN COMPTE -->
         <b-modal id="rechargeCompte" size="sm" title="Recharge de compte" @hidden="resetForm" @ok="doRecharge" @show="() => { recharge.idCompte = occupation.comptes.find(elt => elt.typeCompte.toLowerCase() == 'principal').idCompte }">
@@ -303,6 +320,16 @@
         </b-modal>
 
         <!--MODAL PAYER UNE CHARGE -->
+        <b-modal id="payerCharge" size="sm" title="Règlement de la charge" @hidden="resetForm" @ok="payCharge">
+            <template #modal-footer="{ ok }">
+                <b-button size="sm" variant="danger" @click="ok()" :disabled="submitted">Valider <b-spinner v-if="submitted" small /></b-button>
+            </template>
+            <b-form-group label="Montant" description="Entrez le montant à préléver dans le compte">
+                <b-form-input type="number" min="1" placeholder="Ex: 5000" v-model="payerCharge.montant" />
+            </b-form-group>
+        </b-modal>
+
+        <!--MODAL POUR VOIR LE CONTRAT DE BAIL -->
         <b-modal id="payerCharge" size="sm" title="Règlement de la charge" @hidden="resetForm" @ok="payCharge">
             <template #modal-footer="{ ok }">
                 <b-button size="sm" variant="danger" @click="ok()" :disabled="submitted">Valider <b-spinner v-if="submitted" small /></b-button>
@@ -353,6 +380,7 @@ export default {
         }) */
     },
     mounted(){
+        console.log(this.occupation)
         this.$root.$on("new-charge", newCharge => {
             this.occupation.charges.unshift(newCharge);
             this.$bvModal.hide('chargeForm');
@@ -518,6 +546,11 @@ export default {
             this.creerCompte = {typeCompte: null, solde: 0}
             this.payerCharge = {montant: 0, idCharge: null}
             this.submitted = false
+        },
+        //traitement affichage du contrat de bail
+        showContrat(){
+            console.log('contrat',this.occupation)
+            this.$emit('showDetails', this.occupation)
         }
 
     }
@@ -532,4 +565,19 @@ export default {
     text-align: center;
     margin-top: 2px;
 }
+
+.positionner{
+    position: relative;
+}
+.positionner1{
+    position: absolute;
+    top:-5%;
+    left: 48%;
+}
+.positionner2{
+    position: absolute;
+    top:-5%;
+    left: 62%;
+}
+
 </style>

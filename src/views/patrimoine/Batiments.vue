@@ -47,8 +47,8 @@
         <!-- MODALE POUR AJOUTER/MODIFIER UN BATIMENT -->
         <b-modal id="modal-batiment" size="lg" hide-footer ref="modalBatiment" @hidden="batiment = null">
             <template #modal-title>
-                <span v-if="action == 'add'">Ajouter un batiment</span>
-                <span v-if="action == 'edit'">Edition du batiment</span>
+                <span class="ml-4 text-form-batiment" v-if="action == 'add'">Ajouter un batiment</span>
+                <span class="ml-4 text-form-batiment" v-if="action == 'edit'">Edition du batiment</span>
             </template>
             <form-batiment @batimentAdded="pushBatiment" @batimentUpdated="editBatiment" :action="action" :batiment="batiment" />
         </b-modal>
@@ -252,3 +252,12 @@ export default {
     }
 }
 </script>
+<style scoped>
+    .text-form-batiment{
+        font-size: 1.3em;
+        color: #212121ef;
+        font-weight: 800;
+        text-align: center;
+        margin-top: 2px;
+    }
+</style>

@@ -27,7 +27,6 @@
             </div>
 
             <div class="float-md-right">
-              
               <btnAdd  message="Ajouter un logement" v-b-modal.logementForm/>
 
               <b-button
@@ -160,7 +159,10 @@
       </b-modal>
     </div>
     <!--MODAL POUR AJOUTER OU MODIFIER UN LOGEMENT-->
-    <b-modal id="logementForm" ref="logement-form" size="lg" :title="title" ok-title="Fermer" ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
+    <b-modal id="logementForm" ref="logement-form" size="lg" :title="title" hide-footer  no-close-on-backdrop hide-header-close>
+         <template #modal-title>
+                <span class="ml-4 text-form-logement">{{ title }}</span>
+            </template>
         <div>
             <add-logement @logementAdded="addedLogement" @editSuccessfull="editSuccessfull" :editLogement="logement" :action='action' @closeLogementModal="resetLogementFormProps"/>
         </div>
@@ -428,6 +430,10 @@ export default {
         this.clone.error = true;
         return;
       }
+      if (this.clone.nbr > 10) {
+          this.clone.error = true
+          return App.error('Impossible de cloner plus de 10 logements') 
+      }
       this.clone.submitted = true;
 
       axios
@@ -575,5 +581,12 @@ export default {
 <style scoped>
 .dispose {
   margin-top: -0.5em;
+}
+.text-form-logement {
+    font-size: 1.3em;
+    color: #212121ef;
+    font-weight: 800;
+    text-align: center;
+    margin-top: 2px;
 }
 </style>
