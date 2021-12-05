@@ -6,10 +6,10 @@
           <div class="authentication-form mx-auto" style="width: 80%;height:100vh;padding:10% 0 0;">
             <div class="register-top">
               <b-link :to="{ name: 'home' }">
-                <b-img src="/img/logo-m0.png" style="width: 4em;" />
+                <b-img src="@/assets/img/logo-m0.png" style="width: 4em;" />
               </b-link>
               <h3 class="slogan">
-                Créer votre compte
+                {{$t('data.register_creer_votre_compte')}}
               </h3>
             </div>
 
@@ -21,7 +21,7 @@
                       <input
                         type="text"
                         class="form-control"
-                        placeholder="Nom"
+                        :placeholder="$t('data.profile_nom')"
                         required=""
                         v-model="nom"
                       />
@@ -32,7 +32,7 @@
                       <input
                         type="text"
                         class="form-control"
-                        placeholder="Prenom"
+                        :placeholder="$t('data.profile_prenom')"
                         v-model="prenom"
                       />
                       <i class="ik ik-user"></i></div
@@ -44,7 +44,7 @@
                       <input
                         type="tel"
                         class="form-control"
-                        placeholder="Téléphone"
+                        :placeholder="$t('data.occupation_numero_telephone')"
                         required=""
                         v-model="tel"
                       />
@@ -55,7 +55,7 @@
                       <input
                         type="email"
                         class="form-control"
-                        placeholder="Email"
+                        :placeholder="$t('data.occupation_email')"
                         v-model="email"
                       />
                       <i class="ik ik-mail"></i></div
@@ -65,7 +65,7 @@
                   <input
                     type="password"
                     class="form-control"
-                    placeholder="Mot de passe"
+                    :placeholder="$t('data.login_mot_de_passe')"
                     required=""
                     v-model="mdp"
                   />
@@ -82,7 +82,7 @@
                           value="homme"
                           checked
                         />
-                        <i class="helper"></i> Homme
+                        <i class="helper"></i> {{$t('data.register_homme')}}
                       </label>
                     </div>
                     <div class="radio radio-inline">
@@ -93,7 +93,7 @@
                           v-model="genre"
                           value="femme"
                         />
-                        <i class="helper"></i> Femme
+                        <i class="helper"></i> {{$t('data.register_femme')}}
                       </label>
                     </div>
                     <div class="radio radio-inline">
@@ -104,7 +104,7 @@
                           v-model="genre"
                           value="entreprise"
                         />
-                        <i class="helper"></i> Entreprise
+                        <i class="helper"></i> {{$t('data.register_entreprise')}}
                       </label>
                     </div>
                   </div>
@@ -129,11 +129,11 @@
               </div>
               <div class="sign-btn"> 
                 <span>
-                  Vous avez déjà un compte ?
-                  <b-link :to="{ name: 'login' }">Connectez-vous</b-link>
+                  {{$t("data.register_vous_un_compte")}}
+                  <b-link :to="{ name: 'login' }">{{$t("data.register_connectez_vous")}}</b-link>
                 </span>
                 <b-button type="submit" :disabled="submitted" class="inscription-btn">
-                  Creer un compte <b-spinner v-if="submitted" small></b-spinner>
+                  {{$t('data.register_creer_un_compte')}} <b-spinner v-if="submitted" small></b-spinner>
                 </b-button>
               </div>
             </form>
@@ -142,7 +142,7 @@
             
             <div>
               <span style="font-size:.7em;color: #979797;">
-                En cliquant sur <b style="color:rgba(1, 121, 201, 0.842);">Creer un compte</b>, je déclare avoir lu et accepté les <b style="color:rgba(1, 121, 201, 0.842);">Politiques de confidentialité</b> et <b style="color:rgba(1, 121, 201, 0.842);">Conditions d'utilisation</b> de FlySoft Engineering
+                En cliquant sur <b style="color:rgba(1, 121, 201, 0.842);">{{$t('data.register_creer_un_compte')}}</b>, je déclare avoir lu et accepté les <b style="color:rgba(1, 121, 201, 0.842);">Politiques de confidentialité</b> et <b style="color:rgba(1, 121, 201, 0.842);">Conditions d'utilisation</b> de FlySoft Engineering
               </span>
             </div>
             <div>
@@ -157,37 +157,33 @@
             <b-carousel-slide class="responsive border-0">
               <template #img>
                 <div class="titre-overlay">
-                  <h1 class="titre"><blockquote class="">Gérer facilement vos biens immobiliers</blockquote></h1>
+                  <h1 class="titre"><blockquote class="">{{$t("data.slide_1_titre")}}</blockquote></h1>
                   <p class="description">
-                    Prenez votre envole et découvrez une nouvelle façon de gerer vos biens. Plus besoin d'une assistance quelconque. Tout se fait en un clic.
+                    {{$t('data.slide_1_description')}}
                   </p>
                 </div>
                 <div class="overlay"></div>
-                <img class="w-100 image" src="/img/cites.jpeg" />
+                <img class="w-100 image" src="@/assets/img/cites.jpeg" />
               </template>
             </b-carousel-slide>
             <b-carousel-slide class="responsive border-0">
               <template #img>
                 <div class="titre-overlay">
-                  <h1 class="titre"><blockquote class="">Ne perdez plus aucune information</blockquote></h1>
-                  <p class="description">
-                    Le Maisonnier rassemble, traite et stocke toutes vos informations et vous permet d'utiliser votre memoire pour autre chose.
-                  </p>
+                  <h1 class="titre"><blockquote class="">{{$t('data.slide_2_titre')}}Ne perdez plus aucune information</blockquote></h1>
+                  <p class="description">{{$t('data.slide_2_description')}}</p>
                 </div>
                 <div class="overlay"></div>
-                <img class="w-100 image" src="/img/villa1.jpg" />
+                <img class="w-100 image" src="@/assets/img/villa1.jpg" />
               </template>
             </b-carousel-slide>
             <b-carousel-slide class="responsive border-0">
               <template #img>
                 <div class="titre-overlay">
-                  <h1 class="titre"><blockquote class="">Optimiser la valeur de vos biens</blockquote></h1>
-                  <p class="description">
-                    Decouvrer la rentabilité de vos biens, observer vos bénéfices en continue, interagisser avec vos locataires et bien plus encore...
-                  </p>
+                  <h1 class="titre"><blockquote class="">{{$t('data.slide_3_titre')}}</blockquote></h1>
+                  <p class="description">{{$t('data.slide_3_description')}}</p>
                 </div>
                 <div class="overlay"></div>
-                <img class="w-100 image" src="/img/appart-sejour (2).jpg" />
+                <img class="w-100 image" src="@/assets/img/appart-sejour (2).jpg" />
               </template>
             </b-carousel-slide>
           </b-carousel>

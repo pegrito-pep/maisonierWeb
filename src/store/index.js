@@ -1,16 +1,29 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import createPersistedState from 'vuex-persistedstate'
+
+import locale from './modules/locale'
+
+  const persistedState = createPersistedState({
+    key: 'vuejs-vue-i18n',
+    paths: ['locale']
+  })
 
 Vue.use(Vuex);
 
 const state = {
     user: {
         avatar: null,
-        nom: null
-    }
+        nom: null,
+        devise:null
+    },
 }
 
 export default new Vuex.Store({
+    modules: {
+        locale
+      },
+      plugins: [persistedState],
     state,
     getters: {
         user(state) {
@@ -18,6 +31,12 @@ export default new Vuex.Store({
         }
     },
     mutations: {
+        user_data(state, user) {
+            state.user.nom = user.nom
+            state.user.prenom = user.prenom
+            state.user.email = user.email
+            state.user.tel = user.tel
+        },
         user(state, user) {
             state.user = user
         }
@@ -27,5 +46,4 @@ export default new Vuex.Store({
             context.commit('user', user)
         }
     },
-    modules: {}
 });

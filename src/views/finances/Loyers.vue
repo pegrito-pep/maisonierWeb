@@ -8,7 +8,8 @@
                         <div class="d-block d-md-inline-block">
                             <SearchForm v-model="search" />
                         </div>
-                        <div class="float-md-right">
+                        <div class="float-md-right d-flex">
+                            <paginatorTop :offset="offset" :libelle='$t("data.occupation_loyers")' :total="occupations.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" class="mr-2 d-flex justify-content-center align-items-center" />
                             <div class="d-flex ">
                                 <b-form-select class="form-control" size="sm" v-model="periode.mois" :options="mois" />
                                 <b-form-select class="form-control" size="sm" v-model="periode.annee" :options="annees" />
@@ -20,20 +21,20 @@
                 <b-overlay :show="showOverlay" rounded="sm">
                     <b-alert variant="info" class="text-center" show v-if="!occupations.length">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                        <span class="h4 d-inline-flex ml-2">Vous n'avez défini aucune occupation pour le moment</span>
+                        <span class="h4 d-inline-flex ml-2">{{$t('data.occupation_pas_de_occupation')}}</span>
                     </b-alert> 
                     <b-row v-else>
                         <div class="card-body">
                             <b-table-simple hover small responsive>
                                 <b-thead head-variant="light">
                                     <b-tr class="text-center">
-                                        <b-th>Logement</b-th>
-                                        <b-th>Locataire</b-th>
-                                        <b-th>Loyer de base</b-th>
-                                        <b-th>Consommation en eau</b-th>
-                                        <b-th>Consommation en électricité</b-th>
-                                        <b-th>Charges</b-th>
-                                        <b-th>Action</b-th>
+                                        <b-th>{{$t('data.occupation_logement')}}</b-th>
+                                        <b-th>{{$t('data.occupation_locataire')}}</b-th>
+                                        <b-th>{{$t('data.charge_loyer_de_base')}}</b-th>
+                                        <b-th>{{$t('data.charge_consommation_en_eau')}}</b-th>
+                                        <b-th>{{$t('data.charge_consommation_en_lumiere')}}</b-th>
+                                        <b-th>{{$t('data.ionsolvable_charges_insolvable')}}</b-th>
+                                        <b-th>{{$t('data.batiment_form_label_action')}}</b-th>
                                     </b-tr>
                                 </b-thead>
                                 <b-tbody>
@@ -42,12 +43,12 @@
                                             <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.logement.refLogement }}</span>    
                                             <span class="d-inline-block w-100 mt-1 text-muted">
                                                 {{ occupation.logement.sousTypeLogement.libelleSousType  }}
-                                                <span v-if="occupation.logement.batiment"> / Batiment : {{ occupation.logement.batiment.nomBatiment }}</span>
+                                                <span v-if="occupation.logement.batiment"> / {{$t("data.logement_batiment_lie_au_clonage_label")}} : {{ occupation.logement.batiment.nomBatiment }}</span>
                                             </span>    
                                         </b-td>
                                         <b-td class="p-1">
                                             <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ /*occupation.locataire.titre + ' ' +*/ occupation.locataire.nomLocataire + ' ' + occupation.locataire.prenomLocataire }}</span>    
-                                            <span class="d-inline-block w-100 mt-1 text-muted">{{ occupation.locataire.tel + ' / ' + occupation.locataire.email }}</span>    
+                                            <span class="d-inline-block w-100 mt-1 text-muted">{{ occupation.locataire.tel }}<span v-if="occupation.locataire.email!=null&&occupation.locataire.email!=''">{{ '/' + occupation.locataire.email }} </span></span>
                                         </b-td>
                                         <b-td class="p-1" v-html="_display_loyer(occupation)"></b-td>
                                         <b-td class="p-1" v-html="_display_consommation(occupation, 'eau')"></b-td>
@@ -56,9 +57,9 @@
                                         <b-td>
                                             <b-dropdown right >
                                                 <template #button-content><i class="fa fa-ellipsis-h"></i></template>
-                                                <b-dropdown-item :to="{name: 'occupation', params: {id: occupation.idOccupation}}">Détails de l'occupation</b-dropdown-item>
-                                                <b-dropdown-item href="#" @click.prevent="doPayment(occupation)">Effectuer un paiement</b-dropdown-item>
-                                                <b-dropdown-item href="#" @click.prevent="correspondance(occupation)">Correspondance</b-dropdown-item>
+                                                <b-dropdown-item :to="{name: 'occupation', params: {id: occupation.idOccupation}}">{{$t('data.logement_detail_details_de_occupation')}}</b-dropdown-item>
+                                                <b-dropdown-item href="#" @click.prevent="doPayment(occupation)">{{$t('data.charge_effectuer_un_paiement')}}</b-dropdown-item>
+                                                <b-dropdown-item href="#" @click.prevent="correspondance(occupation)">{{$t('data.charge_correspondance')}}</b-dropdown-item>
                                             </b-dropdown>                                            
                                         </b-td>
                                     </b-tr>
@@ -72,10 +73,10 @@
                         <b-button class="position-fixed validate btn-icon" id="popover-options" variant="danger"><i class="fa fa-bars fa-lg"></i></b-button>
                         <b-popover title="Options" target="popover-options" triggers="click blur" placement="topleft">
                             <div class="py-2">
-                                <b-button block variant="outline-secondary" @click.prevent="autoPay" :disabled="submitted">Lancer le paiement automatique<!--  <b-spinner v-if="submitted" small /> --></b-button>
-                                <b-button block variant="outline-secondary" @click.prevent="generateCharges" :disabled="submitted">Générer les charges</b-button>
+                                <b-button v-if="canPaysLoyers" block variant="outline-secondary" @click.prevent="autoPay" :disabled="submitted">{{$t('data.loyers_paiement_automatique')}}<!--  <b-spinner v-if="submitted" small /> --></b-button>
+                                <b-button v-if="canGenerateCharges" block variant="outline-secondary" @click.prevent="generateCharges" :disabled="submitted">{{$t('data.loyers_generer_charges')}}</b-button>
                                 <hr>
-                                <b-button block variant="outline-secondary" @click.prevent="printList = true">Générer le listing des factures</b-button>
+                                <b-button v-if="canGenerateFactures" block variant="outline-secondary" @click.prevent="printList = true">{{$t("data.loyers_generer_les_factures")}}</b-button>
                             </div>
                         </b-popover>
                     </div>
@@ -84,114 +85,92 @@
         </div>
 
         <!--MODAL POUR PAYER UNE FACTURE -->
-        <div v-if="occupation"><b-modal id="paiement" title="Ajout de paiement" @ok="runPaiement" no-close-on-backdrop ok-only @hidden="resetForm">
-            <template #modal-footer="{ ok }">
-                <b-button size="sm" variant="danger" @click="ok()" :disabled="submitted || totalPayerFacture <= 0">Valider <b-spinner v-if="submitted" small /></b-button>
-            </template>
-            <div class="jumbotron pt-10 pb-10 px-2">
-                <h5 class="text-center mb-2">Effectuer un versement pour:</h5>
-                <b-row>
-                    <b-col><dl>
-                        <dt>Logement</dt>
-                        <dd>{{ occupation.logement.refLogement }} <br> {{ occupation.logement.sousTypeLogement.libelleSousType  }} <br> <span v-if="occupation.logement.batiment">Batiment : {{ occupation.logement.batiment.nomBatiment }}</span></dd>
-                    </dl></b-col>
-                    <b-col><dl>
-                        <dt>Locataire</dt>
-                        <dd>{{ occupation.locataire.titre + ' ' + occupation.locataire.nomLocataire + ' ' + occupation.locataire.prenomLocataire }} <br> {{ occupation.locataire.tel }} <br> {{ occupation.locataire.email }}</dd>
-                    </dl></b-col>
-                </b-row>
-            </div>
-            <b-row>
-                <b-col><b-form-group label="Loyer" :description="'Avance: ' + paiement.avance[0]">
-                    <b-form-checkbox v-model="paiement.buy[0]" :disabled="paiement.disabled[0]">Payer <b>{{ paiement.loyer + ' F' }}</b></b-form-checkbox>
-                </b-form-group></b-col>
-                <b-col><b-form-group label="Charges" :description="'Avance: ' + paiement.avance[3]">
-                    <b-form-checkbox v-model="paiement.buy[3]" :disabled="paiement.disabled[3]">Payer <b>{{ paiement.charges + ' F' }}</b></b-form-checkbox>
-                </b-form-group></b-col>
-            </b-row>
-            <b-row>
-                <b-col><b-form-group label="Eau" :description="'Avance: ' + paiement.avance[1]">
-                    <b-form-checkbox v-model="paiement.buy[1]" :disabled="paiement.disabled[1]">Payer <b>{{ paiement.eau + ' F' }}</b></b-form-checkbox>
-                </b-form-group></b-col>
-                <b-col><b-form-group label="Lumière" :description="'Avance: ' + paiement.avance[2]">
-                    <b-form-checkbox v-model="paiement.buy[2]" :disabled="paiement.disabled[2]">Payer <b>{{ paiement.energie + ' F' }}</b></b-form-checkbox>
-                </b-form-group></b-col>
-            </b-row>
-            <hr>
-            <b-row>
-                <b-col><b-form-group label="Total à payer" description="Ce prix soustrait les montants avancés par le locataire pour cette facture">
-                    <b-form-input disabled :value="totalPayerFacture" />
-                </b-form-group></b-col>
-                <b-col><b-form-group label="Montant à préléver" description="Entrez le montant versé pour cette facture. Il sera débité du compte de l'occupation">
-                    <b-form-input v-model="paiement.payer" :disabled="totalPayerFacture <= 0" />
-                </b-form-group></b-col>
-            </b-row>
+        <div v-if="occupation"><b-modal id="paiement" :title="$t('data.charge_ajouter_paiement')" no-close-on-backdrop @hidden="resetForm" hide-footer>
+            <payer-loyer-form :occupation="occupation" :periodeCourante="periodeCourante" @payed="handlePaiement" />
         </b-modal></div>
 
-        <div v-if="occupation"><b-modal id="correspondance" title="Correspondance" no-close-on-backdrop cancel-title="Fermer" ok-title="Imprimer" ok-variant="danger" @ok="(bvtEvt) => {bvtEvt.preventDefault(); printSingle = true}">
+        <div v-if="occupation"><b-modal id="correspondance" :title="$t('data.charge_correspondance')" no-close-on-backdrop :cancel-title="$t('data.logement_form_fermer')" :ok-title="$t('data.contratoccupation_imprimer')" ok-variant="danger" @ok="(bvtEvt) => {bvtEvt.preventDefault(); printSingle = true}">
             <b-alert v-if="occupation.dateFin" show variant="info" class="text-center">
                 <i class="fa fa-exclamation-triangle fa-5x"></i> <br />
-                <p class="fa-2x mt-5 pt-2">Bail terminé le {{ $dayjs(occupation.dateFin).format('dddd, DD MMMM YYYY') }}</p>
+                <p class="fa-2x mt-5 pt-2">{{$t('data.logement_detail_bail_termine_le')}} {{ $dayjs(occupation.dateFin).format('dddd, DD MMMM YYYY') }}</p>
             </b-alert>
             <printer :display="true" v-else v-model="printSingle" @input="printSingle = false" id="print-correspondance">
                 <b-card class="border" >
-                    <span class="float-right d-inline-block mb-5">Yaoundé le {{ $dayjs().format('DD MMMM YYYY')}} </span>
+                    <span class="float-right d-inline-block mb-5">{{$t('data.charge_label_yaounde_le')}} {{ $dayjs().format('DD MMMM YYYY')}} </span>
                     <br>
                     <div class="clearfix my-3">
-                        <span class="text-underline">Object: </span>
-                        <b class="fa-lg">Loyer du mois de : {{ _find_periode_loyer(occupation) }}</b>
+                        <span class="text-underline">{{$t('data.charge_label_objet')}}: </span>
+                        <b class="fa-lg">{{$t('data.charge_label_loyer_du_mois_de')}} : {{ _find_periode_loyer(occupation) }}</b>
                     </div>
                     <p>
                         <b>{{ occupation.locataire.titre + ' ' + occupation.locataire.nomLocataire + ' ' + occupation.locataire.prenomLocataire }} ({{ occupation.locataire.tel}})</b>,
-                        vous occupez le logement <b>{{ occupation.logement.refLogement }} / {{ occupation.logement.sousTypeLogement.libelleSousType  }}</b> situé à 
-                        <b>{{ occupation.logement.adresse.ville + ' ' + occupation.logement.adresse.pays + ', ' + occupation.logement.adresse.quartier }}</b>. 
+                        {{$t('data.charge_label_vous_occuper_le_logement')}} <b>{{ occupation.logement.refLogement }} / {{ occupation.logement.sousTypeLogement.libelleSousType  }}</b> {{$t('data.charge_label_vous_occuper_le_logement_situe_a')}}
+                        <b v-if="occupation.logement.adresse != null">{{ occupation.logement.adresse.ville + ' ' + occupation.logement.adresse.pays + ', ' + occupation.logement.adresse.quartier }}.</b>
+                        <b v-if="occupation.logement.batiment != null">{{ occupation.logement.batiment.adresse.ville + ' ' + occupation.logement.batiment.adresse.pays + ', ' + occupation.logement.batiment.adresse.quartier }}.</b>
                         <br>
-                        Ci-dessous, votre loyer du mois de {{ _find_periode_loyer(occupation) }}
+                        {{$t('data.charge_label_ci_dessous_le_loyer_du_mois')}} {{ _find_periode_loyer(occupation) }}
                     </p>
                     <b-table-simple>
                         <b-thead>
                             <b-tr>
                                 <b-td></b-td>
-                                <b-th>Montant</b-th>
-                                <b-th>Avance</b-th>
-                                <b-th>Reste</b-th>
+                                <b-th>{{$t('data.occupation_montant')}}</b-th>
+                                <b-th>{{$t('data.occupation_avance')}}</b-th>
+                                <b-th>{{$t('data.occupation_reste')}}</b-th>
                             </b-tr>
                         </b-thead>
                         <b-tbody>
                             <b-tr>
-                                <b-th>Loyer de base</b-th>
-                                <b-td>{{ occupation.loyerBase }} F</b-td>
-                                <b-td>{{ hasBuyLoyer[1] }} F</b-td>
-                                <b-td>{{ occupation.loyerBase - hasBuyLoyer[1] }} F</b-td>
+                                <b-th>{{$t('data.charge_loyer_de_base')}}</b-th>
+                                <!--<b-td>{{ occupation.loyerBase }} F</b-td>-->
+                                <b-td>{{ occupation.loyerBase | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b-td>
+                               
+                                <!--<b-td>{{ hasBuyLoyer[1] }} F</b-td>-->
+                                 <b-td>{{ hasBuyLoyer[1] | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b-td>
+                                <!--<b-td>{{ occupation.loyerBase - hasBuyLoyer[1] }} F</b-td>-->
+                                <b-td>{{ occupation.loyerBase - hasBuyLoyer[1] | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b-td>
                             </b-tr>
                             <b-tr>
-                                <b-th>Charges</b-th>
-                                <b-td>{{ hasBuyCharges[2] }} F</b-td>
-                                <b-td>{{ hasBuyCharges[1] }} F</b-td>
-                                <b-td>{{ hasBuyCharges[2] - hasBuyCharges[1] }} F</b-td>
+                                <b-th>{{$t('data.occupation_charges')}}</b-th>
+                                <!--<b-td>{{ hasBuyCharges[2] }} F</b-td>-->
+                                <b-td>{{ hasBuyCharges[2] | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b-td>
+                                <!--<b-td>{{ hasBuyCharges[1] }} F</b-td>-->
+                                <b-td>{{ hasBuyCharges[1] | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b-td>
+                                <!--<b-td>{{ hasBuyCharges[2] - hasBuyCharges[1] }} F</b-td>-->
+                                <b-td>{{hasBuyCharges[2] - hasBuyCharges[1] | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b-td>
                             </b-tr>
                             <b-tr>
-                                <b-th>Consommation en eau</b-th>
-                                <b-td>{{ hasBuyEau[1] }} F</b-td>
-                                <b-td>{{ hasBuyEau[2] }} F</b-td>
-                                <b-td>{{ hasBuyEau[1] - hasBuyEau[2] }} F</b-td>
+                                <b-th>{{$t('data.charge_consommation_en_eau')}}</b-th>
+                                <!--<b-td>{{ hasBuyEau[1] }} F</b-td>-->
+                                <b-td>{{ hasBuyEau[1] | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b-td>
+                                <!--<b-td>{{ hasBuyEau[2] }} F</b-td>-->
+                                <b-td>{{ hasBuyEau[2] | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b-td>
+                                <!--<b-td>{{ hasBuyEau[1] - hasBuyEau[2] }} F</b-td>-->
+                                <b-td>{{ hasBuyEau[1] - hasBuyEau[2] | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b-td>
                             </b-tr>
                             <b-tr>
-                                <b-th>Consommation en électricité</b-th>
-                                <b-td>{{ hasBuyEnergie[1] }} F</b-td>
-                                <b-td>{{ hasBuyEnergie[2] }} F</b-td>
-                                <b-td>{{ hasBuyEnergie[1] - hasBuyEnergie[2] }} F</b-td>
+                                <b-th>{{$t('data.charge_consommation_en_lumiere')}}</b-th>
+                                <!--<b-td>{{ hasBuyEnergie[1] }} F</b-td>-->
+                                <b-td>{{ hasBuyEnergie[1] | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b-td>
+                                <!--<b-td>{{ hasBuyEnergie[2] }} F</b-td>-->
+                                <b-td>{{ hasBuyEnergie[2] | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b-td>
+                                <!--<b-td>{{ hasBuyEnergie[1] - hasBuyEnergie[2] }} F</b-td>-->
+                                <b-td>{{ hasBuyEnergie[1] - hasBuyEnergie[2] | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b-td>
                             </b-tr>
                             <b-tr>
-                                <b-th>Total</b-th>
-                                <b-td>{{ occupation.loyerBase + hasBuyCharges[2] + hasBuyEau[1] + hasBuyEnergie[1] }} F</b-td>
-                                <b-td>{{ hasBuyLoyer[1] + hasBuyCharges[1] + hasBuyEau[2] + hasBuyEnergie[2] }} F</b-td>
-                                <b-td>{{ totalQuitance }} F</b-td>
+                                <b-th>{{$t('data.ionsolvable_total_insolvable')}}</b-th>
+                                <!--<b-td>{{ occupation.loyerBase + hasBuyCharges[2] + hasBuyEau[1] + hasBuyEnergie[1] }} F</b-td>-->
+                                <b-td>{{ occupation.loyerBase + hasBuyCharges[2] + hasBuyEau[1] + hasBuyEnergie[1] | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b-td>
+                                <!--<b-td>{{ hasBuyLoyer[1] + hasBuyCharges[1] + hasBuyEau[2] + hasBuyEnergie[2] }} F</b-td>-->
+                                <b-td>{{ hasBuyLoyer[1] + hasBuyCharges[1] + hasBuyEau[2] + hasBuyEnergie[2] | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b-td>
+                                <!--<b-td>{{ totalQuitance }} F</b-td>-->
+                                <b-td>{{ totalQuitance | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b-td>
                             </b-tr>
                             <b-tr>
-                                <b-th>Net à payer</b-th>
+                                <b-th>{{$t('data.loyers_montant_net_a_payer')}}</b-th>
                                 <b-td colspan="3">
-                                    <b class="fa-lg text-primary">{{ totalQuitance }} F</b>
+                                    <!--<b class="fa-lg text-primary">{{ totalQuitance }} F</b>-->
+                                    <b class="fa-lg text-primary">{{ totalQuitance | currency(devise, 0,{  symbolOnLeft: false, spaceBetweenAmountAndSymbol: true, thousandsSeparator: '.'  }) }}</b>
                                 </b-td>
                             </b-tr>
                         </b-tbody>
@@ -202,15 +181,15 @@
 
         <!-- IMPRESSIONS -->   
         <printer v-model="printList" @input="printList = false" id="print-liste">
-            <h3 class="text-center mb-3">Loyers du mois de <b>{{ $dayjs(this.periodeCourante).format('MMMM YYYY') }}</b></h3>
+            <h3 class="text-center mb-3">{{$t('data.charge_label_loyer_du_mois_de')}} <b>{{ $dayjs(this.periodeCourante).format('MMMM YYYY') }}</b></h3>
             <b-table-simple class="mt-4" hover small responsive>
                 <b-thead class="border mb-5">
                     <b-tr class="text-center">
-                        <b-th valign="middle">Logement</b-th>
-                        <b-th valign="middle">Locataire</b-th>
-                        <b-th valign="middle">Loyer de base</b-th>
-                        <b-th valign="middle">Consommation en eau</b-th>
-                        <b-th valign="middle">Consommation en lumière</b-th>
+                        <b-th valign="middle">{{$t('data.occupation_logement')}}</b-th>
+                        <b-th valign="middle">{{$t('data.occupation_locataire')}}</b-th>
+                        <b-th valign="middle">{{$t('data.charge_loyer_de_base')}}</b-th>
+                        <b-th valign="middle">{{$t('data.charge_consommation_en_eau')}}</b-th>
+                        <b-th valign="middle">{{$t("data.charge_consommation_en_lumiere")}}</b-th>
                     </b-tr>
                 </b-thead>
                 <b-tbody>
@@ -220,12 +199,12 @@
                             <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.logement.refLogement }}</span>    
                             <span class="d-inline-block w-100 mt-1 text-muted">
                                 {{ occupation.logement.sousTypeLogement.libelleSousType  }}
-                                <span v-if="occupation.logement.batiment"> / Batiment : {{ occupation.logement.batiment.nomBatiment }}</span>
+                                <span v-if="occupation.logement.batiment"> / {{$t('data.logement_batiment_lie_au_clonage_label')}} : {{ occupation.logement.batiment.nomBatiment }}</span>
                             </span>    
                         </b-td>
                         <b-td class="p-1">
                             <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.locataire.titre + ' ' + occupation.locataire.nomLocataire + ' ' + occupation.locataire.prenomLocataire }}</span>    
-                            <span class="d-inline-block w-100 mt-1 text-muted">{{ occupation.locataire.tel + ' / ' + occupation.locataire.email }}</span>    
+                            <span class="d-inline-block w-100 mt-1 text-muted">{{ occupation.locataire.tel }}<span v-if="occupation.locataire.email !=null">{{ '/'+ occupation.locataire.email }}</span></span>    
                         </b-td>
                         <b-td class="p-1" v-html="_display_loyer(occupation)"></b-td>
                         <b-td class="p-1" v-html="_display_consommation(occupation, 'eau')"></b-td>
@@ -239,13 +218,15 @@
 <script>
 import Printer from '@/components/Printer.vue'
 import SearchForm from "@/components/parts/SearchForm.vue";
+import PayerLoyerForm from '../../components/form/PayerLoyerForm.vue';
 const php  = require ( 'phpjs' ) ; 
 
 export default {
   name: "loyers",
   components: {
       SearchForm,
-      Printer
+      Printer,
+    PayerLoyerForm
   },
   data: () => ({
      search: null,
@@ -256,29 +237,48 @@ export default {
      trueOccupations:[],
 
      periode: {annee: null, mois: null},
-     paiement: { 
-        payer: 0, loyer: 0, eau: 0, energie: 0, charges: 0, 
-        avance: [0, 0, 0, 0] ,
-        buy: [true, false, false, false], disabled: [true, false, false, false], 
-    },
      occupation: null,
 
      submitted: false,
      printList: false,
-     printSingle: false
+     printSingle: false,
+
+     devise:null,
+     permissions: storage.get("userPermissions")
   }),
   watch: {
        search(value) {
-      this.occupations = !php.empty(value)
-        ? this.trueOccupations.filter(elt =>
-            elt.locataire.nomLocataire.toLowerCase().includes(value.toLowerCase()) ||
-            elt.locataire.prenomLocataire.toLowerCase().includes(value.toLowerCase()) ||
-            elt.logement.refLogement.toLowerCase().includes(value.toLowerCase())
-          )
-        : this.trueOccupations;
-    }
+        this.occupations = !php.empty(value)
+            ? this.trueOccupations.filter(elt =>
+                elt.locataire.nomLocataire.toLowerCase().includes(value.toLowerCase()) ||
+                elt.locataire.prenomLocataire.toLowerCase().includes(value.toLowerCase()) ||
+                elt.logement.refLogement.toLowerCase().includes(value.toLowerCase())
+            )
+            : this.trueOccupations;
+        },
+        periodeCourante(value) {
+            this.getOccupations()
+        }
   },
   computed: {
+    canPaysLoyers() {
+        if(this.permissions.includes("pay_loyers")){
+            return true;
+        }
+        return false;      
+    },
+    canGenerateFactures() {
+        if(this.permissions.includes("list_factures")){
+            return true;
+        }
+        return false;      
+    },
+    canGenerateCharges(){ 
+         if(this.permissions.includes("generate_charges")){
+            return true;
+        }
+        return false;
+    },
         /**
          * Elements affichés avec prise en charge de la pagination
          */
@@ -322,22 +322,6 @@ export default {
             return this.periode.annee + '-' +  periodeCourante + '-01'
         },
         
-        totalPayerFacture() {
-            let total = 0
-            if (this.paiement.buy[0] == true) {
-                total += (this.paiement.loyer - this.paiement.avance[0])
-            }
-            if (this.paiement.buy[1] == true) {
-                total += (this.paiement.eau - this.paiement.avance[1])
-            }
-            if (this.paiement.buy[2] == true) {
-                total += (this.paiement.energie - this.paiement.avance[2])
-            }
-             if (this.paiement.buy[3] == true) {
-                total += (this.paiement.charges - this.paiement.avance[3])
-            }
-            return total
-        },
 
         hasBuyLoyer() {
             return this._check_if_buy_loyer(this.occupation)
@@ -369,83 +353,39 @@ export default {
         }
         this.getOccupations()
     },
+    mounted(){
+        this.devise=storage.get('devise')
+        if ( this.devise==null)
+        this.devise='F'
+    },
     methods: {
         sendData(){
             
         },
+        handlePaiement() {
+            this.getOccupations()
+            this.$bvModal.hide('paiement')
+        },
         
     //recupération de la liste des logements
-     getOccupations() {
-         this.showOverlay = true
-            axios.get('occupations').then(response => response.result || []).then(occupations => {
+        getOccupations() {
+            this.showOverlay = true
+            axios.get('loyers/generate?periode='+this.periodeCourante).then(response => response.result || []).then(occupations => {
                 this.occupations = this.trueOccupations = occupations
                 this.showOverlay = false
+
             })
-     },
+        },
      
         doPayment(occupation) {
             this.occupation = occupation 
-
-            let [a_payer_loyer, totalPayer] = this._check_if_buy_loyer(occupation)
-            this.paiement.loyer = occupation.loyerBase
-            this.paiement.avance[0] = totalPayer
-            if (totalPayer >= occupation.loyerBase) {
-                this.paiement.buy[0] = false
-            }
-
-            let [a_payer_eau, consommation_eau, indexeMois_eau] = this._check_if_buy_consommation(occupation, 'eau')
-            this.paiement.eau = consommation_eau
-            this.paiement.disabled[1] = a_payer_eau == 1
-            this.paiement.avance[1] = !php.empty(indexeMois_eau) ? indexeMois_eau.avance : 0
-
-            let [a_payer_energie, consommation_energie, indexeMois_energie] = this._check_if_buy_consommation(occupation, 'energie')
-            this.paiement.energie = consommation_energie
-            this.paiement.disabled[2] = a_payer_energie == 1
-            this.paiement.avance[2] = !php.empty(indexeMois_energie) ? indexeMois_energie.avance : 0
-
-            let [a_payer_charge, totalPayer_charge, totalCharge] = this._check_if_buy_charges(occupation)
-            this.paiement.charges = totalCharge
-            this.paiement.disabled[3] = a_payer_charge == 1
-            this.paiement.avance[3] = totalPayer_charge
-
             setTimeout(() => {
                 this.$bvModal.show('paiement')
             }, 50);
         },
         runPaiement(bvtEvt) {
             bvtEvt.preventDefault()
-            if (php.empty(this.paiement.payer) || this.paiement.payer < 1) {
-                return App.error('Veuillez entrer un montant valide');
-            }
-            if (this.paiement.disabled[0] && this.paiement.disabled[1] && this.paiement.buy[2]) {
-                // return App.error('Tous les éléments de cette facture ont déjà été payés')
-            }
-            if (this.paiement.buy[0] == false && this.paiement.buy[1] == false && this.paiement.buy[2] == false && this.paiement.buy[3] == false) {
-                return App.error('Veuillez selectionnez au moins élément à payer')
-            }
-            if (this.paiement.payer > this.totalPayerFacture) {
-                return App.error('Vous ne pouvez pas débiter une somme supérieure au total de la facture')
-            }
-            const data = {
-                montant: this.paiement.payer,
-                periode: this.periodeCourante,
-                loyer: this.paiement.buy[0],
-                eau: this.paiement.buy[1],
-                energie: this.paiement.buy[2],
-                charges: this.paiement.buy[3],
-            }
-            this.submitted = true 
-
-            axios.post('occupations/' + this.occupation.idOccupation + '/pay-facture', data).then(response => {
-                this.submitted = false 
-                return App.alertSuccess(response.message, {callback: () => {
-                    this.getOccupations()
-                    this.$bvModal.hide('paiement')
-                }})
-            }).catch(error => {
-                this.submitted = false
-                return App.alertError(error.message)
-            })
+            this.runPaiementFacture = true
         },
 
         correspondance(occupation) {
@@ -515,7 +455,8 @@ export default {
             }
             else if (a_payer == 2) {
                 variant = 'warning'
-                title = 'Avancé ' + avance + ' F'
+                //title = 'Avancé ' + avance + ' F'
+                title = 'Avancé ' + avance + this.devise
             }
             else if (a_payer == 1) {
                 variant = 'success'
@@ -553,7 +494,8 @@ export default {
             
             if (a_payer == 2) {
                 variant = 'warning'
-                title = 'Avancé : ' + totalPayer + ' F'
+                //title = 'Avancé : ' + totalPayer + ' F'
+                title = 'Avancé : ' + totalPayer + this.devise
             }
             else if (a_payer == 1) {
                 variant = 'success'
@@ -585,7 +527,8 @@ export default {
             
             if (a_payer == 2) {
                 variant = 'warning'
-                title = 'Avancé : ' + totalPayer + ' F'
+                //title = 'Avancé : ' + totalPayer + ' F'
+                title = 'Avancé : ' + totalPayer + ' '+this.devise
             }
             else if (a_payer == 1) {
                 variant = 'success'

@@ -6,21 +6,20 @@
                         <div class="d-block d-md-inline-block">
                             <SearchForm v-model="search" />
                         </div>
-                        <div class="float-md-right"> 
-                            <btnAdd  message="créer un Modèle de Contrat" v-b-modal.contratForm ref="buttonAdd"/>
+                        <div class="float-md-right" v-if="canCreateModele"> 
+                            <btnAdd  :message="$t('data.contrat_creer_un_modele_de_contrat')" v-b-modal.contratForm ref="buttonAdd"/>
                         </div>
                     </div>
             </div>
             <div class="ContratcontainerMessage" v-if="definition">
                 <span class="bonjour ">
-                    Un contrat de bail ou un contrat de location est le contrat par lequel l'une des parties (appelée bailleur) s'engage, moyennant un prix (le loyer) que 
-                    l'autre partie (appelée preneur) s'oblige à payer, à procurer à celle-ci, pendant un certain temps, la jouissance d'une chose mobilière ou immobilière.
+                    {{$t("data.contrat_creer_un_modele_de_contrat_description")}}
                 </span>
             </div>
         </b-col>
           <b-alert variant="info" class="text-center" show v-if="!modelesContrats.length">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                        <span class="h4 d-inline-flex ml-2">Aucun résultat trouvé</span>
+                        <span class="h4 d-inline-flex ml-2">{{$t('data.contrat_pas_de_resultat')}}</span>
                     </b-alert>  
                     <b-row v-else class="layout-wrap">
                         <b-col v-for="(contrat, i) in modelesContrats" :key="contrat.id || i" xl="3" lg="4" cols="12" sm="6" class="animated flipInX mb-4">
@@ -57,7 +56,7 @@
         </div>
 
         <!--MODAL POUR AJOUTER OU MODIFIER UN MODELE DE CONTRAT-->
-        <b-modal id="contratForm" ref="contrat-form" size="xl" ok-title="Fermer" ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
+        <b-modal id="contratForm" ref="contrat-form" size="xl" :ok-title="$t('data.contrat_fermer')" ok-only ok-variant="secondary" no-close-on-backdrop hide-header-close>
             <template #modal-title>
                 <span class="ml-4 text-form-contrat">{{ title }}</span>
             </template>
@@ -93,7 +92,8 @@
             contrat:null,
             editTemplate:false,
             title:'créer un Modèle contrat',
-            search:null
+            search:null,
+            permissions: storage.get("userPermissions")
 
         }),
      
@@ -114,6 +114,12 @@
             },
             offset() {
                 return (this.currentPage * this.perPage) - this.perPage
+            },
+            canCreateModele(){
+                if(this.permissions.includes("add_modele")){
+                    return true;
+                }
+                return false;  
             }
         },
         methods:{

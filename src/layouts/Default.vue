@@ -25,9 +25,11 @@ import Vue from 'vue'
 import PageDescription from '@/components/templates/PageDescription.vue'
 import BtnAdd from '@/components/templates/btn.vue'
 import Paginator from '@/components/Paginator.vue'
+import PaginatorTop from '@/components/PaginatorTop.vue'
 Vue.component('PageDescription', PageDescription)
 Vue.component('BtnAdd', BtnAdd)
 Vue.component('Paginator', Paginator)
+Vue.component('PaginatorTop', PaginatorTop)
 
 import VueRepeater from 'vue-repeater'
 import 'vue-repeater/dist/lib/vue-repeater.css'
@@ -59,6 +61,7 @@ export default {
                 }
             }
             if (!php.empty(user)) {
+                console.log('user',user)
                 this.$store.dispatch('user', user)
             }
         }

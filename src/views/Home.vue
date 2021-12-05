@@ -3,12 +3,12 @@
         <link rel="stylesheet" href="">
          <b-overlay :show="showOverlay" rounded="sm">   
             <div class="top-banner">
-                <div class="img">
+                <div class="img" :style="`background:url(${$router.options.base}img/appart.jpg)`">
                     <div class="bg"></div>
                     <div class="txt">
-                        <h1>Bienvenu sur la plateforme maisonnier</h1>
-                        <p>Ici vous pourrez créer des: cités, batiments, logements, habitants. Mais avant, veuillez completer votre profil <br> Profil complet à <b>{{ pourcentage }}%</b></p>
-                        <button @click.prevent="gotToProfile" v-if="compteur!=0">Terminer votre profil</button>
+                        <h1> {{ $t('data.home_bienvenu') }}</h1>
+                        <p> {{ $t('data.home_paragraphe_informatif1') }} <br>{{ $t('data.home_paragraphe_informatif2') }} <b>{{ pourcentage }}%</b></p>
+                        <button @click.prevent="gotToProfile" v-if="compteur!=0"> {{ $t('data.home_terminer_profil') }}</button>
                     </div>
                 </div>
                 <div class="summary">
@@ -16,25 +16,25 @@
                         <div class="stat-item">
                             <i class="fa fa-building"></i>
                             <div>
-                                <h3>Batiments</h3>
-                                <span v-if="batiments.length ==0">Aucun batiment pour le moment</span>
-                                <span v-else>{{ batiments.length }} batiments crées</span>
+                                <h3> {{ $t('data.home_batiments') }} </h3>
+                                <span v-if="nbrBatiments ==0"> {{ $t('data.home_aucun_batiment') }}</span>
+                                <span v-else>{{ nbrBatiments }} {{ $t('data.home_batiments_crees') }}  </span>
                             </div>
                         </div>
                         <div class="stat-item">
                             <i class="fas fa-home"></i>
                             <div>
-                                <h3>Logements</h3>
-                                <span v-if="logements.length ==0">Pas d'habitant pour le moment</span>
-                                <span v-else>{{ logements.length }} logements crées</span>
+                                <h3> {{ $t('data.home_logements') }} </h3>
+                                <span v-if="logements.length ==0"> {{ $t('data.home_pas_de_logements') }} </span>
+                                <span v-else>{{ logements.length }} {{ $t('data.home_logements_crees') }} </span>
                             </div>
                         </div>
                         <div class="stat-item">
                             <i class="fas fa-users"></i>
                             <div>
-                                <h3>Habitants</h3>
-                                <span v-if="locataires.length ==0">Pas d'habitant pour le moment</span>
-                                <span v-else>{{ locataires.length }} locataires crées</span>
+                                <h3> {{ $t('data.home_habitants') }} </h3>
+                                <span v-if="locataires.length ==0"> {{ $t('data.home_pas_dhabitants') }} </span>
+                                <span v-else>{{ locataires.length }} {{ $t('data.home_locataires_crees') }}</span>
                             </div>
                         </div>
                     </div>
@@ -42,46 +42,46 @@
             </div> 
          </b-overlay> 
         <div class="action-container">
-            <span>Actions rapides</span>
+            <span> {{ $t('data.home_actions_rapides') }} </span>
             <div>
                 <div class="action-item">
                     <div class="img">
-                        <img src="/img/cite.jfif" alt="">
+                        <img src="@/assets/img/citee.jpg" alt="">
                     </div>
                     <div class="txt">
-                        <h2>Créer une cité</h2>
-                        <p>Une cité est un ensemble de plusieurs batiments regroupés dans une zone</p>
-                        <button @click.prevent="createCite">Créer</button>
+                        <h2> {{ $t('data.home_creer_une_cite') }} </h2>
+                        <p> {{ $t('data.home_descripton_cite') }} </p>
+                        <button @click.prevent="createCite"> {{ $t('data.home_creer') }} </button>
                     </div>
                 </div>
                 <div class="action-item">
                     <div class="img">
-                        <img src="/img/batiment (2).jpeg" alt="">
+                        <img src="@/assets/img/batiment (2).jpeg" alt="">
                     </div>
                     <div class="txt">
-                        <h2>Créer un batiment</h2>
-                        <p>Un batiment est un édifice doté de plusieurs residences (appartements, studios etc)</p>
-                        <button @click.prevent="createBatiment">Créer</button>
+                        <h2> {{ $t('data.home_creer_batiment') }} </h2>
+                        <p> {{ $t('data.home_description_batiment') }}</p>
+                        <button @click.prevent="createBatiment"> {{ $t('data.home_creer') }}</button>
                     </div>
                 </div>
                 <div class="action-item">
                     <div class="img">
-                        <img src="/img/appart-sejour (2).jpg" alt="">
+                        <img src="@/assets/img/appart-sejour (2).jpg" alt="">
                     </div>
                     <div class="txt">
-                        <h2>Créer un logement</h2>
-                        <p>Un logement est une residence destiné a hébergé un habitant (ex appartement, maison, studio)</p>
-                        <button @click.prevent="createLogement">Créer</button>
+                        <h2> {{ $t('data.home_creer_logement') }} </h2>
+                        <p> {{ $t('data.home_description_logement') }} </p>
+                        <button @click.prevent="createLogement"> {{ $t('data.home_creer') }} </button>
                     </div>
                 </div>
                 <div class="action-item">
                     <div class="img">
-                        <img src="/img/loc.jpg" alt="">
+                        <img src="@/assets/img/loc.jpg" alt="">
                     </div>
                     <div class="txt">
-                        <h2>Créer un habitant</h2>
-                        <p>Un habitant est tout simplement une personne (votre locataire) qui occupe votre logement</p>
-                        <button @click.prevent="createHabitant">Créer</button>
+                        <h2> {{ $t('data.home_creer_habitant') }} </h2>
+                        <p> {{ $t('data.home_description_habitant') }}</p>
+                        <button @click.prevent="createHabitant"> {{ $t('data.home_creer') }}</button>
                     </div>
                 </div>
             </div>
@@ -100,17 +100,19 @@ export default {
         showOverlay: true,
         logements:[],
         locataires:[],
-        batiments:[],
-        userData:null,
+        nbrBatiments:0,
         compteur:0
     }),
-    async mounted() {
-        setTimeout(() => {
-        $('button.nav-toggle').click()
-            
+    computed: {
+        userData() {
+            return this.$store.state.user
+        },
+    },
+    mounted() {
+        setTimeout(async() => {
+            $('button.nav-toggle').click()
+            await this.getStatistiquesData()
         }, 100);
-        await this.getStatistiquesData()
-           
     },
 
     methods:{
@@ -144,10 +146,18 @@ export default {
                 notif.error(error.message);
                 }
                 try {
-                    this.userData=await axios.get("utilisateurs/"+storage.get('access_token')).then(response => response.result || []);
+                    this.nbrBatiments=await axios.get("/stats/nbr-batiments").then(response => response.result || 0);
                 } catch (error) {
                 notif.error(error.message);
                 }
+                /* 
+                    A supprimer car cette operation est deja faite et les information de l'utilisateur sont dans le store
+                    C'est ce qui occasionnait la lanteur obser
+                try {
+                    this.userData=await axios.get("utilisateurs/"+storage.get('access_token')).then(response => response.result || []);
+                } catch (error) {
+                notif.error(error.message);
+                } */
                 if(!this.userData.nom){this.compteur++}
                 if(!this.userData.prenom){this.compteur++}
                 if(!this.userData.avatar){this.compteur++}
@@ -177,14 +187,7 @@ export default {
 }
 </script>
 <style scoped>
-@font-face {
-  font-family: "font-1";
-  src: url(/fonts/rampart-one-Font/RampartOne-Regular.ttf);
-}
-@font-face {
-  font-family: "font-2";
-  src: url(/fonts/ephesis/Ephesis-Regular.ttf);
-}
+
 .top-banner{
     position: relative;
     display:flex;
@@ -196,7 +199,7 @@ export default {
     position: relative;
     display:flex;
     width:100%;
-    background:url(/img/appart.jpg);
+    /*background:url(@/assets/img/appart.jpg);*/
     height:90%;
     border-radius:5px;
 }

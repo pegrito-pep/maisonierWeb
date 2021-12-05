@@ -5,138 +5,54 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between"> 
                         <div class="w-20">
-                                <b-card img-width="200" img-height="200" :img-src="locataire.avatar" img-alt="Card image" img-left class="mb-3">
-                               
-                                </b-card>
+                            <b-avatar :src="locataire.avatar" size="10em" />
                         </div>
-                        <div class="w-60 ml-4 globalcont2">
+                        <div class="w-60 globalcont2">
                             
                             <dl class="row text-muted">
-                                <dd class="mt-1 mb-2 col-1" v-if="locataire.cniLocataire"><i class="fa fa-id-card"></i></dd>
-                                <dt class="mt-1 mb-2 col-11 truncate" v-b-tooltip="'Numéro de CNI'" v-if="locataire.cniLocataire">{{ locataire.cniLocataire }}</dt>
-                                <dd class="mt-1 mb-2 col-1"><i class="fa fa-phone"></i></dd>
-                                <dt class="mt-1 mb-2 col-11 truncate" v-b-tooltip="'Numéro de téléphone'">{{ locataire.tel }}</dt>
-                                <dd class="mt-1 mb-2 col-1"><i class="fa fa-envelope"></i></dd>
-                                <dt class="mt-1 mb-2 col-11 truncate" v-b-tooltip="'Email'">{{ locataire.email }}</dt>
+                                <dd v-if="locataire.cniLocataire" class="mt-1 mb-2 col-1"><i class="fa fa-id-card"></i></dd>
+                                <dt v-if="locataire.cniLocataire" class="mt-1 mb-2 col-11 truncate" v-b-tooltip="$t('data.occupation_numero_cni')">{{ locataire.cniLocataire }}</dt>
+                                <dd v-if="locataire.tel" class="mt-1 mb-2 col-1"><i class="fa fa-phone"></i></dd>
+                                <dt v-if="locataire.tel" class="mt-1 mb-2 col-11 truncate" v-b-tooltip="$t('data.occupation_numero_telephone')">{{ locataire.tel }}</dt>
+                                <dd v-if="locataire.email" class="mt-1 mb-2 col-1"><i class="fa fa-envelope"></i></dd>
+                                <dt v-if="locataire.email" class="mt-1 mb-2 col-11 truncate" v-b-tooltip="$t('data.occupation_email')">{{ locataire.email }}</dt>
                                 <dd class="mt-1 mb-2 col-1" v-if="locataire.dateNaiss"><i class="fas fa-birthday-cake"></i></dd>
-                                <dt class="mt-1 mb-2 col-11 truncate" v-b-tooltip="'Date de naissance'" v-if="locataire.dateNaiss">{{ $date(locataire.dateNaiss).format('DD MMMM YYYY') }}</dt>
-                                <dd class="mt-1 mb-2 col-5">Impayés en loyer</dd>
-                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="'Solde du compte principal'">198 000 F CFA</dt>
-                                <dd class="mt-1 mb-2 col-5">Impayés en eau </dd>
-                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="'Impayés en eau'">36 000 F CFA</dt>
-                                <dd class="mt-1 mb-2 col-5">Impayés en électricité </dd>
-                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="'impayés en électricité'">70 0000 F CFA</dt>
-                                <dd class="mt-1 mb-2 col-5">Total des impayés</dd>
-                                <dt class="mt-1 mb-1 col-3 truncate" v-b-tooltip="'Total impayés'"><b-badge variant="danger">304 000 F CFA</b-badge></dt>
+                                <dt class="mt-1 mb-2 col-11 truncate" v-b-tooltip="$t('data.occupation_date_naissance')" v-if="locataire.dateNaiss">{{ $date(locataire.dateNaiss).format('DD MMMM YYYY') }}</dt>
+                                <dd class="mt-1 mb-2 col-5">{{$t('data.detail_habitant_tooltip_solde_principal')}}</dd>
+                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="$t('data.detail_habitant_tooltip_solde_principal')"> {{ locataire.solde }} F CFA</dt>
+                                <dd class="mt-1 mb-2 col-5">{{$t('data.detail_habitant_impayer_loyer')}}</dd>
+                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="$t('data.detail_habitant_impayer_loyer')"> {{ locataire.impayerLoyer }} F CFA</dt>
+                                <dd class="mt-1 mb-2 col-5">{{$t('data.detail_habitant_impayer_eau')}}</dd>
+                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="$t('data.detail_habitant_impayer_eau')">{{ locataire.impayerEau }} F CFA</dt>
+                                <dd class="mt-1 mb-2 col-5">{{$t('data.detail_habitant_impayer_electricite')}}</dd>
+                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="$t('data.detail_habitant_impayer_electricite')">{{ locataire.impayerEnergie }} F CFA</dt>
+                                <dd class="mt-1 mb-2 col-5">{{$t('data.detail_habitant_impayer_charges')}}</dd>
+                                <dt class="mt-1 mb-2 col-3 truncate" v-b-tooltip="$t('data.detail_habitant_impayer_charges')">{{ locataire.impayerCharges }} F CFA</dt>
+                                <dd class="mt-1 mb-2 col-5">{{$t('data.detail_habitant_total_impayer')}}</dd>
+                                <dt class="mt-1 mb-1 col-3 truncate" v-b-tooltip="$t('data.detail_habitant_total_impayer')"><b-badge variant="danger">{{ locataire.impayerTotal }} F CFA</b-badge></dt>
                             </dl>
                         </div>
                     </div>
 
                 </div>
       
-                <!--DEBUT FORMULAIRE DE RECHARGE DU COMPTE PRINCIPAL>-->
-                   
 
-                     <b-modal
-                        hide-footer
-                        :static="true"
-                        id="modal_recharge"
-                        ref="modal-recharge"
-                        v-model="recharge.enabled"
-                        :title="'Recharger du compte de '+locataire.nomLocataire"
-                        @hidden="resetRechargeForm"
-                    >
-                        <template #modal-footer="{ ok }">
-                            <b-button size="sm" variant="danger" @click="ok()" :disabled="recharge.submitted">
-                                Valider
-                                <b-spinner v-if="recharge.submitted" small />
-                            </b-button>
-                        </template>
-                        <b-form-group description="Entrez le montant de la recharge" label="Montant à créditer">
-                        <b-form-input
-                            v-model="recharge.montant"
-                            type="number"
-                            :min="1000"
-                            :class="{'is-invalid' : recharge.error}"
-                        />
-                        </b-form-group>
-                            <b-form-checkbox v-model="recharge.pay" switch>
-                                <span class="fa-lg">Paiement automatique ?</span>
-                            </b-form-checkbox>
-                              <transition enter-active-class="animated zoomIn">
-                                <b-form-group label="Occupation concernée" v-if="recharge.pay">
-                                    <v-select :options="locataire.occupations" v-model="idOccupation" label="loyerBase">
-                                        <template #option="{ loyerBase, puEnergie, puEau }">
-                                            <span class="text-muted">Loyer: {{ loyerBase }}</span><br />
-                                            <span class="text-muted">Energie: {{ puEnergie }}</span><br />
-                                            <span class="text-muted">Eau: {{ puEau }}</span>
-                                            <!--<small class="text-muted" v-if="cite != null">Cité: {{ cite.nomCite }}</small>-->
-                                            <hr class="m-0">
-                                        </template>
-                                    </v-select>
-                                </b-form-group>
-                            </transition>
-                        <hr>
-                        <div class="float-right"><b-button @click.prevent="validateRecharge" variant="primary">Valider<b-spinner v-if="recharge.submitted" small></b-spinner></b-button></div>
-                    </b-modal>
-           
-                <!--FIN FORMULAIRE DE RECHARGE DU COMPTE PRINCIPAL>-->
-                <!--DEBUT FORMULAIRE DE TRANSFERT INTERCOMPTES-->
-               
-                    <b-modal
-                        hide-footer
-                        :static="true"
-                        id="modal_transfert"
-                        ref="modal-transfert"
-                        v-model="transfert.enabled"
-                        title="Transfert intercomptes"
-                        @hidden="resetTransfertForm"
-                    >
-                        <b-row>
-                            <b-col> 
-                                <div class="form-group">
-                                    <label>compte débiteur</label>
-                                    <v-select label="text" :options="touslesComptes" v-model="transfert.compteDebiteur" :class="!requiredCompteDebiteur ? 'is-red' : ''" @input="filterAccountList"></v-select>
-                                    <span v-if="!requiredCompteCrediteur" style="color:red;">Ce champ est obligatoire</span>
-                                </div>
-                            </b-col>
-                            <b-col> 
-                                <div class="form-group">
-                                    <label>Compte crédité</label>
-                                    <v-select label="text" :options="comptesfiltres" v-model="transfert.compteCredite" :class="!requiredCompteCrediteur ? 'is-red' : ''"></v-select>
-                                    <span v-if="!requiredCompteCrediteur" style="color:red;">Ce champ est obligatoire</span>
-                                </div>
-                            </b-col>
-                        </b-row>
-                          <b-form-group description="Entrez le montant à transférer" label="Montant à transferer">
-                        <b-form-input
-                            v-model="transfert.montant"
-                            type="number"
-                            :min="1000"
-                            :class="{'is-invalid' : transfert.error}"
-                        />
-                        </b-form-group>
-                        <hr>
-                        <div class="float-right"><b-button @click.prevent="validateTransfert" variant="primary">Valider<b-spinner v-if="recharge.submitted" small></b-spinner></b-button></div>
-                    </b-modal>
-                    
-                <!--FIN FORMULAIRE DE TRANSFRERT INTERCOMPTES>-->
             </div> 
         </div>
         <div>
             <ul class="nav nav-tabs">
-                <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'occupations'}" @click.prevent="section = 'occupations'">Occupations</a></li>
-                <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'charges'}" @click.prevent="section = 'charges'">Charges</a></li>
+                <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'occupations'}" @click.prevent="section = 'occupations'">{{$t('data.detail_habitant_occupations')}}</a></li>
+                <!--<li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'charges'}" @click.prevent="section = 'charges'">Charges</a></li>
                 <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'loyers'}" @click.prevent="section = 'loyers'">Loyers</a></li>
-                <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'logements'}" @click.prevent="section = 'Logements'">Logements</a></li>
-                <li class="nav-item" v-if="itemsOccupations.length==0"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'add-occupation'}" @click.prevent="section = 'add-occupation'">Ajouter une occupation</a></li>
+                <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'logements'}" @click.prevent="section = 'Logements'">Logements</a></li>-->
+                <li class="nav-item" v-if="itemsOccupations.length==0"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'add-occupation'}" @click.prevent="section = 'add-occupation'">{{$t('data.detail_habitant_ajouter_occupation')}}</a></li>
             </ul>
             <div class="tab-content mt-3">
                 <div class="tab-pane fade show active">
                     <b-container fluid v-if="section == 'occupations'" style="height: 75vh; overflow-y: auto; overflow-x: hidden">
                         <b-alert variant="info" class="text-center" show v-if="!locataire.occupations.length">
                             <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                            <span class="h4 d-inline-flex ml-2">Vous n'avez défini aucune occupation pour le moment</span>
+                            <span class="h4 d-inline-flex ml-2">{{$t('data.occupation_pas_de_occupation')}}</span>
                         </b-alert> 
                         <b-row v-else>
                             <div class="card-body">
@@ -151,12 +67,12 @@
                                             <b-th>Action</b-th>
                                         </b-tr>-->
                                         <b-tr>
-                                            <b-th>N°</b-th>
-                                            <b-th>Logement</b-th>
-                                            <b-th>Facture Loyer</b-th>
-                                            <b-th>Facture Eau</b-th>
-                                            <b-th>Facture électricité</b-th>
-                                            <b-th class="d-flex justify-content-center align-items-center">Action</b-th>
+                                            <b-th>{{$t("data.detail_habitant_numero")}}</b-th>
+                                            <b-th>{{$t('data.detail_habitant_logement')}}</b-th>
+                                            <b-th>{{$t('data.detail_habitant_prix_loyer')}}</b-th>
+                                            <b-th>{{$t("data.occupation_facture_eau")}}</b-th>
+                                            <b-th>{{$t('data.occupation_facture_energie')}}</b-th>
+                                            <b-th class="d-flex justify-content-center align-items-center">{{$t('data.batiment_form_label_action')}}</b-th>
                                         </b-tr>
                                     </b-thead>
                                     <b-tbody>
@@ -191,37 +107,44 @@
                                                 <b-button id="accessOccupation"  @click.prevent="viewOccupationDetail(occupation)"  class="ml-1" v-b-tooltip.bottom="'Recharger le compte'"><i class="fa fa-user"></i></b-button>
                                             </b-td>
                                         </b-tr>-->
-                                        <b-tr v-for="occupation in itemsOccupations" :key="occupation.idOccupation">
-                                            <b-td class="p-2">{{ occupation.idOccupation }}</b-td>
+                                        <b-tr v-for="(occupation, index) in itemsOccupations" :key="occupation.idOccupation">
+                                            <b-td class="p-2">{{ ++index }}</b-td>
                                             <b-td class="p-2">
-                                                <span class="d-inline-block w-100 mt-1 text-muted" v-if="occupation.modePaiement == 'prepayer'">
-                                                    L-01
-                                                    <b-badge pill variant="secondary">Prépayé</b-badge>
+                                                <span class="d-inline-block w-100 mt-1 text-muted">
+                                                    {{ occupation.logement.refLogement }}
+                                                    <b-badge pill variant="secondary" v-if="occupation.modePaiement == 'prepayer'">Prépayé</b-badge>
+                                                    <b-badge pill variant="danger" v-if="occupation.modePaiement == 'postpayer'">Postpayé</b-badge>
                                                 </span>
-                                                <span class="d-inline-block w-100 mt-1 text-muted" v-if="occupation.modePaiement == 'postpayer'">
-                                                    L-01
-                                                     <b-badge pill variant="danger">Postpayé</b-badge>
-                                                </span>     
                                             </b-td>
                                             <b-td class="p-2">
-                                                <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.loyerBase}}</span> 
-                                                 <b-badge variant="success">réglé</b-badge>   
+                                                <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.loyerBase }}</span> 
+                                                 <!-- <b-badge variant="success">réglé</b-badge>    -->
                                             </b-td>
                                             <b-td class="p-2">
                                                 <span class="d-inline-block w-100 mb-1">
-                                                    <span class="d-inline-block w-100 mb-1 font-weight-bold">2600</span> 
-                                                    <b-badge variant="danger">Non réglé</b-badge> 
+                                                    <span class="d-inline-block w-100 mb-1 font-weight-bold"> {{ occupation.impayerEau }}</span> 
+                                                    <b-badge v-if="occupation.modeEau =='index'" pill variant="secondary">
+                                                        suivi des index
+                                                    </b-badge>
+                                                    <b-badge v-if="occupation.modeEau =='forfait'" pill variant="info">
+                                                        taux forfaiaire
+                                                    </b-badge>
                                                 </span>     
                                             </b-td>
                                             <b-td class="p-2">
                                                  <span class="d-inline-block w-100 mb-1">
-                                                    <span class="d-inline-block w-100 mb-1 font-weight-bold">5000</span> 
-                                                    <b-badge variant="danger">Non réglé</b-badge> 
+                                                    <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.impayerEnergie }}</span>  
+                                                    <b-badge v-if="occupation.modeEnergie =='index'" pill variant="secondary">
+                                                        suivi des index
+                                                    </b-badge>
+                                                    <b-badge v-if="occupation.modeEnergie =='forfait'" pill variant="info">
+                                                        taux forfaiaire
+                                                    </b-badge>
                                                 </span>      
                                             </b-td>
                                             <b-td>
-                                                <b-button id="accessOccupation"  @click.prevent="viewOccupationDetail(occupation)"  :to="{name: 'occupation', params: {id: occupation.idOccupation}}" v-b-tooltip.bottom="'Accéder à l\'occupation'"><i class="fa fa-eye"></i></b-button>
-                                                <b-button id="accessOccupation"  @click.prevent="viewOccupationDetail(occupation)"  class="ml-1" v-b-tooltip.bottom="'Payer'"><i class="fab fa-amazon-pay"></i></b-button>
+                                                <b-button id="accessOccupation"  @click.prevent="viewOccupationDetail(occupation)"  :to="{name: 'occupation', params: {id: occupation.idOccupation}}" v-b-tooltip.bottom="$t('data.detail_habitant_facture_tooltip_acceder_occupation')"><i class="fa fa-eye"></i></b-button>
+                                                <b-button id="accessOccupation"  @click.prevent="viewOccupationDetail(occupation)"  class="ml-1" v-b-tooltip.bottom="$t('data.occupation_charge_payer')"><i class="fab fa-amazon-pay"></i></b-button>
                                             </b-td>
                                         </b-tr>
                                     </b-tbody>
@@ -316,7 +239,7 @@
          <!--<modal name="my-first-modal">
               <div>
                     <button @click="$modal.hide('my-first-modal')">
-                        ❌
+                        
                     </button>
               </div>
                 <b-form-group description="Entrez le montant de la recharge" label="Montant à créditer">

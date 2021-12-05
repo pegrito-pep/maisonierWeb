@@ -33,11 +33,16 @@ Vue.component('empty-layout', Empty)
 import VueGeolocation from 'vue-browser-geolocation'
 Vue.use(VueGeolocation)
 
+import Vue2Filters from 'vue2-filters'
+
+Vue.use(Vue2Filters)
+
 import ImgInputer from 'vue-img-inputer'
 import 'vue-img-inputer/dist/index.css'
 Vue.component('img-inputer', ImgInputer)
 
-
+//import i18n from '@/plugins/i18n.js';
+import i18n from './i18n' 
 
 import * as VueGoogleMaps from 'vue2-google-maps'
 Vue.use(VueGoogleMaps, {
@@ -48,5 +53,6 @@ Vue.use(VueGoogleMaps, {
 new Vue({
     router,
     store,
+    i18n,
     render: function(h) { return h(App) }
 }).$mount('#app')

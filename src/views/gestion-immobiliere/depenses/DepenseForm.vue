@@ -3,44 +3,44 @@
       <b-row>
         <b-col>
           <b-form-group
-            label="Montant"
-            description="à combien s'élève la dépense éffectuée?"
+            :label="$t('data.depense_form_label_montant')"
+            :description="$t('data.depense_form_label_montant_description')"
           >
             <b-form-input
               v-model="depense.montant"
-              placeholder="Ex: 45000"
+              :placeholder="$t('data.depense_form_label_montant_exemple')"
               type="number"
               trim
             ></b-form-input>
           </b-form-group>
         </b-col>
         <b-col>
-            <b-form-group label="Date à laquelle la dépense a été éffectuée">
-                <date-picker v-model="depense.date" placeholder="Selectionnez une date" format="dddd, DD MMMM YYYY" valueType="YYYY-MM-DD" class="w-100" :clearable="false"/>
+            <b-form-group :label="$t('data.depense_form_label_date_depense')">
+                <date-picker v-model="depense.date" :placeholder="$t('data.profile_selectionner_date')" format="dddd, DD MMMM YYYY" valueType="YYYY-MM-DD" class="w-100" :clearable="false"/>
             </b-form-group>                        
         </b-col>
       </b-row>
       <b-row>
         <b-col>
           <b-form-group
-            label="Motif"
-            description="Pourquoi avez-vous éffectué cette dépense ?"
+            :label="$t('data.depense_form_label_motif')"
+            :description="$t('data.depense_form_label_motif_description')"
           >
             <b-form-input
               v-model="depense.motif"
-              placeholder="Ex: Replacement ampoules cassées"
+              :placeholder="$t('data.depense_form_label_motif_description_exemple')"
               trim
             ></b-form-input>
           </b-form-group>
         </b-col>
         <b-col>
           <b-form-group
-            label="responsable"
-            description="Qui est celui qui a déclaré la dépense?"
+            :label="$t('data.depense_form_label_responsable')"
+            :description="$t('data.depense_form_label_responsable_description')"
           >
             <b-form-input
               v-model="depense.responsable"
-              placeholder="Ex: Pedro"
+              :placeholder="$t('data.profile_prenom_exemple')"
               trim
             ></b-form-input>
           </b-form-group>
@@ -48,19 +48,19 @@
       </b-row>
       <b-row>
         <b-col cols="7">
-          <b-form-group label="observations">
+          <b-form-group :label="$t('data.occupation_observation')">
             <b-form-textarea
               class="mb-2"
-              placeholder="C'est ici que vou pouvez décrire ce qui a engendré la dépense"
+              :placeholder="$t('data.depense_form_label_observation_placeholder')"
               rows="7"
               v-model="depense.observation"
             ></b-form-textarea>
           </b-form-group>
         </b-col>
         <b-col cols="5">
-            <b-form-group label="joindre une photo">
+            <b-form-group :label="$t('data.depense_form_label_joindre_une_photo')">
                 <img-inputer v-model="depense.photo" theme="light" size="xl" 
-                        bottom-text="déposez le fichier ici ou cliquez pour modifier" icon="img" placeholder="joindre recu dépense"
+                        :bottom-text="$t('data.depense_form_label_joindre_une_photo_bottom_text')" icon="img" :placeholder="$t('data.depense_form_label_joindre_une_photo_bottom_text_placeholder')"
                         @onChange="onrecuLoad"/>
             </b-form-group>
         </b-col>
@@ -68,7 +68,7 @@
         <b-overlay :show="showOverlay" rounded="sm">
             <b-row>
                     <b-col>
-                        <b-form-group label="Votre dépense concerne" v-slot="{ ariaDescribedby }">
+                        <b-form-group :label="$t('data.depense_form_label_votre_depense_concerne')" v-slot="{ ariaDescribedby }">
                                 <b-form-radio-group
                                     id="radio-slots"
                                     v-model="commandeAction"
@@ -84,15 +84,15 @@
                     <b-col>
                         <transition enter-active-class="animated zoomIn">
                             <div class="form-group" v-if="showSelectCite">
-                                    <label>Cité concernée</label>
+                                    <label>{{$t('data.depense_form_label_cite_concerne')}}</label>
                                      <v-select label="nomCite" :options="cites" v-model="id" :class="{ disabled: disabled == true }"></v-select>
                             </div>
                             <div class="form-group" v-if="showSelectBatiment">
-                                    <label>Batiment concerné</label>
+                                    <label>{{$t('data.depense_form_label_batiment_concerne')}}</label>
                                     <v-select label="nomBatiment" :options="batiments" v-model="id" :class="{ disabled: disabled == true }"></v-select>
                             </div>
                             <div class="form-group" v-if="showSelectLogement">
-                                <label>Logement concerné</label>
+                                <label>{{$t('data.depense_form_label_logement_concerne')}}</label>
                                 <v-select label="refLogement" :options="logements"  v-model="id" :class="{ disabled: disabled == true }"></v-select>
                             </div>
                         </transition>
@@ -100,8 +100,8 @@
             </b-row>
              <hr>
              <div class="float-right">
-                <b-button @click.prevent="$emit('cancel')" class="mr-1" v-if="provenance == '2'">Annuler</b-button>
-                <b-button @click.prevent="submitModal" variant="danger">Valider</b-button>
+                <b-button @click.prevent="$emit('cancel')" class="mr-1" v-if="provenance == '2'">{{$t("data.occupation_recharger_compte_annuler")}}</b-button>
+                <b-button @click.prevent="submitModal" variant="danger">{{$t('data.cite_valider_cite')}}</b-button>
             </div>
         </b-overlay>
     </b-overlay>
@@ -238,7 +238,6 @@ export default {
       if (this.action == "add") {
           this.showOverlayP = true;
          if(this.showSelectLogement){
-              console.log("dépense",this.depense,"id",this.id.idLogement)
               axios.post('/logements/'+this.id.idLogement+'/depenses',this.depense).then(response =>{
                   this.resetModal();
                    this.showOverlayP = false;

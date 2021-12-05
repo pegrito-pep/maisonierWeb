@@ -7,37 +7,31 @@
             <b-carousel-slide class="responsive border-0">
               <template #img>
                 <div class="titre-overlay">
-                  <h1 class="titre"><blockquote class="">Gérer facilement vos biens immobiliers</blockquote></h1>
-                  <p class="description">
-                    Prenez votre envole et découvrez une nouvelle façon de gerer vos biens. Plus besoin d'une assistance quelconque. Tout se fait en un clic.
-                  </p>
+                  <h1 class="titre"><blockquote class="">{{$t('data.slide_1_titre')}}</blockquote></h1>
+                  <p class="description">{{$t('data.slide_1_description')}}</p>
                 </div>
                 <div class="overlay"></div>
-                <img class="w-100 image" src="/img/cites.jpeg" />
+                <img class="w-100 image" src="@/assets/img/cites.jpeg" />
               </template>
             </b-carousel-slide>
             <b-carousel-slide class="responsive border-0">
               <template #img>
                 <div class="titre-overlay">
-                  <h1 class="titre"><blockquote class="">Ne perdez plus aucune information</blockquote></h1>
-                  <p class="description">
-                    Le Maisonnier rassemble, traite et stocke toutes vos informations et vous permet d'utiliser votre memoire pour autre chose.
-                  </p>
+                  <h1 class="titre"><blockquote class="">{{$t('data.slide_2_titre')}}</blockquote></h1>
+                  <p class="description">{{$t('data.slide_2_description')}}</p>
                 </div>
                 <div class="overlay"></div>
-                <img class="w-100 image" src="/img/villa1.jpg" />
+                <img class="w-100 image" src="@/assets/img/villa1.jpg" />
               </template>
             </b-carousel-slide>
             <b-carousel-slide class="responsive border-0">
               <template #img>
                 <div class="titre-overlay">
-                  <h1 class="titre"><blockquote class="">Optimiser la valeur de vos biens</blockquote></h1>
-                  <p class="description">
-                    Decouvrer la rentabilité de vos biens, observer vos bénéfices en continue, interagisser avec vos locataires et bien plus encore...
-                  </p>
+                  <h1 class="titre"><blockquote class="">{{$t('data.slide_3_titre')}}</blockquote></h1>
+                  <p class="description">{{$t('data.slide_3_description')}}</p>
                 </div>
                 <div class="overlay"></div>
-                <img class="w-100 image" src="/img/chambre2.jpg" />
+                <img class="w-100 image" src="@/assets/img/chambre2.jpg" />
               </template>
             </b-carousel-slide>
           </b-carousel>
@@ -47,11 +41,9 @@
           <div class="authentication-form mx-auto">
             <div class="login-top">
               <b-link :to="{ name: 'home' }">
-                <b-img src="/img/logo-m0.png" style="width: 4em;" />
+                <b-img src="@/assets/img/logo-m0.png" style="width: 4em;" />
               </b-link>
-              <h3 class="slogan">
-                Se connecter
-              </h3>
+              <h3 class="slogan">{{$t('data.login_se_connecter')}}</h3>
             </div>
 
             <form action="" @submit.prevent="sendForm">
@@ -59,7 +51,7 @@
                 <input
                   type="text"
                   class="form-control"
-                  placeholder="Email ou téléphone"
+                  :placeholder="$t('data.login_email_telephone')"
                   required=""
                   v-model="login"
                 />
@@ -69,7 +61,7 @@
                 <input
                   type="password"
                   class="form-control"
-                  placeholder="Mot de passe"
+                  :placeholder="$t('data.login_mot_de_passe')"
                   required=""
                   v-model="mdp"
                 />
@@ -80,15 +72,15 @@
                       :to="{ name: 'forgot-password' }"
                       v-b-hover="handleHoverForgot"
                       class="forgotpwd"
-                      >Mot de passe oublié ?</b-link>
+                      >{{$t("data.login_mot_de_passe_oublier")}}</b-link>
                   <b-button type="submit" :disabled="submitted" class="connexion-btn">
-                      Connexion<b-spinner class="ml-3" v-if="submitted" small></b-spinner>
+                      {{$t('data.login_connexion')}}<b-spinner class="ml-3" v-if="submitted" small></b-spinner>
                   </b-button>
               </div>
             </form>
             <div class="login-footer">
-                <span>Vous n'avez pas de compte ?</span>
-                <b-link :to="{ name: 'register' }" v-b-hover="handleHover">Inscrivez-vous</b-link>
+                <span>{{$t('data.forgotPassword_vous_avez_pas_de_compte')}}</span>
+                <b-link :to="{ name: 'register' }" v-b-hover="handleHover">{{$t('data.forgotPassword_inscription')}}</b-link>
             </div>
             <div class="conditions">
               Protégé pa reCAPTCHA et soumis aux <b>Politiques de confidentialité</b> et <b>Conditions d'utilisation de Flysoft Engineering</b>
@@ -98,17 +90,17 @@
       </b-row>
     </div>
     <div class="d-flex justify-content-between align-items-start">
-        <b-button class="position-fixed validate btn-icon" variant="danger" @click.prevent="showSubmitForm" v-b-tooltip.left="'Nous écrire'"><b-spinner small v-if="submitted" /><i v-else class="ik ik-message-circle fa-lg"></i></b-button>
+        <b-button class="position-fixed validate btn-icon" variant="danger" @click.prevent="showSubmitForm" v-b-tooltip.left="'Nous écrire'"><b-spinner small v-if="submitted2" /><i v-else class="ik ik-message-circle fa-lg"></i></b-button>
     </div>
     <transition enter-active-class="animated zoomIn"  leave-active-class="animated fadeOut zoomOut">
         <div class="test1" v-if="submitContactForm">
           <form class="form-contact-support" @submit.prevent="sendContactSupportForm">
-              <b-row>
-                <div>
-                    <div class="input-group input-group-success ml-3 elargir">
+              <b-row cols="12">
+                <div class="w-100">
+                    <div class="input-group input-group-success elargir">
                         <span class="input-group-prepend"><label class="input-group-text"><i class="fa fa-envelope"></i></label></span>
                         <input type="email" v-model="contactData.email" class="form-control" placeholder="Email" required="">
-                        <span v-if="!requiredEmail" style="color:red;">Vous devez fournir une adresse mail'</span>
+                        <span v-if="!requiredEmail" style="color:red;">{{$t('data.login_fournir_une_addresse_email')}}</span>
                     </div>
                 </div>
                 <!--<div md="4" class="ml-4">
@@ -119,19 +111,22 @@
                 </div>-->
             </b-row>
             <b-row>
-                <b-col cols="10">
-                  <b-form-group label="Message">
+                <b-col cols="12" class="p-0">
+                  <b-form-group class="w-100 h-100" label="Message">
                     <b-form-textarea
                       class="mb-2"
-                      placeholder="En quoi pouvons nous vous aider ?"
+                      :placeholder="$t('data.login_laisser_un_message')"
                       rows="4"
+                      cols="100"
                       required=""
                       v-model="contactData.message"
                     ></b-form-textarea>
                   </b-form-group>
                 </b-col>
             </b-row>
-            <b-button type="submit" class="float-right" :disabled="submitted2" variant="outline-success">envoyer<b-spinner class="ml-2" small v-if="submitted2" style="margin-left: 5px;"></b-spinner></b-button>
+            <div class="envoyer">
+              <b-button type="submit" class="float-right mr--4" :disabled="submitted2" variant="outline-success">{{$t('data.habitant_form_envoyer')}}<b-spinner class="ml-2" small v-if="submitted2" style="margin-left: 5px;"></b-spinner></b-button>
+            </div>
           </form>
         </div>
     </transition>
@@ -173,6 +168,7 @@ export default {
         .post("signin", { login: this.login, mdp: this.mdp })
         .then((response) => {
           if(!response.result.statutUtilisateur){
+             storage.set('user-email', this.login);
              //notif.error('compte utilisateur inactif')
              App.notifyError('compte utilisateur inactif');
               setTimeout(() => {
@@ -182,7 +178,65 @@ export default {
           }
           storage.set("access_token", response.result.access_token);
           storage.set("refresh_token", response.result.refresh_token);
-          window.location.href = '/'
+          let permissions = [
+            'create_cite',
+            'update_cite',
+            'delete_cite',
+            'view_cite',
+            'list_cites',
+            'create_batiment',
+            'update_batiment',
+            'delete_batiment',
+            'view_batiment',
+            'list_batiments',
+            'create_logement',
+            'update_logement',
+            'view_logement',
+            'list_logements',
+            'delete_logement',
+            'clone_logement',
+            'create_occupation',
+            'view_occupation',
+            'list_occupations',
+            'update_occupation',
+            'delete_occupation',
+            'view_contrat',
+            'create_annonce',
+            'update_annonce',
+            'delete_annonce',
+            'view_annonce',
+            'list_annonces',
+            'publish_annonce',
+            'comment_annonce',
+            'list_habitants',
+            'create_habitant',
+            'update_habitant',
+            'delete_habitant',
+            'view_habitant',
+            'view_insolvables',
+            'list_depenses',
+            'update_depense',
+            'delete_depense',
+            'create_depense',
+            'list_indexes',
+            'add_indexes',
+            'list_loyers',
+            'pay_loyers',
+            'list_factures',
+            'generate_charges',
+            'list_comptes_amounts',
+            'add_recharge_comptes',
+            'list_modeles',
+            'add_modele',
+            'view_contrat'
+          ]
+          storage.set('userPermissions', permissions)
+          //we also store the user permissions in localstore.
+          //This is needed to implement access control.
+          //storage.set("userPermissions", response.result.permissions);
+          storage.set('devise','F')
+
+          window.location.href = this.$router.options.base
           // this.$router.push({ name: "home" });
         })
         .catch((error) => {
@@ -209,6 +263,7 @@ export default {
           if (!response.success) {
             return App.alertError(response.message)
           }
+          this.showSubmitForm()
           return App.notifySuccess(response.message)
         })
         .catch((error) => {
@@ -387,16 +442,20 @@ export default {
     width: 400px;
     font-size: 18px;
     border-radius: 10px;
-    box-shadow: 0px 0px 8px 5px rgba(0, 0, 0, .4);
+    box-shadow: rgba(0, 0, 0, 0.23) 0px 4px 12px;
     min-height: 100px;
   }
   .elargir{
-    min-width:240px;
+    min-width: 100%;
+    margin-bottom: 5px;
   }
   .test1{
     position:absolute;
     right:2em;
-    bottom:4.5em;
+    bottom:4.8em;
     z-index: 1000
+  }
+  .envoyer{
+    margin-right: -15px;
   }
 </style>

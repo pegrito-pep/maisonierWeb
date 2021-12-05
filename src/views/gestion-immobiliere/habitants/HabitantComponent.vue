@@ -23,30 +23,30 @@
                                 :img-src="photo"
                             ></b-carousel-slide>
                         </b-carousel>
-                <span v-if="!annonce.publish" class="badge badge-pill badge-danger position-absolute badge-top-left">Pas encore publiée</span>
-                <span v-if="annonce.publish" class="badge badge-pill badge-success position-absolute badge-top-left">déja publié</span>
+                <span v-if="!annonce.publish" class="badge badge-pill badge-danger position-absolute badge-top-left">{{$t('data.detail_habitant_pas_encore_publier')}}</span>
+                <span v-if="annonce.publish" class="badge badge-pill badge-success position-absolute badge-top-left">{{$t('data.detail_habitant_deja_publier')}}</span>
             </a>
                 </b-col>
                 <b-col cols="1" class="refactor">
                     <b-row>
                         <button type="button" class="btn btn-icon btn-warning" id="button-edit"><i class="ik ik-edit-2"></i></button>
-                        <b-tooltip target="button-edit" noninteractive variant="warning"><span> Modifier</span></b-tooltip>
+                        <b-tooltip target="button-edit" noninteractive variant="warning"><span> {{$t('data.detail_habitant_modifier')}}</span></b-tooltip>
                     </b-row>
                    <b-row>
                         <button type="button" class="btn btn-icon btn-danger" id="button-delete"><i class="ik ik-trash-2"></i></button>
-                        <b-tooltip target="button-delete" noninteractive variant="danger"><span> Supprimer</span></b-tooltip>
+                        <b-tooltip target="button-delete" noninteractive variant="danger"><span> {{$t('data.detail_habitant_supprimer')}}</span></b-tooltip>
                     </b-row>
                     <b-row v-if="annonce.nbrPropostions===0">
                         <button  class="btn btn-icon btn-secondary" id="button-nombre-propositions"><i class="fas fa-sticky-note"></i></button>
-                        <b-tooltip target="button-nombre-propositions" noninteractive variant="secondary"><span> vous avez déjà reçu {{ annonce.nbrPropostions }} proposition</span></b-tooltip>
+                        <b-tooltip target="button-nombre-propositions" noninteractive variant="secondary"><span> {{$t('data.detail_habitant_deja_recu')}} {{ annonce.nbrPropostions }} {{$t('data.detail_habitant_proposition')}}</span></b-tooltip>
                     </b-row>
                      <b-row v-if="annonce.nbrPropostions>0">
                         <button  class="btn btn-icon btn-success" id="button-nombre-propositions"><i class="fas fa-sticky-note"></i></button>
-                        <b-tooltip target="button-nombre-propositions" noninteractive variant="success"><span> vous avez déjà reçu {{ annonce.nbrPropostions }} proposition</span><span v-if="annonce.nbrPropostions>0">s</span></b-tooltip>
+                        <b-tooltip target="button-nombre-propositions" noninteractive variant="success"><span> {{$t('data.detail_habitant_deja_recu')}} {{ annonce.nbrPropostions }}  {{$t('data.detail_habitant_proposition')}}</span><span v-if="annonce.nbrPropostions>0">s</span></b-tooltip>
                     </b-row>
                     <b-row>
                         <button class="btn btn-icon btn-info" id="button-comment"><i class="fa fa-comments"></i></button>
-                        <b-tooltip target="button-comment" noninteractive variant="info"><span> Faire un commentaire</span></b-tooltip>
+                        <b-tooltip target="button-comment" noninteractive variant="info"><span> {{$t('data.annonce_details_tooltip_commenter_annonce')}}</span></b-tooltip>
                     </b-row>
                </b-col>
                   

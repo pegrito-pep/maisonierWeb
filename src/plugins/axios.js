@@ -8,10 +8,10 @@ import axios from "axios";
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 const env = process.env.NODE_ENV || 'development'
-let baseURL = 'https://fse-le-maisonier.herokuapp.com/api';
-// let baseURL = 'http://localhost:4002/api'
+// let baseURL = 'http://localhost:4002/api';
+let baseURL = 'http://192.168.100.19:4002/api'
 if (env === 'production') {
-    baseURL = 'https://fse-le-maisonier.herokuapp.com/api';
+    baseURL = 'http://www.maisonier.com/api' // 'https://fse-le-maisonier.herokuapp.com/api';
 }
 else if (env === 'test') {
 
@@ -65,7 +65,7 @@ _axios.interceptors.response.use(
         }
         if (data.code == 498) {
             storage.clear()
-            window.location.href = '/login'
+            window.location.href = env === 'production' ? '/app/login' : '/login'
         }
         return Promise.reject(data)
     }

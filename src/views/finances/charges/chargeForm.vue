@@ -3,12 +3,12 @@
       <b-row>
         <b-col>
           <b-form-group
-            label="Montant"
-            description="combien voulez-vous attribuer ?"
+            :label="$t('data.charge_form_montant')"
+            :description="$t('data.charge_form_montant_description')"
           >
             <b-form-input
               v-model="charge.montant"
-              placeholder="Ex: 3000"
+              :placeholder="$t('data.charge_form_montant_exemple')"
               type="number"
               trim
             ></b-form-input>
@@ -41,10 +41,10 @@
       </b-row>-->
       <b-row>
         <b-col>
-          <b-form-group label="Description">
+          <b-form-group :label="$t('data.charge_form_montant_label_description')">
             <b-form-textarea
               class="mb-2"
-              placeholder="pourquoi attribuez-vous cette charge ?"
+              :placeholder="$t('data.charge_form_montant_label_description_explication')"
               rows="6"
               v-model="charge.observation"
             ></b-form-textarea>
@@ -54,14 +54,14 @@
       <b-row>
         <b-col>
             <div class="form-group">
-                <label>Type de charge concernée</label>
+                <label>{{$t('data.charge_form_type_de_charge')}}</label>
                 <v-select label="libelle" :options="typesCharges"  v-model="typeCharge" @input="setType"></v-select>
             </div>
         </b-col>
       </b-row>
       <b-row>
         <b-col>
-            <b-form-checkbox v-model="charge.etatCharge"><span class="mt-3">Statut</span></b-form-checkbox>
+            <b-form-checkbox v-model="charge.etatCharge"><span class="mt-3">{{$t('data.charge_form_statut')}}</span></b-form-checkbox>
         </b-col>
       </b-row>
 
@@ -70,7 +70,7 @@
 
         <hr>
         <div class="float-right">
-        <b-button @click.prevent="submitModal" variant="danger">Valider</b-button>
+        <b-button @click.prevent="submitModal" variant="danger">{{$t('data.cite_valider_cite')}}</b-button>
     </div>
     </b-overlay>
 </template>

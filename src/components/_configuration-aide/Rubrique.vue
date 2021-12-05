@@ -3,13 +3,13 @@
         <div class="card d-flex flex-row mb-3">
             <a class="d-flex card-img" @click.prevent="showDetails" href="#">
                 <img src="@/assets/img/rubrique.jpg" alt="" style="height: 10em" class="list-thumbnail responsive border-0">
-                <span v-if="isNew" class="badge badge-pill badge-primary position-absolute badge-top-left">New</span>
+                <span v-if="isNew" class="badge badge-pill badge-primary position-absolute badge-top-left">{{$t('data.article_nouvel')}}</span>
             </a>
             <div class="d-flex flex-grow-1 min-width-zero card-content">
                 <div class="card-body align-self-center d-flex flex-column flex-md-row justify-content-between min-width-zero align-items-md-center">
                     <div class="text-center">
                         <!-- <h4 class="text-red mt-0 truncate">{{ rubrique.descRubrique }}</h4> -->
-                        <span class="d-inline-block text-muted">Rubrique: <b>{{rubrique.descRubrique }}</b></span>
+                        <span class="d-inline-block text-muted">{{$t('data.article_details_article_rubrique')}}: <b>{{rubrique.descRubrique }}</b></span>
                     </div>
                     <p v-if="isSub" class="text-muted mt-3 mb-1 date w-15 w-xs-100 text-small">{{ $date(rubrique.createdAt).format("DD.MM.YYYY") }}</p>
                     <p v-else v-b-tooltip.bottom="dateCreation" class="mt-3 mb-1 text-muted text-small date w-15 w-xs-100">{{ $date(rubrique.createdAt).format("DD.MM.YYYY") }}</p>

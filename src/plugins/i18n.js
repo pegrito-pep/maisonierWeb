@@ -1,0 +1,346 @@
+import Vue from 'vue';
+import VueI18n from 'vue-i18n';
+
+Vue.use(VueI18n);
+
+const messages = {
+    'en': {
+        sidebar_acueil: 'Home',
+        sidebar_dashboard: 'Dashboard',
+        sidebar_patrimoine_immobilier: 'Real estate',
+        sidebar_mes_cites: 'My cities',
+        sidebar_mes_batiments: 'My buildings',
+        sidebar_mes_logements: 'My accommodations',
+        sidebar_gestion_immobiliere: 'Property management',
+        sidebar_mes_annonces: 'My ads',
+        sidebar_mes_occupations: 'My occupations',
+        sidebar_locations: 'Rentals',
+        sidebar_mes_habitants: 'My tenants',
+        sidebar_insolvables: 'Insolvent',
+        sidebar_analyse_rentabilite: 'Analysis & Profitability',
+        sidebar_depenses:'Expenses',
+        sidebar_finances:'Finance',
+        sidebar_releves_indexes: 'Index statements',
+        sidebar_loyers: 'Rents',
+        sidebar_configuration_aide: 'Setup and help',
+        sidebar_modeles_contrats: 'Contract models',
+        sidebar_documentation: 'Documentation',
+        sidebar_parametres:'Settings',
+        sidebar_preferences: 'Preferences',
+
+        //messages de la homepage
+        home_bienvenu: 'Welcome to the maisonier platform',
+        home_paragraphe_informatif1: 'Here you can create: cities, buildings, housing, inhabitants. But first, please complete your profile ',
+        home_paragraphe_informatif2: 'Full profile at',
+        home_terminer_profil: 'Finish your profile',
+        home_batiments: 'Buildings',
+        home_aucun_batiment: ' No building for the moment',
+        home_batiments_crees: 'buildings created',
+        home_logements: 'Accommodations',
+        home_pas_de_logements: 'No accommodation created for the moment',
+        home_logements_crees: ' housing created',
+        home_habitants: 'tenants',
+        home_pas_dhabitants: 'No tenant created for the moment',
+        home_locataires_crees: 'tenants created',
+        home_actions_rapides: 'Quick actions',
+        home_creer_une_cite: 'Create a city',
+        home_descripton_cite : 'A city is a set of several buildings grouped together in an area',
+        home_creer: 'Create',
+        home_creer_batiment : 'Create a building',
+        home_description_batiment : ' A building is a building with several residences (apartments, studios, etc.)',
+        home_creer_logement : 'Create accommodation',
+        home_description_logement : 'Accommodation is a residence intended to lodge an inhabitant (eg apartment, house, studio)',
+        home_creer_habitant : 'Create a tenant',
+        home_description_habitant: 'A resident is simply a person (your tenant) who occupies your home',
+
+        //Dashbord message
+        dashbord_logements: 'Accommodations',
+        dashbord_disponibles: 'Available',
+        dashbord_occupe: 'busy',
+        dashbord_locataires: 'Tenants',
+        dashbord_actifs: 'active',
+        dashbord_actif: 'active',
+        dashbord_evenements: 'Events',
+        dashbord_total_evenement: 'Total Events',
+        dashbord_commentaires: 'Comments',
+        dashbord_total_commentaire: 'Total comments',
+        dashbord_recouvrement_du_mois: 'Monthly collections',
+        dashbord_recouvrement_annuel: 'Annual collections',
+        dashbord_Logements_par_batiment: "Housing by building",
+
+        //messages de page des cités
+        cite_ajouter_cite: 'Add a city',
+        cite_pas_de_cite_enregistrer: 'No city registered for the moment',
+        cite_detail_cite: 'City details',
+        cite_editer_cite: 'City edition',
+        cite_valider_cite: 'validate',
+        cite_nom_cite: 'Name',
+        cite_exemple_cite: 'Eg: City of peace',
+        cite_reference_cite: 'Reference',
+        cite_exemple_reference_cite: 'Eg: CP3',
+        cite_label_photo: 'Photo',
+        cite_ajouter_photo_de_la_cite: 'Add the city photo',
+        cite_bottom_text: 'drop the file here or click to modify',
+
+        // messages d'un cité
+        cite_new: 'New',
+        cite_tooltip_details: 'Details',
+        cite_tooltip_editer: 'Edit',
+        cite_tooltip_supprimer: 'delete',
+
+        //messages de page de détail de la cité
+        cite_detail_batiments: 'Buildings',
+        cite_detail_stat_generales: 'General statistics',
+        cite_detail_ajout_batiments: 'Add buildings',
+        cite_detail_depenses_de_la_cite: 'City-related expenses',
+        cite_detail_ajouter_depense: 'Add an expense',
+        cite_detail_titre_stat_generales: 'General statistics',
+        cite_detail_pas_de_batiments: 'No building registered for the moment',
+        cite_detail_pas_de_depenses: 'No expense recorded for the moment',
+
+         
+        //messages de page des bâtiments
+        batiment_ajouter_batiment: 'Add a building',
+        batiment_editer_batiment: 'Building edition',
+        batiment_pas_de_batiment: 'No building registered for the moment',
+        batiment_pas_de_batiment_trouve: 'No building found',
+        batiment_details_batiment: 'Building details',
+
+        //messages du bâtiment
+        batiment_new: 'New',
+        batiment_reference: 'Reference',
+        batiment_details: 'Details',
+        batiment_acceder_aux_details: 'Go to details',
+        batiment_editer: 'Edit',
+        batiment_supprimer: 'Delete',
+
+        //messages de page de la navbar
+        navbar_mes_cites: 'My Cities',
+        navbar_mes_batiments: 'My buildings',
+        navbar_mes_logements: 'My accommodations',
+
+        //messages de page des logement
+        Filtre_de_categories: 'Category filter',
+        logement_ajouter_logement: 'Add accommodation',
+        logement_pas_de_logement: 'No accommodation registered for the moment',
+        logement_details_logement: 'Accommodation details',
+        logement_cloner_logement: 'Clone housing',
+        logement_description_clonage: 'Housing cloning allows you to add a multitude of housings by using pre-existing housing to generate new ones.',
+        logement_nombre_de_clones: 'Enter the number of homes to generate',
+        logement_nombre_de_clones_label: 'Number of clones',
+        logement_batiment_lie_au_clonage: 'Select the building to which the generated dwellings will be attached',
+        logement_batiment_lie_au_clonage_label: 'Building',
+        logement_pas_de_batiment: 'No building',
+
+
+        
+        // message de la page du profile de l'utilisateur
+        profile_certifier_informations: 'Certify my information',
+        profile_certifier_informations_description: "This consists in sending my information for study to the administrators of the platform. Please click on the button to certify your information",
+        profile_nombre_locataire: 'Certify my information',
+        profile_nombre_logement_libre_sans_annonce_publie: 'The number of my vacancies and without published advertisement',
+        profile_address_email: 'E-mail',
+        profile_address_email_secondaire: 'Secondary Email',
+        profile_address_email_exemple: 'Eg: tagnemiguel@gmail.com',
+        profile_address_phone: 'Phone number',
+        profile_address_phone_secondaire: 'Secondary phone number',
+        profile_address_phone_exemple: 'Eg: 693803726',
+        profile_maisonier_sur_reseaux_sociaux: 'The Maisonier on social networks',
+        profile_maisonier_facebook: 'Access the Maisonier\'s Facebook page.',
+        profile_maisonier_twitter: 'Access the Maisonier\'s Twitter account.',
+        profile_maisonier_instagram: 'Access the Maisonier\'s Instagram account.',
+        profile_maisonier_youtube: 'Access the Maisonier\'s youtube channel',
+        profile_activite: 'Activity',
+        profile_mes_informations: 'My informations',
+        profile_nom: 'Name(s)',
+        profile_nom_exemple: 'Eg: TAGNE',
+        profile_prenom: 'First name(s)',
+        profile_prenom_exemple: 'Eg: Miguel Pedro',
+        profile_genre: 'Kind',
+        profile_date_naissance: 'Date of Birth',
+        profile_selectionner_date: 'Select a date',
+        profile_profession: 'Profession',
+        profile_profession_exemple: 'Eg: Architecte',
+        profile_photo_profile: 'Profile picture',
+        profile_modifier_mot_de_passe: 'Change my password',
+        profile_mot_de_passe_actuel: 'Current Password',
+        profile_mot_de_passe_nouveau: 'New Password',
+        profile_mot_de_passe_mettre_a_jour: 'Update',
+
+    },
+
+    'fr': {
+        sidebar_acueil: 'Accueil',
+        sidebar_dashboard: 'Tableau de bord',
+        sidebar_patrimoine_immobilier: 'Patrimoine immobilier',
+        sidebar_mes_cites: 'Mes cités',
+        sidebar_mes_batiments: 'Mes batiments',
+        sidebar_mes_logements: 'Mes logements',
+        sidebar_gestion_immobiliere: 'Gestion Immobilière',
+        sidebar_mes_annonces: 'Mes annonces',
+        sidebar_mes_occupations: 'Mes occupations',
+        sidebar_locations: 'Locations',
+        sidebar_mes_habitants: 'Mes habitants',
+        sidebar_insolvables: 'Insolvables',
+        sidebar_analyse_rentabilite: 'Analyse & Rentabilité',
+        sidebar_depenses:'Dépenses',
+        sidebar_finances:'Finances',
+        sidebar_releves_indexes: 'Relevés d\'indexes',
+        sidebar_loyers: 'Loyers',
+        sidebar_configuration_aide: 'Configuration et aide',
+        sidebar_modeles_contrats: 'Modèles de contrats',
+        sidebar_documentation: 'Documentation',
+        sidebar_parametres:'Paramètres',
+        sidebar_preferences: 'Préférences',
+        
+        //messages de la homepage
+        home_bienvenu: 'Bienvenu sur la plateforme maisonier',
+        home_paragraphe_informatif1: 'Ici vous pourrez créer des: cités, batiments, logements, habitants. Mais avant, veuillez completer votre profil ',
+        home_paragraphe_informatif2 :'Profil complet à',
+        home_terminer_profil: 'Terminer votre profil',
+        home_batiments: 'Batiments',
+        home_aucun_batiment: ' Aucun batiment pour le moment',
+        home_batiments_crees: 'batiments crées',
+        home_logements: 'Logements',
+        home_pas_de_logements: 'Aucun logement crée pour le moment',
+        home_logements_crees: ' logements crées',
+        home_habitants: 'Habitants',
+        home_pas_dhabitants: 'Pas d\'habitant pour le moment',
+        home_locataires_crees: 'locataires crées',
+        home_actions_rapides: 'Actions rapides',
+        home_creer_une_cite: 'Créer une cité',
+        home_descripton_cite : 'Une cité est un ensemble de plusieurs batiments regroupés dans une zone',
+        home_creer: 'Créer',
+        home_creer_batiment : 'Créer un batiment',
+        home_description_batiment : ' Un batiment est un édifice doté de plusieurs residences (appartements, studios etc)',
+        home_creer_logement : 'Créer un logement',
+        home_description_logement : 'Un logement est une residence destiné a hébergé un habitant (ex appartement, maison, studio)',
+        home_creer_habitant : 'Créer un habitant',
+        home_description_habitant: 'Un habitant est tout simplement une personne (votre locataire) qui occupe votre logement',
+
+
+        //messages du dashbord
+        dashbord_logements: 'Logements',
+        dashbord_disponibles: 'disponibles',
+        dashbord_occupe: 'occupé',
+        dashbord_locataires: 'Locataires',
+        dashbord_actifs: 'actifs',
+        dashbord_actif: 'actif',
+        dashbord_evenements: 'Evènements',
+        dashbord_total_evenement: 'Total Evènements',
+        dashbord_commentaires: 'Commentaires',
+        dashbord_total_commentaire: 'Total commentaires',
+        dashbord_recouvrement_du_mois: 'Recouvrements du mois',
+        dashbord_recouvrement_annuel: 'Recouvrements annuel',
+        dashbord_Logements_par_batiment: "Logements par bâtiment",
+
+        //messages de page des cités
+        cite_ajouter_cite: 'Ajouter une cité',
+        cite_pas_de_cite_enregistrer: 'Aucune cité enregistrée pour le moment',
+        cite_detail_cite: 'Détails de la cité',
+        cite_editer_cite: 'Edition de la cité',
+        cite_valider_cite: 'Valider',
+        cite_nom_cite: 'Nom',
+        cite_exemple_cite: 'Ex: Cité de la paix',
+        cite_reference_cite: 'Reference',
+        cite_exemple_reference_cite: 'Ex: CP3',
+        cite_label_photo: 'Photo',
+        cite_ajouter_photo_de_la_cite: 'Ajouter la photo de la cité',
+        cite_bottom_text: 'déposez le fichier ici ou cliquez pour modifier',
+        
+        // messages d'un cité
+        cite_new: 'Nouvelle',
+        cite_tooltip_details: 'Détails',
+        cite_tooltip_editer: 'Editer',
+        cite_tooltip_supprimer: 'Supprimer',
+
+        //messages de page de détail de la cité
+        cite_detail_batiments: 'Bâtiments',
+        cite_detail_stat_generales: 'Statistiques générales',
+        cite_detail_ajout_batiments: 'Ajouter des bâtiments',
+        cite_detail_depenses_de_la_cite: 'Dépenses liées à la cité',
+        cite_detail_ajouter_depense: 'Ajouter une dépense',
+        cite_detail_titre_stat_generales: 'Statistiques générales',
+        cite_detail_pas_de_batiments: 'Aucun bâtiment enregistré pour le moment',
+        cite_detail_pas_de_depenses: 'Aucune dépense enregistrée pour le moment',
+
+
+        //messages de page des bâtiments
+        batiment_ajouter_batiment: 'Ajouter un bâtiment',
+        batiment_editer_batiment: 'Edition du bâtiment',
+        batiment_pas_de_batiment: 'Aucun bâtiment enregistré pour le moment',
+        batiment_pas_de_batiment_trouve: 'Aucun bâtiment trouvé',
+        batiment_details_batiment: 'Détails du bâtiment',
+
+        //messages du bâtiment
+        batiment_new: 'Nouveau',
+        batiment_reference: 'Reference',
+        batiment_details: 'Détails',
+        batiment_acceder_aux_details: 'Accéder aux détails',
+        batiment_editer: 'Editer',
+        batiment_supprimer: 'Supprimer',
+
+
+        //messages de page de la navbar
+        navbar_mes_cites: 'Mes cités',
+        navbar_mes_batiments: 'Mes bâtiments',
+        navbar_mes_logements: 'Mes logements',
+
+        //messages de page des logements
+        Filtre_de_categories: 'Filtre de catégories',
+        logement_ajouter_logement: 'Ajouter un logement',
+        logement_valider_logement: 'Valider',
+        logement_pas_de_logement: 'Aucun logement enregistré pour le moment',
+        logement_details_logement: 'Détails du logement',
+        logement_cloner_logement: 'Clonner le logement',
+        logement_description_clonage: 'Le clonnage de logement vous permet d\'ajouter une multitude de logement en se servant d\'un logement pré-existant pour générer de nouveaux.',
+        logement_nombre_de_clones: 'Entrez le nombre de logement à générer',
+        logement_nombre_de_clones_label: 'Nombre de clone',
+        logement_batiment_lie_au_clonage: 'Selectionnez le batiment auquel sera rataché les logements générés',
+        logement_batiment_lie_au_clonage_label: 'Batiment',
+        logement_pas_de_batiment: 'Pas de batiment',
+
+        // message de la page du profile de l'utilisateur
+        profile_certifier_informations: 'Certifier mes informations',
+        profile_certifier_informations_description: "Celà consiste à envoyer mes informations pour étude aux administrateurs de la plateforme. Bien vouloir cliquer sur le bouton pour certifier vos infomations",
+        profile_nombre_locataire: 'Certifier mes informations',
+        profile_nombre_logement_libre_sans_annonce_publie: 'Le nombre de mes logements libres et sans annonce publié',
+        profile_address_email: 'E-mail',
+        profile_address_email_secondaire: 'E-mail Secondaire',
+        profile_address_email_exemple: 'Ex: tagnemiguel@gmail.com',
+        profile_address_phone: 'N° Téléphone',
+        profile_address_phone_secondaire: 'N° Téléphone secondaire',
+        profile_address_phone_exemple: 'Ex: 693803726',
+        profile_maisonier_sur_reseaux_sociaux: 'Le maisonier sur les réseaux sociaux',
+        profile_maisonier_facebook: 'Accéder à la page Facebook du Maisonier.',
+        profile_maisonier_twitter: 'Accéder au compte Twitter du Maisonier.',
+        profile_maisonier_instagram: 'Accéder au compte Instagram du Maisonier.',
+        profile_maisonier_youtube: 'Accéder à la chaine youtube du Maisonier',
+        profile_activite: 'Activité',
+        profile_mes_informations: 'Mes informations',
+        profile_nom: 'Nom(s)',
+        profile_nom_exemple: 'Ex: TAGNE',
+        profile_prenom: 'Prénom(s)',
+        profile_genre: 'Genre',
+        profile_prenom_exemple: 'Ex: Miguel Pedro',
+        profile_date_naissance: 'Date de naissance',
+        profile_selectionner_date: 'Selectionnez une date',
+        profile_profession: 'Profession',
+        profile_profession_exemple: 'Eg: Architecte',
+        profile_photo_profile: 'Photo de profil',
+        profile_modifier_mot_de_passe: 'Modifier mon mot de passe',
+        profile_mot_de_passe_actuel: 'Mot de passe Actuel',
+        profile_mot_de_passe_nouveau: 'Nouveau mot de passe',
+        profile_mot_de_passe_mettre_a_jour: 'Mettre à jour',
+
+        
+    }
+};
+
+const i18n = new VueI18n({
+    locale: 'fr', // set locale
+    fallbackLocale: 'en', // set fallback locale
+    messages, // set locale messages
+});
+
+export default i18n;

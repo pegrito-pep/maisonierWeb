@@ -1,20 +1,20 @@
 <template>
         <b-overlay :show="showOverlay" rounded="sm">
-            <form-wizard   title='' subtitle='' nextButtonText='suivant' backButtonText='Précedent' finishButtonText='Enregistrer' aria-labelledby="demoModalLabel"  @on-complete="onComplete"
+            <form-wizard   title='' subtitle='' :nextButtonText='("data.batiment_form_wizard_suivant")' :backButtonText='$t("data.batiment_form_wizard_precedent")' :finishButtonText='$t("data.batiment_form_wizard_bouton_enregistrer")' aria-labelledby="demoModalLabel"  @on-complete="onComplete"
                             @on-loading="setLoading"
                             shape="circle"
                             color="#e74c3c" >
           
-                <tab-content title="écriture du modèle" icon="ik ik-edit-1" :before-change="validateSecond">
+                <tab-content :title="$t('data.contrat_form_wizard_tab_content_titre_1')" icon="ik ik-edit-1" :before-change="validateSecond">
                     <b-row>
                         <b-col cols="4">
-                            <label for="libelle-modele-contrat" class="big-size_text">Libellé du modèle</label>
+                            <label for="libelle-modele-contrat" class="big-size_text">{{$t('data.contrat_form_wizard_libelle_modele')}}</label>
                         </b-col>
                         <b-col cols="8">
                             <div class="input-group input-group-success">
                                 <span class="input-group-prepend"><label class="input-group-text"><i class="ik ik-shield"></i></label></span>
-                                    <input type="text" v-model="modelContrat.libele" class="form-control" placeholder="Ex: Contrat de bail à usage d'habitation">
-                                    <span v-if="!requiredModelContrat" style="color:red;">Le libellé est obligatoire</span>
+                                    <input type="text" v-model="modelContrat.libele" class="form-control" :placeholder="$t('data.contrat_form_wizard_libelle_modele_exemple')">
+                                    <span v-if="!requiredModelContrat" style="color:red;">{{$t('data.contrat_form_wizard_libelle_modele_obligatoire')}}</span>
                             </div>
                         </b-col>
                     </b-row>

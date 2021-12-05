@@ -7,37 +7,35 @@
                     <b-carousel-slide class="responsive border-0">
                     <template #img>
                         <div class="titre-overlay">
-                        <h1 class="titre"><blockquote class="">Gérer facilement vos biens immobiliers</blockquote></h1>
+                        <h1 class="titre"><blockquote class="">{{$t('data.slide_1_titre')}}</blockquote></h1>
                         <p class="description">
-                            Prenez votre envole et découvrez une nouvelle façon de gerer vos biens. Plus besoin d'une assistance quelconque. Tout se fait en un clic.
+                           {{$t('data.slide_1_description')}}
                         </p>
                         </div>
                         <div class="overlay"></div>
-                        <img class="w-100 image" src="/img/cites.jpeg" />
+                        <img class="w-100 image" src="@/assets/img/cites.jpeg" />
                     </template>
                     </b-carousel-slide>
                     <b-carousel-slide class="responsive border-0">
                     <template #img>
                         <div class="titre-overlay">
-                        <h1 class="titre"><blockquote class="">Ne perdez plus aucune information</blockquote></h1>
-                        <p class="description">
-                            Le Maisonnier rassemble, traite et stocke toutes vos informations et vous permet d'utiliser votre memoire pour autre chose.
-                        </p>
+                        <h1 class="titre"><blockquote class="">{{$t('data.slide_2_titre')}}</blockquote></h1>
+                        <p class="description">{{$t('data.slide_2_description')}}</p>
                         </div>
                         <div class="overlay"></div>
-                        <img class="w-100 image" src="/img/villa1.jpg" />
+                        <img class="w-100 image" src="@/assets/img/villa1.jpg" />
                     </template>
                     </b-carousel-slide>
                     <b-carousel-slide class="responsive border-0">
                     <template #img>
                         <div class="titre-overlay">
-                        <h1 class="titre"><blockquote class="">Optimiser la valeur de vos biens</blockquote></h1>
+                        <h1 class="titre"><blockquote class="">{{$t('data.slide_3_titre')}}</blockquote></h1>
                         <p class="description">
-                            Decouvrer la rentabilité de vos biens, observer vos bénéfices en continue, interagisser avec vos locataires et bien plus encore...
+                            {{$t('data.slide_3_description')}}
                         </p>
                         </div>
                         <div class="overlay"></div>
-                        <img class="w-100 image" src="/img/chambre2.jpg" />
+                        <img class="w-100 image" src="@/assets/img/chambre2.jpg" />
                     </template>
                     </b-carousel-slide>
                 </b-carousel>
@@ -45,15 +43,15 @@
                 <div class="col-xl-4 col-lg-6 col-md-7 my-auto p-0">
                     <div class="authentication-form mx-auto">
                         <div class="mt-n5 mb-4 d-flex justify-content-center align-items-center flex-column">
-                            <b-link :to="{name: 'home'}"><b-img src="/img/logo-m0.png" style="width: 4em; height: 4em"/></b-link>
-                            <h3 class="text-center mt-4 mb-0 font-weight-bold">Retrouver votre mot de passe</h3>
+                            <b-link :to="{name: 'home'}"><b-img src="@/assets/img/logo-m0.png" style="width: 4em; height: 4em"/></b-link>
+                            <h3 class="text-center mt-4 mb-0 font-weight-bold">{{$t('data.forgotPassword_retrouver_mdp')}}</h3>
                         </div>
                         
                         <form action="" @submit.prevent="sendForm">
                             <transition enter-active-class="animated zoomIn">
                                 <div v-if="step == 1">
                                     <div class="form-group">
-                                        <input type="email" class="form-control" placeholder="Adresse email" required="" v-model="email">
+                                        <input type="email" class="form-control" :placeholder="$t('data.forgotPassword_addresse_email')" required="" v-model="email">
                                         <i class="ik ik-mail"></i>
                                     </div>
                                 </div>
@@ -61,23 +59,23 @@
                             <transition enter-active-class="animated zoomIn">
                                 <div v-if="step == 2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" placeholder="Code de verification" required="" v-model="code">
+                                        <input type="text" class="form-control" :placeholder="$t('data.forgotPassword_code_verification')" required="" v-model="code">
                                         <i class="fa fa-key"></i>
                                     </div>
                                     <div class="form-group">
-                                        <input type="password" class="form-control" placeholder="Nouveau mot de passe" required="" v-model="mdp">
+                                        <input type="password" class="form-control" :placeholder="$t('data.forgotPassword_nouveau_mdp')" required="" v-model="mdp">
                                         <i class="ik ik-lock"></i>
                                     </div>
                                 </div>
                             </transition>
                             
                             <div class="sign-btn text-center">
-                                <b-button type="submit" :disabled="submitted" class="valid-btn">Valider <b-spinner v-if="submitted" small></b-spinner></b-button>
+                                <b-button type="submit" :disabled="submitted" class="valid-btn">{{$t('data.cite_valider_cite')}} <b-spinner v-if="submitted" small></b-spinner></b-button>
                             </div>
                         </form>
                         <div class="register-footer">
-                            <span>Vous n'avez pas de compte ?</span>
-                            <b-link :to="{ name: 'register' }" v-b-hover="handleHover">Inscrivez-vous</b-link>
+                            <span>{{$t('data.forgotPassword_vous_avez_pas_de_compte')}}</span>
+                            <b-link :to="{ name: 'register' }" v-b-hover="handleHover">{{$t('data.forgotPassword_inscription')}}</b-link>
                         </div>
                         <div class="conditions">
                             Protégé pa reCAPTCHA et soumis aux <b>Politiques de confidentialité</b> et <b>Conditions d'utilisation de Flysoft Engineering</b>

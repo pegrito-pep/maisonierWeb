@@ -1,6 +1,6 @@
 <template>
     <div >
-        <page-description :path="[{label: 'indexes', route: 'indexes',}, {label: 'Loyers', route: 'loyers',}]" />
+        <page-description :path="[{label: $t('data.finance_indexes'), route: 'indexes',}, {label: $t('data.sidebar_loyers'), route: 'loyers'}, {label: $t('data.finance_recharges'), route: 'recharges'}]" />
         <Indexes v-if=" path == ''" />
         <router-view v-else />
     </div>

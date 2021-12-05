@@ -8,8 +8,9 @@
                         <div class="d-block d-md-inline-block">
                             <SearchForm v-model="search" />
                         </div>
-                        <div class="float-md-right"> 
-                            <btnAdd  message="Ajouter un habitant" v-b-modal.habitantForm ref="buttonAdd"/>
+                        <div class="float-md-right d-flex">
+                            <paginatorTop :offset="offset" :libelle='$t("data.habitants")' :total="habitants.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" class="mr-2 d-flex justify-content-center align-items-center" /> 
+                            <btnAdd v-if="canCreateHabitant"  :message="$t('data.habitant_form_ajouter_habitant')" v-b-modal.habitantForm ref="buttonAdd"/>
                         </div>
                     </div>
                 </div>
@@ -17,10 +18,10 @@
                 <b-overlay :show="showOverlay" rounded="sm">
                     <b-alert variant="info" class="text-center" show v-if="!habitants.length">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                        <span class="h4 d-inline-flex ml-2">Aucun habitant crée pour l'instant</span>
+                        <span class="h4 d-inline-flex ml-2">{{$t('data.habitant_form_pas_de_habitant')}}</span>
                     </b-alert> 
                     <b-row v-else>
-                        <b-col xs="12" sm="6" md="3" v-for="locataire in habitants" :key="locataire.idLocataire"> 
+                        <b-col  xs="12" md="4" xl="3" v-for="locataire in items" :key="locataire.idLocataire"> 
                             <div class="card">
                                 <div class="text-center">
                                     <div class="card-body pb-0">
@@ -32,15 +33,38 @@
                                         <h6 class="truncate small card-subtitle text-muted">{{ locataire.profession }}</h6>
                                         <div class="mt-3 d-flex justify-content-center">
                                             <b-button-group>
-                                                <b-button size="sm" v-b-tooltip.top="'Détails'" @click.prevent="showDetails(locataire)"><i class="ik f-16 ik-eye"></i></b-button>
-                                                <b-button size="sm" v-b-tooltip.top="'Modifier'"><i class="ik f-16 ik-edit"></i></b-button>
-                                                <b-button size="sm" v-b-tooltip.top="'Supprimer'"><i class="ik f-16 ik-trash-2"></i></b-button>
+                                                <b-button v-if="canSeeDetailsHabitant" size="sm" v-b-tooltip.top="$t('data.cite_tooltip_details')" @click.prevent="showDetails(locataire)"><i class="ik f-16 ik-eye"></i></b-button>
+                                                <b-button v-if="canUpdateHabitant" size="sm" v-b-tooltip.top="$t('data.cite_tooltip_editer')"><i class="ik f-16 ik-edit"></i></b-button>
+                                                <b-button v-if="canDeleteHabitant" size="sm" v-b-tooltip.top="$t('data.cite_tooltip_supprimer')" @click.prevent="removeHabitant(locataire)"><i class="ik f-16 ik-trash-2"></i></b-button>
                                             </b-button-group>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </b-col>
+                        <!-- <b-col xs="12" md="6" xl="4" v-for="locataire in habitants" :key="locataire.idLocataire"> 
+                            <div class="card" style="border-radius: 10px">
+                                <div class="d-flex p-3" >
+                                    <div class="mr-3 ">
+                                        <div class="rounded-circle overflow-hidden d-flex justify-content-center">
+                                            <b-avatar :src="locataire.avatar" size="5rem" />
+                                        </div>
+                                        <p class='text-center text-muted mt-2'>{{ locataire.profession }}</p>
+                                    </div>
+                                    <div class="card-body mt-0 px-0">
+                                        <h4 class="card-title" style="white-space: wrap;">{{ locataire.nomLocataire + ' ' + locataire.prenomLocataire }}</h4>
+                                        <h6 class="truncate card-subtitle text-muted">Tel: {{ locataire.tel }}</h6>
+                                        <div class="d-flex justify-content-end" style="margin-top: 30px">
+                                            <b-button-group >
+                                                <b-button v-if="canSeeDetailsHabitant" size="sm" v-b-tooltip.top="$t('data.cite_tooltip_details')" @click.prevent="showDetails(locataire)"><i class="ik f-16 ik-eye"></i></b-button>
+                                                <b-button v-if="canUpdateHabitant" size="sm" v-b-tooltip.top="$t('data.cite_tooltip_editer')"><i class="ik f-16 ik-edit"></i></b-button>
+                                                <b-button v-if="canDeleteHabitant" size="sm" v-b-tooltip.top="$t('data.cite_tooltip_supprimer')"><i class="ik f-16 ik-trash-2"></i></b-button>
+                                            </b-button-group>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </b-col> -->
                     </b-row>
                     <paginator hr="top" :offset="offset" :total="habitants.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" />                   
                 </b-overlay>
@@ -52,7 +76,8 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editLayoutItemLabel">Dossier de  <b>{{ locataire.titre }}</b> <b>{{ locataire.nomLocataire }}</b></h5>
+                        <h5 class="modal-title" id="editLayoutItemLabel">{{$t('data.habitant_form_dossier_de')}} <b v-if="locataire.titre=='M'||locataire.titre=='Monsieur'||locataire.titre=='Mr'">M.</b>
+                        <b v-if="locataire.titre=='Madamme'||locataire.titre=='Mme'||locataire.titre=='Mlle'">Mme.</b> <b>{{ locataire.nomLocataire }}</b></h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body pt-2">
@@ -94,7 +119,8 @@ export default {
      locataire: null,
      habitants:[],
      trueHabitants:[],
-     title:"Ajouter un locataire"
+     title:"Ajouter un locataire",
+    permissions: storage.get("userPermissions")
 
   }),
 
@@ -117,7 +143,32 @@ export default {
         },
         offset() {
             return (this.currentPage * this.perPage) - this.perPage
+        },
+        canCreateHabitant(){
+            if(this.permissions.includes("create_habitant")){
+            return true;
+            }
+            return false; 
+        },
+        canSeeDetailsHabitant(){
+            if(this.permissions.includes("view_habitant")){
+            return true;
+            }
+            return false; 
+        },
+        canUpdateHabitant(){
+            if(this.permissions.includes("update_habitant")){
+            return true;
+            }
+            return false; 
+        },
+        canDeleteHabitant(){
+            if(this.permissions.includes("delete_habitant")){
+            return true;
+            }
+            return false; 
         }
+
     },
 
     beforeMount() {
@@ -163,8 +214,17 @@ export default {
         updateHabitant(habitant) {
             console.log("habitant",habitant)
         },
-        removeHabitant(habitant) {
-            console.log("habitant",habitant)
+        removeHabitant(locataire) {
+            console.log('locataire', locataire);
+            App.confirm(`Voulez vous vraiment supprimer l'habitant " <b>${locataire.nomLocataire}</b> " ?`, { confirm: () => {
+                axios.delete(`habitants/${locataire.idLocataire}`).then(response => {
+                    if (!response.success) {
+                        return App.notifyError(response.message)
+                    }
+                    this.$emit('deleted', locataire.idLocataire)
+                    return App.notifySuccess(response.message)
+                })
+            }})
         },
         showDetails(locataire) {
           console.log('locataire',locataire,' ')

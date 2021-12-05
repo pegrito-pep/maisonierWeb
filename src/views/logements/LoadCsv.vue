@@ -2,15 +2,15 @@
     <b-modal
       id="modal-prevent-closing"
       ref="load-csv-modal"
-      title="Configurer votre fichier Modèle"
+      :title="$t('data.loadcsv_modal_title')"
       @show="resetModal"
       @hidden="resetModal"
     >
         <b-overlay :show="showOverlay" rounded="sm">
                 <form ref="form" @submit.stop.prevent="handleSubmit">
                     <div class="form-group">
-                        <label>Batiment associé</label>
-                        <b-form-select
+                        <label></label>
+                        <b-form-select{{$t('data.loadcsv_label_batiment_associe')}}
                             v-model="idBatiment"
                             :options="tousLesBatiments"
                             class="mb-3"
@@ -20,7 +20,7 @@
                         ></b-form-select>
                     </div>
                     <div class="form-group">
-                        <label>Catégorie associée </label>
+                        <label>{{$t('data.loadcsv_label_categorie_associe')}}</label>
                         <b-form-select
                             v-model="idSousType"
                             :options="sousTypesLogements || []"
@@ -29,11 +29,8 @@
                             value-field="idSousType"
                             text-field="libelleSousType"
                         ></b-form-select>
-                        <span v-if="!requiredSousType" style="color:red;">Vous devez choisir au moins un sous-type</span>
+                        <span v-if="!requiredSousType" style="color:red;">{{$t('data.loadcsv_label_choisir_sous_type')}}</span>
                     </div>
-
-                    
-
                 </form>
         </b-overlay>
         <template #modal-footer>
@@ -44,7 +41,7 @@
                 name="fichiermodel.xls"
                 :before-finish = "finishDownload">
             
-                <b-button class="btn btn-info ml-4"><i class="fa fa-download"></i>Télécharger</b-button>
+                <b-button class="btn btn-info ml-4"><i class="fa fa-download"></i>{{$t('data.loadcsv_label_telecharger')}}</b-button>
             </download-excel>
     
     </template>

@@ -1,10 +1,6 @@
 <template>
-    <div class="tab-container">
-        <div class="first">
-            <i class="ik ik-command"></i>
-            <span>Navigation rapide</span>
-        </div>
-        <div class="tabs">
+    <div class="tab-container mt-0">
+        <div class="tabs w-100">
             <div>
                 <b-link class="tab-item" v-for="(p, i) in path" :key="i" :to="{name: p.route}">{{ p.label}}</b-link>
             </div>
@@ -72,7 +68,7 @@ export default {
     /*.tabs > div a:nth-child(2){
         background: #f5365c;
     }*/
-    .router-link-exact-active{
+    .router-link-active{
         background: #f5365c;
     }
     .first{

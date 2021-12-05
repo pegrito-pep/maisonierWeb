@@ -1,17 +1,17 @@
 <template>
     <b-overlay :show="showOverlay" rounded="sm">
-        <form-wizard ref="occupationForm" title='' subtitle='' nextButtonText='suivant' backButtonText='Précedent' finishButtonText='Enregistrer' aria-labelledby="demoModalLabel"  @on-complete="onComplete"
+        <form-wizard ref="occupationForm" title='' subtitle='' :nextButtonText='$t("data.batiment_form_wizard_suivant")' :backButtonText='$t("data.batiment_form_wizard_precedent")' :finishButtonText='$t("data.batiment_form_wizard_bouton_enregistrer")' aria-labelledby="demoModalLabel"  @on-complete="onComplete"
             @on-loading="setLoading"
             shape="circle"
             color="#e74c3c">
             
-            <tab-content title="Habitation"
+            <tab-content :title="$t('data.occupation_form_wizard_tab_content_titre_1')"
                 icon="fas fa-info-circle" 
                    :before-change="validateFirst" 
                 >
                 <b-row class="mb-4">
                     <b-col>
-                        <b-form-group label="Quel est le logement concerné par l'occupation">
+                        <b-form-group :label="$t('data.occupation_form_label_logement_de_occupation')">
                             <div style="height: 10.5em">
                                 <v-select :options="logements" v-model="occupation.idLogement" :reduce="logement => logement.idLogement" label="refLogement"  @input="setSlide_logement" />
                                 <b-carousel :interval="0" controls v-model="selected_index_logement" ref="logementCarousel">
@@ -23,7 +23,7 @@
                         </b-form-group>
                     </b-col>
                     <b-col>
-                        <b-form-group label="Qui est le résident pour lequel l'occupation est défini">
+                        <b-form-group :label="$t('data.occupation_form_label_logement_de_occupant')">
                             <div style="height: 10.5em">
                                 <v-select :options="locataires" v-model="occupation.idLocataire" :reduce="locataire => locataire.idLocataire" label="nomLocataire"  @input="setSlide_locataire" :disabled="disabled" >
                                 <!--<v-select :options="locataires" v-model="occupation.idLocataire" label="nomLocataire"  @input="setSlide_locataire"  :class="{ disabled: disabled == true }" />-->
@@ -49,57 +49,56 @@
                 </b-row>
                 <b-row class="mt-4">
                     <b-col class="col-4">
-                        <b-form-group label="Date de debut du bail">
-                            <date-picker v-model="occupation.debut" placeholder="Selectionnez une date" format="dddd, DD MMMM YYYY" valueType="YYYY-MM-DD" class="w-100" :clearable="false" />
+                        <b-form-group :label="$t('data.occupation_informations_date_debut_bail')">
+                            <date-picker v-model="occupation.debut" :placeholder="$t('data.occupation_form_label_selectionner_date')" format="dddd, DD MMMM YYYY" valueType="YYYY-MM-DD" class="w-100" :clearable="false" />
                         </b-form-group>
                     </b-col>
                      <b-col class="col-2">
-                        <b-form-group label="Durée du bail">
-                            <b-form-input :class="!requiredAvance ? 'is-red' : ''" type="number"  v-model="occupation.dureeBail" placeholder="Ex: 6" trim></b-form-input>
-                            <span v-if="!requiredAvance" style="color:red;">Ce champ est obligatoire</span>
+                        <b-form-group :label="$t('data.occupation_form_label_duree_du_bail')">
+                            <b-form-input :class="!requiredAvance ? 'is-red' : ''" type="number"  v-model="occupation.dureeBail" :placeholder="$t('data.occupation_form_label_duree_du_bail_exemple')" trim></b-form-input>
+                            <span v-if="!requiredAvance" style="color:red;">{{$t('data.logement_reference_du_logement_obligatoire')}}</span>
                         </b-form-group>
                     </b-col>
                     <b-col class="mt-4">
                         <b-form-checkbox v-model="occupation.endLastBail" switch>
-                            <span class="fa-lg">Mettre fin au bail précédent</span>
+                            <span class="fa-lg">{{$t('data.occupation_form_label_mettre_fin_au_bail_precedent')}}</span>
                         </b-form-checkbox>
                     </b-col>
                 </b-row>
             </tab-content>
         
-            <tab-content title="Facturation"
+            <tab-content :title="$t('data.occupation_form_wizard_tab_content_titre_2')"
                 icon="ik ik-dollar-sign"
                 :before-change="validateSecond" >
                 <!--LOYERS-->
                 <b-row>
                     <b-col>
                         <!--<CustomInputGroup :class="!requiredLoyer ? 'is-red' : ''"   label="Loyer" description="Combien devra payer le résident" placeholder="Ex: 45000" v-model="occupation.loyer" />-->
-                            <b-form-group label="Loyer"  description="Combien devra payer le résident">
-                                <b-form-input :class="!requiredLoyer ? 'is-red' : ''" type="number"  v-model="occupation.loyer" placeholder="Ex: 45000" trim></b-form-input>
-                                <span v-if="!requiredLoyer" style="color:red;">Ce champ est obligatoire</span>
+                            <b-form-group :label="$t('data.occupation_informations_loyer')"  :description="$t('data.occupation_form_label_combien_doit_payer_le_resident')">
+                                <b-form-input :class="!requiredLoyer ? 'is-red' : ''" type="number"  v-model="occupation.loyer" :placeholder="$t('data.occupation_form_label_combien_doit_payer_le_resident_exemple')" />
                             </b-form-group>
                         
                     </b-col>
                     <b-col>
                         <!--<CustomSelectGroup label="Mode de paiement" description="Le résident devra t-il payer son loyer courant avant ou après l'avoir consommé" v-model="occupation.mode" :options="payoptions"  />-->
                         <div class="form-group">
-                            <label>Mode de paiement</label>
+                            <label>{{$t('data.occupation_informations_mode_paiement')}}</label>
                             <v-select label="text" :options="payoptions" v-model="occupation.mode" :reduce="mode => mode.value" :class="!requiredMode ? 'is-red' : ''" class="pb-5"></v-select>
-                            <span v-if="!requiredMode" style="color:red;">Ce champ est obligatoire</span>
+                            <span v-if="!requiredMode" style="color:red;">{{$t('data.logement_reference_du_logement_obligatoire')}}</span>
                         </div>
                     </b-col>
-                     <b-col class="col-2">
+                     <b-col class="col-4">
                         <!--<CustomInputGroup label="Nombre de mois d'avance" description="Combien de mois le locataire a t-il avancé" placeholder="Ex: 6" v-model="occupation.avance" min="1" type="number" />-->
-                        <b-form-group label="Nombre de mois d'avance" description="Combien de mois le locataire a t-il avancé">
-                                <b-form-input :class="!requiredAvance ? 'is-red' : ''" type="number"  v-model="occupation.avance" placeholder="Ex: 6" trim></b-form-input>
-                                <span v-if="!requiredAvance" style="color:red;">Ce champ est obligatoire</span>
+                        <b-form-group :label="$t('data.occupation_form_label_nombre_de_mois_avance')" :description="$t('data.occupation_form_label_nombre_de_mois_avance_description')">
+                                <b-form-input :class="!requiredAvance ? 'is-red' : ''" type="number"  v-model="occupation.avance" :placeholder="$t('data.occupation_form_label_duree_du_bail_exemple')" trim></b-form-input>
+                                <span v-if="!requiredAvance" style="color:red;">{{$t('data.logement_reference_du_logement_obligatoire')}}</span>
                         </b-form-group>
                     </b-col>
-                     <b-col>
+                     <b-col class="col-2">
                         <!--<CustomInputGroup label="Caution" description="somme versée faisant office de caution" placeholder="Ex: 25000" v-model="occupation.caution" min="1" type="number" />-->
-                        <b-form-group label="Caution" description="somme versée faisant office de caution">
-                                <b-form-input :class="!requiredCaution ? 'is-red' : ''" type="number"  v-model="occupation.caution" placeholder="Ex: 25000" trim></b-form-input>
-                                <span v-if="!requiredCaution" style="color:red;">Ce champ est obligatoire</span>
+                        <b-form-group :label="$t('data.occupation_form_label_caution')" :description="$t('data.occupation_form_label_caution_description')">
+                                <b-form-input :class="!requiredCaution ? 'is-red' : ''" type="number"  v-model="occupation.caution" :placeholder="$t('data.occupation_form_label_combien_doit_payer_le_resident_exemple')" trim></b-form-input>
+                                <span v-if="!requiredCaution" style="color:red;">{{$t('data.logement_reference_du_logement_obligatoire')}}</span>
                         </b-form-group>
                     </b-col>
                 </b-row>
@@ -109,23 +108,23 @@
                     <b-col>
                         <!--<CustomSelectGroup label="Facturation d'eau" description="Comment s'effectuera la facturation en eau de ce résident" v-model="occupation.eau" :options="eauoptions"  />-->
                          <div class="form-group">
-                            <label>Facturation d'eau</label>
+                            <label>{{$t('data.occupation_facture_eau')}}</label>
                             <v-select label="text" :options="eauoptions" v-model="occupation.eau" :reduce="eau => eau.value" :class="!requiredEau ? 'is-red' : ''"></v-select>
-                            <span v-if="!requiredEau" style="color:red;">Ce champ est obligatoire</span>
+                            <span v-if="!requiredEau" style="color:red;">{{$t('data.logement_reference_du_logement_obligatoire')}}</span>
                         </div>
                     </b-col>
                     <b-col>
                         <!--<CustomInputGroup :label="occupation.eau == 'forfait' ? 'Taux forfataire' : 'Prix unitaire de l\'eau'" description="" placeholder="Ex: 1500" v-model="occupation.puEau" min="0" type="number" />-->
                         <b-form-group :label="occupation.eau == 'forfait' ? 'Taux forfataire' : 'Prix unitaire de l\'eau'" description="">
                             <b-form-input :class="!requiredPuEau ? 'is-red' : ''" min="0" type="number"  v-model="occupation.puEau" placeholder="Ex: 1500" trim></b-form-input>
-                            <span v-if="!requiredPuEau" style="color:red;">Ce champ est obligatoire</span>
+                            <span v-if="!requiredPuEau" style="color:red;">{{$t('data.logement_reference_du_logement_obligatoire')}}</span>
                         </b-form-group>
                     </b-col>
                     <b-col v-if="occupation.eau == 'index'">
                         <!--<CustomInputGroup label="Index initial" description="Index du compteur d'eau à l'entrée du locataire" placeholder="Ex: 095" v-model="occupation.indexEau" min="0" type="number" />-->
-                        <b-form-group label="Index initial" description="Index du compteur d'eau à l'entrée du locataire">
-                            <b-form-input :class="!requiredIndex ? 'is-red' : ''" min="0" type="number"  v-model="occupation.indexEau" placeholder="Ex: 095" trim ></b-form-input>
-                            <span v-if="!requiredIndex" style="color:red;">Ce champ est obligatoire</span>
+                        <b-form-group :label="$t('data.occupation_form_label_indexe_initial')" :description="$t('data.occupation_form_label_indexe_initial_description')">
+                            <b-form-input :class="!requiredIndex ? 'is-red' : ''" min="0" type="number"  v-model="occupation.indexEau" :placeholder="$t('data.occupation_form_label_indexe_initial_exemple')" trim ></b-form-input>
+                            <span v-if="!requiredIndex" style="color:red;">{{$t('data.logement_reference_du_logement_obligatoire')}}</span>
                         </b-form-group>
                     </b-col>
                 </b-row>
@@ -133,36 +132,36 @@
                     <b-col>
                         <!--<CustomSelectGroup label="Facturation d'électricité" description="Comment s'effectuera la facturation en électricité de ce résident" v-model="occupation.energie" :options="eauoptions"  />-->
                         <div class="form-group">
-                            <label>Facturation d'électricité</label>
+                            <label>{{$t('data.occupation_facture_energie')}}</label>
                             <v-select label="text" :options="eauoptions"  v-model="occupation.energie" :reduce="eau => eau.value" :class="!requiredELectricite ? 'is-red' : ''"></v-select>
-                            <span v-if="!requiredELectricite" style="color:red;">Ce champ est obligatoire</span>
+                            <span v-if="!requiredELectricite" style="color:red;">{{$t('data.logement_reference_du_logement_obligatoire')}}</span>
                         </div>
                     </b-col>
                     <b-col>
                         <!--<CustomInputGroup :label="occupation.energie == 'forfait' ? 'Taux forfataire' : 'Prix unitaire de l\'energie'" description="L'exemple suggéré suppose une consommation par forfait" placeholder="Ex: 2500" v-model="occupation.puEnergie" min="0" type="number" />-->
-                        <b-form-group :label="occupation.energie == 'forfait' ? 'Taux forfataire' : 'Prix unitaire de l\'électricité'" description="L'exemple suggéré suppose une consommation par index">
-                                <b-form-input :class="!requiredPuEnergie ? 'is-red' : ''" type="number" min="0"  v-model="occupation.puEnergie" placeholder="Ex: 150" trim></b-form-input>
-                                <span v-if="!requiredPuEnergie" style="color:red;">Ce champ est obligatoire</span>
+                        <b-form-group :label="occupation.energie == 'forfait' ? $t('data.occupation_form_taux_forfaitaire') : $t('data.occupation_form_prix_unitaire_electricite')" :description="$t('data.occupation_form_taux_forfaitaire_description')">
+                                <b-form-input :class="!requiredPuEnergie ? 'is-red' : ''" type="number" min="0"  v-model="occupation.puEnergie" :placeholder="$t('data.occupation_form_prix_unitaire_electricite')" trim></b-form-input>
+                                <span v-if="!requiredPuEnergie" style="color:red;">{{$t('data.logement_reference_du_logement_obligatoire')}}</span>
                         </b-form-group>
                     </b-col>
                     <b-col v-if="occupation.energie == 'index'">
                         <!--<CustomInputGroup label="Index initial" description="Index du compteur d'energie à l'entrée du locataire" placeholder="Ex: 095" v-model="occupation.indexEnergie" min="0" type="number" />-->
-                        <b-form-group label="Index initial" description="Index du compteur d'électricité à l'entrée du locataire">
-                            <b-form-input :class="!requiredPuEnergie ? 'is-red' : ''" type="number" min="0"  v-model="occupation.indexEnergie" placeholder="Ex: 095" trim></b-form-input>
-                            <span v-if="!requiredPuEnergie" style="color:red;">Ce champ est obligatoire</span>
+                        <b-form-group :label="$t('data.occupation_form_label_indexe_initial')" :description="$t('data.occupation_form_label_indexe_electricite_initial_description')">
+                            <b-form-input :class="!requiredPuEnergie ? 'is-red' : ''" type="number" min="0"  v-model="occupation.indexEnergie" :placeholder="$t('data.occupation_form_indexe_initial_electricite_exemple')" trim></b-form-input>
+                            <span v-if="!requiredPuEnergie" style="color:red;">{{$t('data.logement_reference_du_logement_obligatoire')}}</span>
                         </b-form-group>
                     </b-col>
                 </b-row>
             </tab-content>    
 
-            <tab-content title="Contrat"
+            <tab-content :title="$t('data.occupation_form_wizard_tab_content_titre_3')"
                         icon="fas fa-file-contract"  
                 >
                 <div class="templateChoix mb-4">
                     <b-col xl="2" lg="2" cols="12" sm="6" v-for="(item, index) in contrats" :key="index" @click="contratSelect(item, index)">
                         <div class="contratTheme" :class="{'active-contrat': selectedContrat == index}">
                             <div class="contratImage">
-                               <img src="../../../assets/img/c.png"  alt="template de contrat de bail ou de location">
+                               <img src="../../../assets/img/c.png"  :alt="$t('data.occupation_form_template_contrat_bail_location')">
                             </div>
                             <div class="contratType" :class="{'active-contrat': selectedContrat == index}">
                                 <span>
@@ -181,7 +180,7 @@
             <div class="leloader" v-if="loadingWizard"></div>
         </form-wizard>
            <div class="float-right">
-                <b-button @click.prevent="resetModal" variant="secondary">Fermer</b-button>
+                <b-button @click.prevent="resetModal" variant="secondary">{{$t('data.logement_form_fermer')}}</b-button>
             </div>                  
     </b-overlay>
 </template>
@@ -433,15 +432,18 @@ export default {
     validateSecond:function() {
         return new Promise((resolve, reject) => {
             
-            if(!this.occupation.loyer || !this.occupation.avance  || !this.occupation.mode || !this.occupation.caution){
+            if((!this.occupation.loyer || !this.occupation.avance  || !this.occupation.mode || !this.occupation.caution)&&this.editOccupation==null){
+                
                 if(!this.occupation.loyer){this.requiredLoyer=false;}
                 else {this.requiredLoyer=true;}
                 if(!this.occupation.avance){this.requiredAvance=false;}
                 else{this.requiredAvance=true;}
                 if(!this.occupation.mode){this.requiredMode=false;}
                 else{this.requiredMode=true;}
-                if(!this.occupation.caution){this.requireCaution=false;}
-                else{this.requireCaution=true;}
+                if(!this.occupation.caution){
+                    console.log('entrée ici 1')
+                    this.requiredCaution=false;}
+                else{this.requiredCaution=true;}
                 if(!this.occupation.puEnergie){this.requiredPuEnergie=false;}
                 else{this.requiredPuEnergie=true;}
                 if(!this.occupation.puEau){this.requiredPuEau=false;}
@@ -449,16 +451,26 @@ export default {
                 this.check2=false
             }else{
                 this.check2=true
-                this.alreadyset=true;
             }
             //pré-remplissage du modèle de contrat avec remplacement des différentes clés
             this.content = this.fillData(this.content)
             
-            console.log('entrée ici')
+            console.log('entrée ici 2')
             setTimeout(() => {
                 resolve(this.check2)
             }, 1000)
         })
+    },
+    getAdresse(logement, key) {
+        if (!php.empty(logement.adresse)) {
+            return logement.adresse[key]
+        }
+        if (!php.empty(logement.batiment)) {
+            if (!php.empty(logement.batiment.adresse)) {
+                return logement.batiment.adresse[key]
+            }
+        }
+        return '..............'
     },
     fillData(content){
         console.log('debug1')
@@ -480,7 +492,7 @@ export default {
             let newContent=ancienContent.replace('{{  NOM_BAILLEUR }}',this.user.profil.titre+'. '+this.user.nom+' '+this.user.prenom || '..............')
                            .replace('{{  CNI_BAILLEUR }}' ,this.user.profil.cni || '..............')
                            .replace('{{  TEL_BAILLEUR }}' ,this.user.tel || '..............')
-                           .replace('{{ LOGEMENT_ADRESSE_PAYS}}' ,logementSelect.adresse.pays || '..............')
+                           .replace('{{ LOGEMENT_ADRESSE_PAYS}}' , this.getAdresse(logementSelect, 'pays'))
                            .replace('{{ LOCATAIRE_NOMS_PRENOMS }}' ,locataireSelect.titre+' '+locataireSelect.nomLocataire+' '+locataireSelect.prenomLocataire)
                            .replace('{{ LOCATAIRE_DATE_NAISSANCE  }}' ,locataireSelect.dateNaiss || '.............')
                            .replace('{{ LOCATAIRE_CNI }}' ,locataireSelect.cniLocataire || '.............')
@@ -491,10 +503,10 @@ export default {
                            .replace('{{ AVANCE }}' ,this.occupation.avance * this.occupation.loyer || '.............')
                            .replace('{{ CARACTERISTIQUES_LOGEMENT }}' ,caract)
                            .replace('{{ NBRE_MOIS }}' ,this.occupation.avance || '.............')
-                           .replace('{{ LOGEMENT_ADRESSE_QUARTIER }}' ,logementSelect.adresse.quartier || '.............')
-                           .replace('{{ LOGEMENT_ADRESSE_VILLE }}' ,logementSelect.adresse.ville || '.............')
-                           .replace('{{ LOGEMENT_ADRESSE_VILLE }}' ,logementSelect.adresse.ville || '.............')
-                           .replace('{{ LOGEMENT_ADRESSE_QUARTIER }}' ,logementSelect.adresse.quartier || '.............')
+                           .replace('{{ LOGEMENT_ADRESSE_QUARTIER }}' ,this.getAdresse(logementSelect, 'quartier'))
+                           .replace('{{ LOGEMENT_ADRESSE_VILLE }}' ,this.getAdresse(logementSelect, 'ville'))
+                           .replace('{{ LOGEMENT_ADRESSE_VILLE }}' ,this.getAdresse(logementSelect, 'ville'))
+                           .replace('{{ LOGEMENT_ADRESSE_QUARTIER }}' ,this.getAdresse(logementSelect, 'quartier'))
                            .replace('{{ REF_LOGEMENT }}' ,logementSelect.refLogement || '.............');
             console.log('debug3')
             let p1 = document.querySelector(".forfait_eau");
@@ -558,6 +570,25 @@ export default {
                 return  App.alertError(error.message)
             })
         }
+        if(this.action=='edit'){
+                console.log('nouvelle occupation',this.occupation)
+                axios.put(`occupations/${ this.editOccupation.idOccupation}`,this.occupation).then(response =>{
+                    if (!response.success) {
+                        this.showOverlay=false;
+                        return App.alertError(response.message)
+                    }
+                    this.resetModal()
+                    this.showOverlay=false;
+                    this.editOccupation=null;
+                    this.$emit("editSuccessfull", response.result);
+                    return App.notifySuccess(response.message)
+                     
+                })
+                .catch(error => {
+                    this.showOverlay=false;
+                    notif.error(error.message);
+                });
+            }
     },
 
    async getInitialiseData(){
@@ -597,44 +628,19 @@ export default {
            this.content=this.contrats[0].contenu;
             this.showOverlay = false
     },
-     enableEditMode(){
-                richTextField.document.designMode = 'On'
-            },
-             execCmd(element){
-                richTextField.document.execCommand(element,false, null)
-            },
-            toggleSource(){
-                if (this.showingCodeSource) {
-                    richTextField.document.getElementsByTagName('body')[0].innerHTML=richTextField.document.getElementsByTagName('body')[0].textContent
-                    this.showingCodeSource = false  
-                    
-                } else {
-                    console.log(richTextField.document.getElementsByTagName('body')[0].textContent  )
-                    richTextField.document.getElementsByTagName('body')[0].textContent  =richTextField.document.getElementsByTagName('body')[0].innerHTML
-                    this.showingCodeSource = true 
-                }
-            },
-            //reinitialisation du formulaire de création d'une occupation
-            resetModal() {
-            this.occupation = {
-                loyer: null, mode: null, energie: "index", eau: "index",
-                puEnergie: null, puEau: null, idLogement: null, idLocataire: null, debut: null, indexEnergie: 0,
-                indexEau: 0, endLastBail: false, avance: 1, contrats: null, dureeBail: 0,
-                caution: 1
-            }
-            if(this.editOccupation){
-                /*this.Occupation = {
-                refLogement: null, descLogement: null, prixMin: null, prixMax: null,
-                pays: null, ville: null, quartier: null, lat: null, lon: null, nbchambre: null,
-                nbcuisine: null, nbsalon: null, nbdouche: null, nbparking: null, nbpiscine: null,
-                nbgarage: null, nbsona: null
-            }*/
-            }
-            this.action='add'
-            this.$emit('closeOccupationModal');
-     
-            
-        },
+
+    //reinitialisation du formulaire de création d'une occupation
+    resetModal() {
+        this.occupation = {
+            loyer: null, mode: null, energie: "index", eau: "index",
+            puEnergie: null, puEau: null, idLogement: null, idLocataire: null, debut: null, indexEnergie: 0,
+            indexEau: 0, endLastBail: false, avance: 1, contrats: null, dureeBail: 0,
+            caution: 1
+        }
+        //this.editOccupation=null;
+        this.action='add'
+        this.$emit('closeOccupationModal');
+    },
   
   },
   async mounted() {
@@ -646,21 +652,23 @@ export default {
       this.occupation.idLocataire = this.locataire.idLocataire
     }
 
-
-
     if(this.editOccupation){
-           console.log("provenance = édition")
-           /*this.logement.ref= this.editLogement.refLogement;  this.logement.description= this.editLogement.descLogement; 
-           this.logement.prixMin= this.editLogement.prixMin;  this.logement.prixMax= this.editLogement.prixMax; 
-           this.logement.pays= this.editLogement.adresse.pays;  this.logement.ville= this.editLogement.adresse.ville; 
-           this.logement.quartier= this.editLogement.adresse.quartier;  this.logement.lat= this.editLogement.adresse.lat; 
-           this.logement.lon= this.editLogement.adresse.lon;  this.photos=this.editLogement.photos; 
-            this.sousType=this.editLogement.sousTypeLogement
-           this.logement.nbchambre= this.editLogement.adresse.lat; 
-           if(this.editLogement.batiment!= null){
-               this.showSelectBatiment=true
-               this.idBatiment=this.editLogement.batiment.idBatiment
-           }*/
+            console.log("provenance = édition", this.editOccupation)
+           this.occupation.idLogement= this.editOccupation.idLogement; 
+           this.occupation.idLocataire= this.editOccupation.idLocataire;
+
+            this.setSlide_logement(this.occupation.idLogement)
+           this.setSlide_locataire(this.occupation.idLocataire)
+
+           this.occupation.loyer=this.editOccupation.loyerBase; 
+           this.occupation.caution=this.editOccupation.caution; 
+           this.occupation.mode=this.editOccupation.modePaiement; 
+           this.occupation.debut=this.editOccupation.dateDeb; 
+           this.occupation.energie=this.editOccupation.modeEnergie; 
+           this.occupation.eau=this.editOccupation.modeEau; 
+           this.occupation.puEnergie=this.editOccupation.puEnergie; 
+           this.occupation.puEau=this.editOccupation.puEau; 
+           this.occupation.dureeBail=this.editOccupation.dureeBail; 
 
            this.$refs['occupationForm'].activateAll();
        }

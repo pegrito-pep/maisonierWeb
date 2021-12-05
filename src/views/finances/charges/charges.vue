@@ -1,7 +1,7 @@
 <template>
     <div class="container-fluid">
         <!--page header start -->
-        <page-description title="Loyers" description="Fiche de loyers" icon="list" :path="['Finances', 'Loyers']" />
+        <page-description :title="$t('data.occupation_loyers')" :description="$t('data.charge_description')" icon="list" :path="['Finances', 'Loyers']" />
         <div class="row">
             <div class="col-md-12">
                 <div class="mb-2 clearfix">
@@ -26,19 +26,19 @@
                 <b-overlay :show="showOverlay" rounded="sm">
                     <b-alert variant="info" class="text-center" show v-if="!occupations.length">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                        <span class="h4 d-inline-flex ml-2">Vous n'avez défini aucune occupation pour le moment</span>
+                        <span class="h4 d-inline-flex ml-2">{{$t('data.charge_pas_de_occupations')}}</span>
                     </b-alert> 
                     <b-row v-else>
                         <div class="card-body">
                             <b-table-simple hover small responsive>
                                 <b-thead head-variant="light">
                                     <b-tr class="text-center">
-                                        <b-th>Logement</b-th>
-                                        <b-th>Locataire</b-th>
-                                        <b-th>Loyer de base</b-th>
-                                        <b-th>Consommation en eau</b-th>
-                                        <b-th>Consommation en lumière</b-th>
-                                        <b-th>Action</b-th>
+                                        <b-th>{{$t('data.detail_habitant_logement')}}</b-th>
+                                        <b-th>{{$t('data.occupation_locataire')}}</b-th>
+                                        <b-th>{{$t('data.charge_loyer_de_base')}}</b-th>
+                                        <b-th>{{$t('data.charge_consommation_en_eau')}}</b-th>
+                                        <b-th>{{$t('data.charge_consommation_en_lumiere')}}</b-th>
+                                        <b-th>{{$t('data.batiment_form_label_action')}}</b-th>
                                     </b-tr>
                                 </b-thead>
                                 <b-tbody>
@@ -47,7 +47,7 @@
                                             <span class="d-inline-block w-100 mb-1 font-weight-bold">{{ occupation.logement.refLogement }}</span>    
                                             <span class="d-inline-block w-100 mt-1 text-muted">
                                                 {{ occupation.logement.sousTypeLogement.libelleSousType  }}
-                                                <span v-if="occupation.logement.batiment"> / Batiment : {{ occupation.logement.batiment.nomBatiment }}</span>
+                                                <span v-if="occupation.logement.batiment"> / {{$t('data.logement_batiment_lie_au_clonage_label')}} : {{ occupation.logement.batiment.nomBatiment }}</span>
                                             </span>    
                                         </b-td>
                                         <b-td class="p-1">
@@ -60,9 +60,9 @@
                                         <b-td>
                                             <b-dropdown right >
                                                 <template #button-content><i class="fa fa-ellipsis-h"></i></template>
-                                                <b-dropdown-item :to="{name: 'details-occupation', params: {id: occupation.idOccupation}}">Détails de l'occupation</b-dropdown-item>
-                                                <b-dropdown-item href="#" @click.prevent="doPayment(occupation)">Effectuer un paiement</b-dropdown-item>
-                                                <b-dropdown-item href="#" @click.prevent="correspondance(occupation)">Correspondance</b-dropdown-item>
+                                                <b-dropdown-item :to="{name: 'details-occupation', params: {id: occupation.idOccupation}}">{{$t('data.logement_detail_details_de_occupation')}}</b-dropdown-item>
+                                                <b-dropdown-item href="#" @click.prevent="doPayment(occupation)">{{$t('data.charge_effectuer_un_paiement')}}</b-dropdown-item>
+                                                <b-dropdown-item href="#" @click.prevent="correspondance(occupation)">{{$t('data.charge_correspondance')}}</b-dropdown-item>
                                             </b-dropdown>                                            
                                         </b-td>
                                     </b-tr>
@@ -76,16 +76,16 @@
         </div>
 
         <!--MODAL POUR AJOUTER OU MODIFIER UNE OCCUPATION-->
-        <div v-if="occupation"><b-modal id="paiement" title="Ajout de paiement" size="lg" no-close-on-backdrop ok-only ok-title="Valider" ok-variant="danger">
+        <div v-if="occupation"><b-modal id="paiement" :title="$t('data.charge_ajouter_paiement')" size="lg" no-close-on-backdrop ok-only :ok-title="$t('data.cite_valider_cite')" ok-variant="danger">
             <div class="jumbotron pt-10 pb-10 px-2">
-                <h4 class="text-center">Effectuer un versement pour:</h4>
+                <h4 class="text-center">{{$t('data.charge_effectuer_versement_pour')}}:</h4>
                 <b-row>
                     <b-col><dl>
-                        <dt>Logement</dt>
-                        <dd>{{ occupation.logement.refLogement }} / {{ occupation.logement.sousTypeLogement.libelleSousType  }} <br> <span v-if="occupation.logement.batiment">Batiment : {{ occupation.logement.batiment.nomBatiment }}</span></dd>
+                        <dt>{{$t('data.detail_habitant_logement')}}</dt>
+                        <dd>{{ occupation.logement.refLogement }} / {{ occupation.logement.sousTypeLogement.libelleSousType  }} <br> <span v-if="occupation.logement.batiment">{{$t('data.occupation_batiment')}} : {{ occupation.logement.batiment.nomBatiment }}</span></dd>
                     </dl></b-col>
                     <b-col><dl>
-                        <dt>Locataire</dt>
+                        <dt>{{$t('data.occupation_locataire')}}</dt>
                         <dd>{{ occupation.locataire.titre + ' ' + occupation.locataire.nomLocataire + ' ' + occupation.locataire.prenomLocataire }} <br> {{ occupation.locataire.tel + ' / ' + occupation.locataire.email }}</dd>
                     </dl></b-col>
                 </b-row>
@@ -93,8 +93,8 @@
             </div>
             <b-row>
                 <b-col>
-                    <h5 class="border-bottom mb-3">Paiement du loyer</h5>
-                    <b-form-group label="Type de paiement" description="Par quel canal doit-on effectuer le paiement">
+                    <h5 class="border-bottom mb-3">{{$t('data.charge_paiement_loyer')}}</h5>
+                    <b-form-group :label="$t('data.charge_label_type_paiement_loyer')" :description="$t('data.charge_label_type_paiement_loyer_description')">
                         <b-form-select :options="[
                             {text: 'Selectionnez une méthode', value: null, disabled: true},
                             {text: 'Payer en espèce', value: 'espece'},
@@ -122,44 +122,44 @@
                     <h5 class="border-bottom mb-3">Paiement de la lumière</h5>
                     <b-form-group label="Type de paiement" description="Par quel canal doit-on effectuer le paiement">
                         <b-form-select :options="[
-                            {text: 'Selectionnez une méthode', value: null, disabled: true},
-                            {text: 'Payer en espèce', value: 'espece'},
-                            {text: 'Payer à partir de compte lumière', value: 'energie'},
+                            {text: $t('data.charge_label_selectionner_methode'), value: null, disabled: true},
+                            {text: $t('data.charge_label_payer_en_espece'), value: 'espece'},
+                            {text: $t('data.charge_label_payer_par_compte_lumiere'), value: 'energie'},
                         ]" v-model="paiement.type" />
                     </b-form-group>
-                    <b-form-group label="Montant" description="Combien doit-on verser">
+                    <b-form-group :label="$t('data.occupation_montant')" :description="$t('data.charge_label_combien_doit_on_verser')">
                         <b-form-input type="number" v-model="paiement.energie" disabled />
                     </b-form-group>
                 </b-col>
             </b-row>
         </b-modal></div>
 
-        <div v-if="occupation"><b-modal id="correspondance" title="Correspondance" no-close-on-backdrop ok-only ok-title="Fermer" ok-variant="secondary">
+        <div v-if="occupation"><b-modal id="correspondance" :title="$t('data.charge_correspondance')" no-close-on-backdrop ok-only :ok-title="$t('data.logement_form_fermer')" ok-variant="secondary">
             <b-alert v-if="occupation.dateFin" show variant="info" class="text-center">
                 <i class="fa fa-exclamation-triangle fa-5x"></i> <br />
-                <p class="fa-2x mt-5 pt-2">Bail terminé le {{ $dayjs(occupation.dateFin).format('dddd, DD MMMM YYYY') }}</p>
+                <p class="fa-2x mt-5 pt-2">{{$t('data.logement_detail_bail_termine_le')}} {{ $dayjs(occupation.dateFin).format('dddd, DD MMMM YYYY') }}</p>
             </b-alert>
             <div v-else>
                 <b-card class="border" >
-                    <span class="float-right d-inline-block mb-5">Yaoundé le {{ $dayjs().format('DD MMMM YYYY')}} </span>
+                    <span class="float-right d-inline-block mb-5">{{$t('data.charge_label_yaounde_le')}} {{ $dayjs().format('DD MMMM YYYY')}} </span>
                     <br>
                     <div class="clearfix my-3">
-                        <span class="text-underline">Object: </span>
-                        <b class="fa-lg">Loyer du mois de : {{ _find_periode_loyer(occupation) }}</b>
+                        <span class="text-underline">{{$t('data.charge_label_objet')}}: </span>
+                        <b class="fa-lg">{{$t('data.charge_label_loyer_du_mois_de')}} : {{ _find_periode_loyer(occupation) }}</b>
                     </div>
                     <p>
                         <b>{{ occupation.locataire.titre + ' ' + occupation.locataire.nomLocataire + ' ' + occupation.locataire.prenomLocataire }} ({{ occupation.locataire.tel}})</b>,
-                        vous occupez le logement <b>{{ occupation.logement.refLogement }} / {{ occupation.logement.sousTypeLogement.libelleSousType  }}</b> situé à 
+                        {{$t('data.charge_label_vous_occuper_le_logement')}} <b>{{ occupation.logement.refLogement }} / {{ occupation.logement.sousTypeLogement.libelleSousType  }}</b>{{$t('data.charge_label_vous_occuper_le_logement_situe_a')}}
                         <b>{{ occupation.logement.adresse.ville + ' ' + occupation.logement.adresse.pays + ', ' + occupation.logement.adresse.quartier }}</b>. 
                         <br>
-                        Ci-dessous, votre loyer du mois de {{ _find_periode_loyer(occupation) }}
+                        {{$t('data.charge_label_ci_dessous_le_loyer_du_mois')}} {{ _find_periode_loyer(occupation) }}
                     </p>
                     <b-table-simple>
                         <b-tbody>
-                            <b-tr><b-th>Loyer de base</b-th><b-td>{{ occupation.loyerBase }} F</b-td></b-tr>
-                            <b-tr><b-th>Consommation en eau</b-th><b-td>{{ _calcul_consommation(occupation, 'eau') }} F</b-td></b-tr>
-                            <b-tr><b-th>Consommation en lumière</b-th><b-td>{{ _calcul_consommation(occupation, 'energie') }} F</b-td></b-tr>
-                            <b-tr><b-th>Total</b-th><b-td><b class="fa-2x text-primary">
+                            <b-tr><b-th>{{$t('data.charge_loyer_de_base')}}</b-th><b-td>{{ occupation.loyerBase }} F</b-td></b-tr>
+                            <b-tr><b-th>{{$t('data.charge_consommation_en_eau')}}</b-th><b-td>{{ _calcul_consommation(occupation, 'eau') }} F</b-td></b-tr>
+                            <b-tr><b-th>{{$t('data.charge_consommation_en_lumiere')}}</b-th><b-td>{{ _calcul_consommation(occupation, 'energie') }} F</b-td></b-tr>
+                            <b-tr><b-th>{{$t('data.ionsolvable_total_insolvable')}}</b-th><b-td><b class="fa-2x text-primary">
                                 {{ parseInt(occupation.loyerBase) + _calcul_consommation(occupation, 'energie') + _calcul_consommation(occupation, 'eau') }} F    
                             </b></b-td>
                         </b-tr>

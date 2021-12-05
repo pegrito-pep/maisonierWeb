@@ -1,6 +1,6 @@
 <template>
     <div >
-        <page-description :path="[{label: 'Mes cités', route: 'cites',}, {label: 'Mes batiments', route: 'batiments',}, {label: 'Mes logements', route: 'logements',}]" />
+        <page-description :path="[{label: $t('data.navbar_mes_cites'), route: 'cites',}, {label: $t('data.navbar_mes_batiments'), route: 'batiments',}, {label: $t('data.navbar_mes_logements'), route: 'logements',}]" />
         <Cites v-if=" path == ''" />
         <router-view v-else />
     </div>

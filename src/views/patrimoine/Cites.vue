@@ -7,8 +7,10 @@
                         <div class="d-block d-md-inline-block">
                             <SearchForm v-model="search" />
                         </div>
-                        <div class="float-md-right">
-                            <btnAdd  message="Ajouter une cité" @click="() => {modal.action = 'add'; $bvModal.show('modal-cite')}"/>
+                        <div class="float-md-right d-flex">
+                             <paginatorTop :offset="offset" :total="cites.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" :libelle="$t('data.cites')" class="mr-2 d-flex justify-content-center align-items-center" />    
+                            <!--<btnAdd  :message="$t('data.cite_ajouter_cite')" @click="() => {modal.action = 'add'; $bvModal.show('modal-cite')}"/>-->
+                            <btnAdd  :message="$t('data.cite_ajouter_cite')" @click="createCiteCall"/>
                         </div>
                     </div>
                 </div>
@@ -16,7 +18,7 @@
                 <b-overlay :show="showOverlay" rounded="sm">
                     <b-alert variant="info" class="text-center" show v-if="!cites.length">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                        <span class="h4 d-inline-flex ml-2">Aucune cité enregistrée pour le moment</span>
+                        <span class="h4 d-inline-flex ml-2">{{ $t('data.cite_pas_de_cite_enregistrer') }}</span>
                     </b-alert> 
                     <b-row v-else class="layout-wrap">
                         <b-col v-for="(cite, i) in items" :key="cite.idCite || i" xl="3" lg="4" cols="12" sm="6" class="animated flipInX mb-4">
@@ -33,11 +35,11 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editLayoutItemLabel">Détails de la cité : <b>{{ cite.nomCite }}</b>.</h5>
+                        <h5 class="modal-title" id="editLayoutItemLabel">{{ $t('data.cite_detail_cite')}} : <b>{{ cite.nomCite }}</b>.</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body pt-2">
-                        <details-cite @batimentsChanged="changeBatiments" :cite="cite" :source="source"/>
+                        <details-cite @batimentAdded="changeBatiments" :cite="cite" :source="source"/>
                     </div>
                 </div>
             </div>
@@ -46,22 +48,59 @@
         <!-- MODALE POUR AJOUTER/MODIFIER UNE CITE -->
         <b-modal id="modal-cite" size="sm" @hidden="resetModal" @ok="submitModal" ref="modalCite">
             <template #modal-title>
-                <span v-if="modal.action == 'add'">Ajouter une cité</span>
-                <span v-if="modal.action == 'edit'">Edition de la cité</span>
+                <span v-if="modal.action == 'add'">{{ $t('data.cite_ajouter_cite')}}</span>
+                <span v-if="modal.action == 'edit'">{{ $t('data.cite_editer_cite')}}</span>
             </template>
             <template #modal-footer="{ ok }">
-                <b-button size="sm" variant="danger" @click="ok()" :disabled="modal.submitted">Valider <b-spinner v-if="modal.submitted" small /></b-button>
+                <b-button size="sm" variant="danger" @click="ok()" :disabled="modal.submitted">{{ $t('data.cite_valider_cite')}} <b-spinner v-if="modal.submitted" small /></b-button>
             </template>
-            <b-form-group label="Nom de la cité">
-                <b-form-input v-model="modal.nom" placeholder="Ex: Cité de la paix" trim></b-form-input>
+            <b-form-group :label="$t('data.cite_nom_cite')">
+                <b-form-input v-model="modal.nom" :placeholder="$t('data.cite_exemple_cite')" trim></b-form-input>
             </b-form-group>
-            <b-form-group label="Reference">
-                <b-form-input v-model="modal.ref" placeholder="Ex: CP3" trim></b-form-input>
+            <b-form-group :label="$t('data.cite_reference_cite')">
+                <b-form-input v-model="modal.ref" :placeholder="$t('data.cite_exemple_reference_cite')" trim></b-form-input>
             </b-form-group>
-            <b-form-group label="Photo">
-                <img-inputer v-model="modal.photo" :img-src="$getBase64(modal.photo, false)" placeholder="Ajouter la photo de la cité" theme="light" size="xl" bottom-text="déposez le fichier ici ou cliquez pour modifier" icon="img"  />
+            <b-form-group :label="$t('data.cite_label_photo')">
+                <img-inputer v-model="modal.photo" :img-src="$getBase64(modal.photo, false)" :placeholder="$t('data.cite_ajouter_photo_de_la_cite')" theme="light" size="xl" :bottom-text="$t('data.cite_bottom_text')" icon="img"  />
             </b-form-group>
         </b-modal>
+
+        <!-- MODAL DE FORBIDDEN -->
+       <!-- <b-modal id="modal-cite-forbidden" size="sm" @hidden="resetModal" @ok="submitModal" ref="modalCite" hide-footer>
+            <template #modal-title>
+                <span v-if="modal.action == 'add'">ACCES NON AUTORISEE</span>
+                <div class="text-center">
+                    <i class="fas fa-ban fa-3x"></i> <br>
+                    <span class="h4 d-inline-flex ml-2">formule inadéquate</span>
+                    <br>
+                    <div class="jumbotron pt-10 pb-10">
+                        <p>Pour pouvoir crée votre cité, vous devez avoir payé la formule adéquate</p>
+                    </div>
+                    <b-button size="lg" class="my-2" variant="outline-info" @click.prevent="createLogement">payer la formule ACCESS</b-button>
+                </div>
+            </template>
+           
+        </b-modal>-->
+         <b-modal id="modal-cite-forbidden" size="lg" title="Large Modal" ref="modal-cite-forbidden"  no-close-on-backdrop hide-header-close>
+              <template #modal-title>
+                <span class="font-weight-bold font-size-2em">Avertissement</span>
+            </template>
+              <div class="text-center">
+                    <i class="fas fa-ban fa-3x"></i> <br>
+                    <span class="h4 d-inline-flex ml-2">formule inadéquate</span>
+                    <br>
+                    <div class="jumbotron pt-10 pb-10">
+                        <p>Actuellement, vous utilisez une formule inadéquate à l'action que vous voulez mener.
+                            Cette fonctionnalité est disponible pour les comptes payants.
+                            Vous pouvez consulter notre page des<b-link :to="{name: 'packs'}"><span class="signup">{{$t('data.modal_restriction_tarifs')}}</span></b-link> pour plus d'informations.</p>
+                    </div>
+                    
+                </div>
+            <template #modal-footer>
+                <button type="button" class="btn btn-secondary" @click="$bvModal.hide('modal-cite-forbidden')">Fermer</button>
+                <b-button size="lg" class="my-2" variant="outline-info" @click.prevent="createLogement">payer la formule ACCESS</b-button>
+            </template>
+         </b-modal>
     </div>
 </template>
 
@@ -89,7 +128,13 @@ export default {
         },
         offset() {
             return (this.currentPage * this.perPage) - this.perPage
-        }
+        },
+        canCreateCite() {
+            if(this.permissions!=null&&this.permissions.includes("create_cite")){
+                return true;
+            }
+            return false;      
+        },
     },
     data: () => ({
         cites: [],
@@ -103,7 +148,8 @@ export default {
             action: '', submitted: false,
             nom: '', ref: '', idCite: '', photo: ''
         },
-        source:0
+        source:0,
+        permissions: storage.get("userPermissions") ||[],
 
     }),
     watch: {
@@ -123,6 +169,16 @@ export default {
         // this.autoAddTarget();
     },
     methods: {
+        createCiteCall(){
+            if(this.canCreateCite){
+                this.modal.action='add'
+                this.$bvModal.show('modal-cite')
+            }else{
+                console.log('entrée ici')
+                this.$bvModal.show('modal-cite-forbidden')
+            }
+            
+        },
         showModal(){
             this.modal.action='add'
             this.$refs.modalCite.show("modal-cite");
@@ -145,7 +201,8 @@ export default {
          */
         getCities() {
             axios.get('cites').then(response => response.result || []).then(cites => {
-                this.cites = this.trueCites = cites
+console.log(cites);
+this.cites = this.trueCites = cites
                 this.autoAddTarget()
                 this.showOverlay = false
 
@@ -191,9 +248,21 @@ export default {
         /**
          * Raffraichi la liste des batiments de la cité active
          * 
-         * @param {Batiment[]} batiments
+         * @param {Batiment} neWbatiment
          */
-        changeBatiments(batiments) {
+        changeBatiments(neWbatiment) {
+            /*this.cites = this.cites.map(elt => {
+                if (elt.idCite != this.cite.idCite) {
+                    return elt
+                }
+                return {
+                    ...elt,
+                    batiments
+                }
+            })*/
+            this.cite.batiments.unshift(neWbatiment)
+        },
+        /*changeBatiments(batiment) {
             this.cites = this.cites.map(elt => {
                 if (elt.idCite != this.cite.idCite) {
                     return elt
@@ -204,7 +273,7 @@ export default {
                 }
             })
             this.cite.batiments = batiments
-        },
+        },*/
         /**
          * Retire une cite
          * 
@@ -241,8 +310,9 @@ export default {
                     if (!response.success) {
                         return App.alertError(response.message)
                     }
-                    this.cites = this.addNewCite(this.cites, response.result)
-                    this.trueCites = this.addNewCite(this.trueCites, response.result)
+                    /* this.cites = this.addNewCite(this.cites, response.result)
+                    this.trueCites = this.addNewCite(this.trueCites, response.result) */
+                    this.getCities()
                     this.$bvModal.hide('modal-cite')
                     return App.notifySuccess(response.message)
                 }).catch(error => {
@@ -304,3 +374,9 @@ export default {
     }
 }
 </script>
+<style scoped>
+    .signup{
+        color: #ee3a5b;
+        font-weight: bold;
+    }
+</style>

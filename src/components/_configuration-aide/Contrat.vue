@@ -5,15 +5,15 @@
                     <div class="contratLocationBailContainer">
                         <div class="cardImageBailContainer img-top"  @click.prevent="showDetails">
                              <b-skeleton-img card-img="top" v-if="showOverlay" aspect="8:9"></b-skeleton-img>
-                            <img src="../../assets/img/c.png" v-else alt="template de contrat de bail ou de location">
+                            <img src="../../assets/img/c.png" v-else :alt="$t('data.contrat_image_alt')">
                         </div>
                         <div class="footerBailContainer">
                             <span>
                                 {{contrat.libelleModele}}
                             </span>
                         </div>
-                         <div class="list-actions">
-                            <a href="#" @click.prevent="showDetails"><i class="ik ik-eye"></i></a>
+                         <div v-if="canViewModele" class="list-actions">
+                            <a  href="#" @click.prevent="showDetails"><i class="ik ik-eye"></i></a>
                             <!-- <a href="#" @click.prevent="$emit('makeUpdate', article)"><i class="ik ik-edit-2"></i></a> -->
                         </div>
                     </div>
@@ -23,7 +23,7 @@
 </template>
 
 <script>
-
+const php = require('phpjs')
 export default {
     props: {
         contrat: { type: Object, required: true },
@@ -31,9 +31,24 @@ export default {
     },
     data (){
         return {
-            showOverlay:true
-        }
+            showOverlay:true,
+            }
 
+    },
+    computed:{
+        permissions() {
+            const permissions = storage.get("userPermissions")
+            if (php.empty(permissions)) {
+                return []
+            }
+            return permissions
+        },
+       canViewModele(){
+            if(this.permissions.includes("view_contrat")){
+                return true;
+            }
+            return false;  
+        }
     },
     methods: {
         /**
@@ -43,7 +58,6 @@ export default {
             if (this.isSub) {
                 return false
             }
-
             this.$emit('showDetails', this.contrat)
             console.log(this.contrat)
         },

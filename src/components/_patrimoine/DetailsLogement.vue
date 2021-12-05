@@ -8,7 +8,7 @@
           class="nav-link"
           :class="{ active: section == 'caracteristiques' }"
           @click.prevent="section = 'caracteristiques'"
-          >Caractéristiques</a
+          >{{$t('data.logement_detail_caracteristiques')}}</a
         >
       </li>
       <li class="nav-item">
@@ -18,7 +18,7 @@
           class="nav-link"
           :class="{ active: section == 'annonces' }"
           @click.prevent="section = 'annonces'"
-          >Annonces</a
+          >{{$t('data.logement_detail_annonces')}}</a
         >
       </li>
       <li class="nav-item">
@@ -28,7 +28,7 @@
           class="nav-link"
           :class="{ active: section == 'depenses' || section == 'add-depense' }"
           @click.prevent="section = 'depenses'"
-          >Dépenses</a
+          >{{$t('data.logement_detail_depenses')}}</a
         >
       </li>
       <li class="nav-item">
@@ -38,144 +38,34 @@
           class="nav-link"
           :class="{ active: section == 'locataire' }"
           @click.prevent="section = 'locataire'"
-          >Locataires</a
+          >{{$t('data.logement_detail_locataires')}}</a
         >
       </li>
     </ul>
     <div class="tab-content mt-3">
       <div class="tab-pane fade show active">
-        <!--<b-container
-          fluid
-          v-if="section == 'photos'"
-          style="height: 75vh; overflow-y: auto; overflow-x: hidden"
-        >
-          <b-row class="layout-wrap">
-            <b-col cols="4">
-              <vue-upload-multiple-image
-                @upload-success="section_photo_uploadImageSuccess"
-                :data-images="section_photo.images"
-              />
-            </b-col>
-            <b-col cols="4" v-for="(photo, i) in photos" :key="i">
-              <div class="shadow list-item list-item-grid">
-                <div class="card d-flex flex-row mb-3">
-                  <a
-                    class="d-flex card-img"
-                    @click.prevent="() => section_photo_showImg(i)"
-                    href="#"
-                  >
-                    <img
-                      :src="photo"
-                      alt
-                      style="height: 15em"
-                      class="list-thumbnail responsive border-0"
-                    />
-                  </a>
-                  <div class="d-flex flex-grow-1 min-width-zero card-content">
-                    <div class="list-actions">
-                      <a href="#" @click.prevent="() => section_photo_showImg(i)">
-                        <i class="ik ik-eye"></i>
-                      </a>
-                      <a href="#" class="list-delete">
-                        <i class="ik ik-trash-2"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </b-col>
-          </b-row>
-          <vue-easy-lightbox
-            :visible="section_photo.visible"
-            :imgs="photos"
-            :index="section_photo.index"
-            @hide="section_photo_handleHide"
-          />
-        </b-container>-->
-        <!--<b-container fluid v-if="section == 'details'">
-          <b-row>
-            <b-col cols="6">
-              <span class="d-inline-block w-100 my-1">
-                Pays:
-                <b>{{ logement.adresse.pays }}</b>
-              </span>
-              <span class="d-inline-block w-100 my-1">
-                Ville:
-                <b>{{ logement.adresse.ville }}</b>
-              </span>
-              <span class="d-inline-block w-100 my-1">
-                Quartier:
-                <b>{{ logement.adresse.quartier }}</b>
-              </span>
-            </b-col>
-            <b-col cols="6">
-              <span class="d-inline-block w-100 my-1">
-                Logitude:
-                <b>{{ logement.adresse.lon }}</b>
-              </span>
-              <span class="d-inline-block w-100 my-1">
-                Latitue:
-                <b>{{ logement.adresse.lat }}</b>
-              </span>
-            </b-col>
-          </b-row>
-          <b-container class="mt-4 p-0">
-            <GmapMap
-              :center="{lat: parseFloat(logement.adresse.lat), lng: parseFloat(logement.adresse.lon)}"
-              :zoom="14"
-              class="w-100"
-              style="height:340px;"
-            />
-          </b-container>
-        </b-container>-->
+
         <b-container fluid v-if="section == 'caracteristiques'">
           <!--LOGEMENT SUR LA MAP -->
-          <h2 class="text-capitalize font-weight-bold fs-4">Localisation</h2>
-          <!-- <b-row>
-            <b-col cols="6">
-              <span class="d-inline-block w-100 my-1">
-                Pays:
-                <b>{{ logement.adresse.pays }}</b>
-              </span>
-              <span class="d-inline-block w-100 my-1">
-                Ville:
-                <b>{{ logement.adresse.ville }}</b>
-              </span>
-              <span class="d-inline-block w-100 my-1">
-                Quartier:
-                <b>{{ logement.adresse.quartier }}</b>
-              </span>
-            </b-col>
-            <b-col cols="6">
-              <span class="d-inline-block w-100 my-1">
-                Logitude:
-                <b>{{ logement.adresse.lon }}</b>
-              </span>
-              <span class="d-inline-block w-100 my-1">
-                Latitue:
-                <b>{{ logement.adresse.lat }}</b>
-              </span>
-            </b-col>
-          </b-row> -->
           <b-row
             class="rounded text-white py-2"
             style="margin: 0; background: #f5365c"
           >
             <b-col lg="4" md="6" sm="12">
               <span class="d-inline-block w-100 my-1">
-                Pays:
+                {{$t('data.logement_detail_localisation_pays')}}:
                 <b class="font-weight-bold">{{ logement.adresse != null ? logement.adresse.pays : (logement.batiment != null ? logement.batiment.adresse.pays : '') }}</b>
               </span>
             </b-col>
             <b-col lg="4" md="6" sm="12">
               <span class="d-inline-block w-100 my-1">
-                Ville:
+                {{$t('data.logement_detail_localisation_ville')}}:
                 <b class="font-weight-bold">{{ logement.adresse != null ? logement.adresse.ville : (logement.batiment != null ? logement.batiment.adresse.ville : '') }}</b>
               </span>
             </b-col>
             <b-col lg="4" md="6" sm="12">
               <span class="d-inline-block w-100 my-1">
-                Quartier:
+               {{$t('data.logement_detail_localisation_quartier')}}:
                 <b class="font-weight-bold">{{ logement.adresse != null ? logement.adresse.quartier : (logement.batiment != null ? logement.batiment.adresse.quartier : '') }}</b>
               </span>
             </b-col>
@@ -198,16 +88,16 @@
           <hr />
           
           <h2 class="text-capitalize font-weight-bold fs-4">
-            Caractéristiques approfondies
+            {{$t('data.logement_detail_caracteristiques_approfondies')}}
           </h2>
           <b-row>
             <b-col cols="12">
               <span class="d-inline-block w-100 my-1">
-                Type de logement:
+                 {{ $t('data.logement_detail_type_logement')}} :
                 <b>{{ logement.sousTypeLogement.libelleSousType }}</b>
               </span>
               <span class="d-inline-block w-100 text-muted">
-                Posté le :
+                {{$t('data.logement_detail_date_du_poste')}} :
                 <small>{{ logement.createdAt.slice(0, 10) }}</small>
               </span>
             </b-col>
@@ -226,13 +116,20 @@
           <div class="jumbotron pt-10 pb-10 mt-2 mb-0">
             <p class="description">{{ logement.descLogement }}</p>
           </div>
-          <h2 class="text-capitalize font-weight-bold fs-4 my-4">Photos</h2>
+          <h2 class="text-capitalize font-weight-bold fs-4 my-4">{{$t('data.logement_detail_photos')}}</h2>
 
           <div class="row my-4">
             <div v-if="!photos.length" class="col-md-12">
               <div id="logement-main-img">
                 <div class="logement-preview">
                   <img src="/img/imagelogementdefault-.jpg" alt="" />
+                </div>
+              </div>
+            </div>
+            <div v-if="photos.length == 1" class="col-md-12">
+              <div id="logement-main-img">
+                <div class="logement-preview">
+                  <img :src="photos[0]" alt="" />
                 </div>
               </div>
             </div>
@@ -243,7 +140,7 @@
                   v-for="(photo, i) in newPhotos"
                   :key="i"
                 >
-                  <img :src="photo" alt="" />
+                  <img :src="photo" alt="Pas de photo" />
                 </div>
 
                 <div class="icon-up" @click="goUp">
@@ -266,38 +163,38 @@
           <table class="table table-hover table-dark">
             <thead>
               <tr>
-                <th scope="col">Libellé</th>
-                <th scope="col">Valeur</th>
+                <th scope="col">{{$t('data.logement_detail_tableau_libelle')}}</th>
+                <th scope="col">{{$t('data.logement_detail_tableau_valeur')}}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>Etat du logement</td>
+                <td>{{$t('data.logement_detail_titre_etat_logement')}}</td>
                 <td>
                   <b-badge
                     v-if="logement.etatLogement"
                     class="mt--1 mr-2 btn bg-badge background rounded-pill"
                   >
-                    <small class="fa-sm">Logement occupé</small>
+                    <small class="fa-sm">{{$t('data.logement_etat_occupe')}}</small>
                   </b-badge>
                   <b-badge
                     v-else
                     class="mt--1 mr-2 btn bg-badge bg-danger rounded-pill"
                   >
-                    <small class="fa-sm">Logement libre</small>
+                    <small class="fa-sm">{{$t('data.logement_etat_libre')}}</small>
                   </b-badge>
                 </td>
               </tr>
 
               <tr>
-                <td>Prix du minimal</td>
+                <td>{{$t('data.logement_detail_prix_min_logement')}}</td>
                 <td>
                   {{ logement.prixMin }}
                   FCFA
                 </td>
               </tr>
               <tr>
-                <td>Prix du maximal</td>
+                <td>{{$t('data.logement_detail_prix_max_logement')}}</td>
                 <td>
                   {{ logement.prixMax }}
                   FCFA
@@ -319,7 +216,7 @@
           >
             <i class="fa fa-exclamation-triangle fa-3x float-left"></i>
             <span class="h4 d-inline-flex ml-2"
-              >Aucune annonce enregistrée pour le moment</span
+              >{{$t('data.Aucune annonce enregistrée pour le moment')}}</span
             >
           </b-alert>
           <b-row>
@@ -346,7 +243,7 @@
                       >&nbsp;
                       <b-badge variant="light">
                         <i class="fa fa-clock"></i>
-                        Créée le
+                        {{$t('data.logement_detail_annonce_creee_le')}}
                         {{ $date(annonce.createdAt).format("DD.MM.YYYY") }}
                       </b-badge>
                     </div>
@@ -393,13 +290,13 @@
                 size="sm"
                 variant="outline-secondary"
                 @click.prevent="section = 'add-depense'"
-                >Ajouter une dépense</b-button
+                >{{$t('data.logement_detail_ajouter_depense')}}</b-button
               >
             </div>
             <b-alert variant="info" show v-if="!logement.depenses.length">
               <i class="fa fa-exclamation-triangle fa-3x float-left"></i>
               <span class="h4 d-inline-flex ml-2"
-                >Aucune dépense enregistrée pour le moment</span
+                > {{$t('data.logement_detail_pas_de_depense')}} </span
               >
             </b-alert>
             <div v-else style="height: 75vh">
@@ -444,7 +341,7 @@
           >
             <i class="fa fa-exclamation-triangle fa-3x"></i> <br />
             <span class="h4 d-inline-flex ml-2"
-              >Aucun locataire n'a occupé ce logement pour le moment</span
+              >{{$t('data.logement_detail_pas_de_locataire_dans_le_logement')}}</span
             >
           </b-alert>
           <b-card
@@ -462,10 +359,10 @@
                 class="w-90"
                 variant="success"
                 v-if="occupation.dateFin == null"
-                >Bail en cours</b-badge
+                >{{$t('data.logement_detail_bail_en_cours')}}</b-badge
               >
               <b-badge class="w-90" variant="danger" v-else
-                >Bail terminé le
+                >{{ $t('data.logement_detail_bail_termine_le')}}
                 {{ $date(occupation.dateFin).format("DD MMMM YYYY") }}</b-badge
               >
               <b-dropdown
@@ -482,11 +379,11 @@
                         <b-dropdown-item :to="{name: 'details-occupation', params: {id: occupation.idOccupation}}">Détails de l'occupation</b-dropdown-item>-->
                 <b-dropdown-item
                   @click.prevent="goToDetailLocataire(occupation)"
-                  >Détails du locataire</b-dropdown-item
+                  >{{$t('data.logement_detail_details_du_locataire')}}</b-dropdown-item
                 >
                 <b-dropdown-item
                   @click.prevent="goToDetaiOccupation(occupation)"
-                  >Détails de l'occupation</b-dropdown-item
+                  >{{$t('data.logement_detail_details_de_occupation')}}</b-dropdown-item
                 >
               </b-dropdown>
             </div>
@@ -495,7 +392,7 @@
               <dd class="my-1 col-1"><i class="fa fa-user"></i></dd>
               <dt
                 class="my-1 col-11 truncate"
-                v-b-tooltip.left="'nom et prénom'"
+                v-b-tooltip.left="$t('data.logement_detail_tooltip_nom_et_prenom')"
               >
                 {{
                   occupation.locataire.titre +
@@ -508,25 +405,25 @@
               <dd class="my-1 col-1"><i class="fa fa-phone"></i></dd>
               <dt
                 class="my-1 col-11 truncate"
-                v-b-tooltip.left="'Numéro de téléphone'"
+                v-b-tooltip.left="$t('data.occupation_numero_telephone')"
               >
                 {{ occupation.locataire.tel }}
               </dt>
-              <dd class="my-1 col-1"><i class="fa fa-envelope"></i></dd>
-              <dt class="my-1 col-11 truncate" v-b-tooltip.left="'Email'">
+              <dd v-if="occupation.locataire.email" class="my-1 col-1"><i class="fa fa-envelope"></i></dd>
+              <dt v-if="occupation.locataire.email" class="my-1 col-11 truncate" :v-b-tooltip.left="$t('data.occupation_email')">
                 {{ occupation.locataire.email }}
               </dt>
-              <dd class="my-1 col-1"><i class="fa fa-id-card"></i></dd>
-              <dt
+              <dd v-if="occupation.locataire.cniLocataire" class="my-1 col-1"><i class="fa fa-id-card"></i></dd>
+              <dt v-if="occupation.locataire.cniLocataire"
                 class="my-1 col-11 truncate"
-                v-b-tooltip.left="'Numéro de CNI'"
+                v-b-tooltip.left="$t('data.occupation_numero_cni')"
               >
                 {{ occupation.locataire.cniLocataire }}
               </dt>
-              <dd class="my-1 col-1"><i class="fas fa-birthday-cake"></i></dd>
-              <dt
+              <dd v-if="occupation.locataire.dateNaiss" class="my-1 col-1"><i class="fas fa-birthday-cake"></i></dd>
+              <dt v-if="occupation.locataire.dateNaiss"
                 class="my-1 col-11 truncate"
-                v-b-tooltip.left="'Date de naissance'"
+                v-b-tooltip.left="$t('data.occupation_date_naissance')"
               >
                 {{
                   $dayjs(occupation.locataire.dateNaiss).format("DD MMMM YYYY")
@@ -535,7 +432,7 @@
               <dd class="my-1 col-1"><i class="fa fa-calendar"></i></dd>
               <dt
                 class="my-1 col-11 truncate"
-                v-b-tooltip.left="'Date de début du bail'"
+                v-b-tooltip.left="$t('data.occupation_informations_date_debut_bail')"
               >
                 {{ $dayjs(occupation.dateDeb).format("dddd, DD MMMM YYYY") }}
               </dt>
@@ -609,8 +506,6 @@ export default {
   mounted() {
     this.newPhotos = this.photos.slice(0, 3);
     this.currentPicture = this.newPhotos[0];
-
-    console.log("logement", this.logement);
     this.marker.lat = this.logement.adresse.lat;
     this.marker.lng = this.logement.adresse.lon;
   },
@@ -718,7 +613,8 @@ export default {
 
 <style scoped>
 #logement-main-img {
-  height: 100%;
+  height: 350px;
+  width: 100%;
   overflow: hidden;
   border-radius: 8px;
 }
@@ -784,5 +680,6 @@ export default {
 }
 p.description::first-letter {
   font-size: 40px;
+  text-transform: uppercase;
 }
 </style>

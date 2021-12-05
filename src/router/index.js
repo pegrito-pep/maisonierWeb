@@ -134,7 +134,7 @@ const routes = [{
                     name: 'contrats',
                     component: () =>
                         import ('@/views/configuration-aide/Contrats/Contrats.vue')
-                },
+                }
             ]
     },
     
@@ -169,6 +169,33 @@ const routes = [{
                 path: 'loyers',
                 name: 'loyers',
                 component: () => import('@/views/finances/Loyers.vue')
+            },
+            {
+                path: 'recharges',
+                name: 'recharges',
+                component: () => import('@/views/finances/recharges/Recharges.vue')
+            }
+        ]
+    },
+     /**
+     * Préférences
+     */
+      {
+        path: '/parametres',
+        name: 'parametres',
+        component: () =>
+            import ('@/views/parametres/parametres.vue'),
+        children: [
+            
+            {
+                path: 'preferences',
+                name: 'preferences',
+                component: () => import('@/views/parametres/preferences.vue')
+            },
+            {
+                path: 'packs',
+                name: 'packs',
+                component: () => import('@/views/parametres/Packs.vue')
             }
         ]
     },
@@ -200,13 +227,19 @@ const routes = [{
 ]
 
 const router = new VueRouter({
-    mode: 'hash',
+    mode: 'history',
     base: process.env.BASE_URL,
     routes
 })
 
 
 router.beforeEach(async(to, from, next) => {
+      //A Logged-in user can't go to login page again
+    if (to.name === 'login' && localStorage.getItem("accessToken")) {
+            router.push({
+            name: 'home'
+            })
+    }
     if (to.matched.some(record => (record.meta.noAuth && true === record.meta.noAuth))) {
         next()
     } else {
@@ -214,8 +247,36 @@ router.beforeEach(async(to, from, next) => {
         if (!access_token || access_token == null || access_token == '') {
             next({ name: 'login' })
         }
+        /*else {
+            if (!this.hasAccess(to.name)) {
+              router.push({
+                name: 'page-not-authorized'
+              })
+            }
+        }*/
         next()
     }
-})
+});
 
+ /*hasAccess(name) {
+    permissions = localStorage.getItem("permissions")
+  
+    switch (name) {
+  
+      case "home":
+        return true;
+  
+      case "users":
+        return permissions.includes("View All Users")
+  
+      case "permissions":
+        return permissions.includes("View All Permissions")
+  
+      case "roles":
+        return permissions.includes("View All Roles")
+  
+      default:
+        return false;
+    }
+}*/
 export default router

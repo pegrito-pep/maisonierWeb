@@ -9,8 +9,9 @@
                         <div class="d-block d-md-inline-block">
                             <SearchForm v-model="search" />
                         </div>
-                        <div class="float-md-right">
-                            <btnAdd  message="Nouvelle Annonce" v-b-modal.annonceForm />
+                        <div class="float-md-right d-flex">
+                            <paginatorTop :offset="offset" :libelle='$t("data.annonces")' :total="annonces.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" class="mr-2 d-flex justify-content-center align-items-center" />
+                            <btnAdd v-if="canCreateAnnonce"  :message="$t('data.annonce_ajouter_une_annonce')" v-b-modal.annonceForm />
                         </div>
                     </div>
                 </div>
@@ -18,7 +19,7 @@
                     <b-overlay :show="showOverlay" rounded="sm">
                         <b-alert variant="info" class="text-center" show v-if="!annonces.length">
                             <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                            <span class="h4 d-inline-flex ml-2">Aucune annonce créée pour le moment</span>
+                            <span class="h4 d-inline-flex ml-2">{{$t('data.annonce_pas_de_annonce')}}</span>
                         </b-alert> 
                         <b-row v-else class="layout-wrap">
                             <b-col v-for="(annonce, i) in items" :key="annonce.idAnnonce || i" sm="12" md="6" lg="3" class="animated flipInX mb-4">
@@ -35,7 +36,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editLayoutItemLabel">Détails de l'annonce : <b>{{ annonce.titreAnnonce }}</b>.</h5>
+                        <h5 class="modal-title" id="editLayoutItemLabel">{{$t('data.annonce_details_de_annonce')}} : <b>{{ annonce.titreAnnonce }}</b>.</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body pt-2">
@@ -48,7 +49,9 @@
         <!--MODAL POUR AJOUTER OU MODIFIER UNE ANNONCE-->
             <b-modal id="annonceForm" size="lg" hide-footer no-close-on-backdrop>
             <template #modal-title>
-            <span class="ml-4 text-form-annone">{{ title }}</span>
+            <div class="mx-4 text-center">
+                <span class="text-form-annone">{{ title }}</span>
+            </div>
             </template>
             <div>
                 <annonce-form @annonceAdded="pushAnnonce" @annonceUpdated="editAnnonces" @createLogementFirst="goToLogement" :action="action" :editAnnonce="editAnnonce"/>
@@ -64,11 +67,11 @@
                     @hidden="resetDuplicationForm"
                 >
                     <template #modal-title>
-                         Dupplication de l'annonce de titre <br><code>"{{ annonce.titreAnnonce }}"</code>
+                         {{$t('data.annonce_details_dupliquer_annonce_de_titre')}} <br><code>"{{ annonce.titreAnnonce }}"</code>
                     </template>
                     <template #modal-footer="{ ok }">
                     <b-button size="sm" variant="danger" @click="ok()" :disabled="duplication.submitted">
-                        Valider
+                        {{$t('data.annonce_details_dupliquer_annonce_de_titre_valider')}}
                         <b-spinner v-if="duplication.submitted" small />
                     </b-button>
                     </template>
@@ -76,9 +79,7 @@
                     <!--<p>La duplication de cette annonce consistera à l'appliquer à tous les logements du batiment auquel cette dernière est liée.
                         Pour notre cas, il s'agit de tous les logements du batiments<span>{{ annonce.logement.batiment.nomBatiment }}</span>
                     </p>-->
-                    <p>La duplication de cette annonce consistera à l'appliquer à tous les logements du batiment auquel cette dernière est liée.
-                        Pour notre cas, il s'agit de tous les logements du batiment
-                    </p>
+                    <p> {{ $t('data.annonce_details_dupliquer_annonce_description')}} </p>
                     </div>
                     <!--<b-form-group description="Entrez le nombre de logement à générer" label="Nombre de clone">
                     <b-form-input
@@ -144,7 +145,8 @@ export default {
       idBatiment: null
     },
     annonce: null,
-    editAnnonce:null
+    editAnnonce:null,
+    permissions: storage.get("userPermissions"),
   }),
   computed: {
         /**
@@ -155,7 +157,13 @@ export default {
         },
         offset() {
             return (this.currentPage * this.perPage) - this.perPage
-        }
+        },
+        canCreateAnnonce(){
+            if(this.permissions.includes("create_annonce")){
+                return true;
+            }
+            return false;  
+        },
     },
 
     beforeMount() {

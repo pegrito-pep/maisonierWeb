@@ -1,6 +1,6 @@
 <template>
     <div >
-        <page-description :path="[{label: 'contrats', route: 'contrats',}, {label: 'documentation', route: 'doc',}]" />
+        <page-description :path="[{label: $t('data.configuration_contrats'), route: 'contrats',}, {label: $t('data.configuration_documentation'), route: 'doc',}]" />
         <Contrats v-if=" path == ''" />
         <router-view v-else />
     </div>

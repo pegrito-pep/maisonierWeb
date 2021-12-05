@@ -8,7 +8,7 @@
           class="nav-link"
           :class="{ active: section == 'caractéristiques' }"
           @click.prevent="section = 'caracteristiques'"
-          >Caractéristiques</a
+          >{{$t('data.annonce_details_caracteristiques')}}</a
         >
       </li>
       <li class="nav-item">
@@ -18,7 +18,7 @@
           class="nav-link"
           :class="{ active: section == 'propositions' }"
           @click.prevent="section = 'propositions'"
-          >Propositions</a
+          >{{$t('data.annonce_details_propositions')}}</a
         >
       </li>
       
@@ -27,42 +27,40 @@
       <div class="tab-pane fade show active">
         <b-container fluid v-if="section == 'caracteristiques'">
           <!--Annonce SUR LA MAP -->
-          <h2 class="text-capitalize font-weight-bold fs-4">Localisation</h2>
+          <h2 class="text-capitalize font-weight-bold fs-4">{{$t('data.annonce_details_localisation')}}</h2>
           <b-row
             class="rounded text-white py-2"
             style="margin: 0; background: #f5365c"
           >
             <b-col lg="4" md="6" sm="12">
               <span class="d-inline-block w-100 my-1">
-                Pays:
+                {{$t('data.annonce_details_pays')}}:
+                <b class="font-weight-bold">{{ adresse.pays }}</b>
+              </span>
+            </b-col>
+            <b-col lg="4" md="6" sm="12">
+              <span class="d-inline-block w-100 my-1">
+                {{$t('data.annonce_details_ville')}}:
                 <b class="font-weight-bold">{{
-                  annonce.logement.adresse.pays
+                  adresse.ville
                 }}</b>
               </span>
             </b-col>
             <b-col lg="4" md="6" sm="12">
               <span class="d-inline-block w-100 my-1">
-                Ville:
+                {{$t('data.annonce_details_quartier')}}:
                 <b class="font-weight-bold">{{
-                  annonce.logement.adresse.ville
-                }}</b>
-              </span>
-            </b-col>
-            <b-col lg="4" md="6" sm="12">
-              <span class="d-inline-block w-100 my-1">
-                Quartier:
-                <b class="font-weight-bold">{{
-                  annonce.logement.adresse.quartier
+                  adresse.quartier
                 }}</b>
               </span>
             </b-col>
           </b-row>
           <b-container class="mt-4 p-0">
             <div class="map-container">
-              <GmapMap
+              <GmapMap v-if="adresse.lat != undefined && adresse.lon != undefined"
                 :center="{
-                  lat: parseFloat(annonce.logement.adresse.lat),
-                  lng: parseFloat(annonce.logement.adresse.lon),
+                  lat: parseFloat(adresse.lat),
+                  lng: parseFloat(adresse.lon),
                 }"
                 :zoom="14"
                 class="w-100"
@@ -80,13 +78,13 @@
               <div v-show="dvisible" class="mini-composant">
                 <div class="internal">
                   <p>
-                    Pays: <span>{{ annonce.logement.adresse.pays }}</span>
+                    {{$t('data.annonce_details_pays')}}: <span>{{ adresse.pays }}</span>
                   </p>
                   <p>
-                    Ville: <span>{{ annonce.logement.adresse.ville }}</span>
+                    {{$t('data.annonce_details_ville')}}: <span>{{ adresse.ville }}</span>
                   </p>
                   <p>
-                    Quartier: <span>{{ annonce.logement.adresse.quartier }}</span>
+                    {{$t('data.annonce_details_quartier')}}: <span>{{ adresse.quartier }}</span>
                   </p>
                 </div>
               </div>
@@ -100,16 +98,16 @@
             @hide="section_photo_handleHide"
           />
           <h2 class="text-capitalize font-weight-bold fs-4 my-4">
-            Caractéristiques approfondies
+            {{$t('data.annonce_details_caracteristiques_approfondies')}}
           </h2>
           <b-row>
             <b-col cols="12">
               <span class="d-inline-block w-100 my-1 h6">
-                Titre:
+                {{$t('data.annonce_details_titre')}}:
                 <strong>{{ annonce.titreAnnonce }}</strong>
               </span>
               <span class="d-inline-block w-100 text-muted">
-                Posté le :
+                {{$t('data.annonce_details_poste_le')}} :
                 <small>{{ annonce.createdAt.slice(0, 10) }}</small>
               </span>
             </b-col>
@@ -129,9 +127,16 @@
             <p class="text-justify description">{{ annonce.descAnnonce }}</p>
           </div>
           <!--Annonce SUR LA MAP -->
-          <h2 class="text-capitalize font-weight-bold fs-4 my-4">Photos</h2>
+          <h2 class="text-capitalize font-weight-bold fs-4 my-4">{{ $t('data.annonce_details_photos_annonce')}}</h2>
 
           <div class="row">
+            <div v-if="!photos.length" class="col-md-12">
+              <div id="logement-main-img">
+                <div class="logement-preview">
+                  <img src="/img/image-defauft-annonce.jpeg" alt="" />
+                </div>
+              </div>
+            </div>
             <div v-if="photos.length > 1" class="col-md-3">
               <div id="logement-imgs">
                 <div
@@ -157,45 +162,45 @@
                 </div>
               </div>
             </div>
-            <div v-else class="col-md-12">
+            <div v-if="photos.length == 1" class="col-md-12">
               <div id="logement-main-img">
                 <div class="logement-preview">
-                  <img :src="currentPicture" alt="" />
+                  <img :src="currentPicture" alt="Pas de photo" />
                 </div>
               </div>
             </div>
           </div>
           
           <h2 class="text-capitalize font-weight-bold fs-4 my-4">
-            Informations sur le logement
+            {{$t('data.annonce_details_informations_sur_le_logement')}}
           </h2>
           <table class="table table-hover table-dark">
             <thead>
               <tr>
-                <th scope="col">Libellé</th>
-                <th scope="col">Valeur</th>
+                <th scope="col">{{$t('data.annonce_details_tableau_libelle')}}</th>
+                <th scope="col">{{$t('data.annonce_details_tableau_valeur')}}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>Etat du logement</td>
+                <td>{{$t('data.logement_detail_titre_etat_logement')}}</td>
                 <td>
                   <b-badge
                     v-if="annonce.logement.etatLogement"
-                    class="mt--1 mr-2 btn bg-badge background rounded-pill"
+                    class="mt--1 mr-2 btn bg-badge bg-success rounded-pill"
                   >
-                    <small class="fa-sm">Logement occupé</small>
+                    <small class="fa-sm">{{$t('data.logement_etat_occupe')}}</small>
                   </b-badge>
                   <b-badge
                     v-else
                     class="mt--1 mr-2 btn bg-badge bg-danger rounded-pill"
                   >
-                    <small class="fa-sm">Logement libre</small>
+                    <small class="fa-sm">{{$t('data.logement_etat_libre')}}</small>
                   </b-badge>
                 </td>
               </tr>
               <tr>
-                <td>Prix du logement</td>
+                <td>{{$t('data.annonce_details_prix_logement')}}</td>
                 <td>
                   {{
                     (annonce.logement.prixMax + annonce.logement.prixMin) / 2
@@ -210,11 +215,11 @@
         <b-container fluid v-if="section == 'propositions'">
           <!--Annonce SUR LA MAP -->
           <h2 class="text-capitalize font-weight-bold fs-4 mb-4">
-            Propositions
+            {{$t('data.annonce_details_propositions')}}
           </h2>
           <!-- <hr /> -->
           <p class="btn btn-secondary position-relative rounded-pill mt-3 mr-2">
-            proposition(s)
+            {{$t('data.annonce_details_propositions')}}
             <span
               class="
                 position-absolute
@@ -290,14 +295,23 @@ export default {
     offset() {
       return this.currentPage * this.perPage - this.perPage;
     },
+
+    adresse() {
+      if (!php.empty(this.annonce.logement.adresse)) {
+        return this.annonce.logement.adresse
+      }
+      if (!php.empty(this.annonce.logement.batiment)) {
+        return this.annonce.logement.batiment.adresse || {}
+      }
+      return {}
+    }
   },
   mounted() {
     this.newPhotos = this.photos.slice(0, 3);
     this.currentPicture = this.newPhotos[0];
-  
     this.tags = this.annonce.tags.split(",");
-    this.marker.lat = this.annonce.logement.adresse.lat;
-    this.marker.lng = this.annonce.logement.adresse.lon;
+    this.marker.lat = this.adresse.lat;
+    this.marker.lng = this.adresse.lon;
   },
   methods: {
     /**
@@ -370,6 +384,7 @@ export default {
 }
 p.description::first-letter {
   font-size: 40px;
+  text-transform: uppercase;
 }
 .background {
   background: #f5365c;
@@ -402,7 +417,8 @@ p.description::first-letter {
 /* =========================  new ================================= */
 
 #logement-main-img {
-  height: 100%;
+   height: 350px;
+  width: 100%;
   overflow: hidden;
   border-radius: 8px;
 }

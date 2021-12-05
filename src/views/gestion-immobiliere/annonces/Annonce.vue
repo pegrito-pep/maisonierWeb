@@ -2,33 +2,17 @@
   <div class="list-item list-item-grid">
     <div class="card mb-3">
       <div class="d-flex">
-        <a class="w-100 d-flex card-img" @click.prevent="showDetails" href="#">
-          <b-carousel :interval="4000" indicators>
-            <img
-              v-if="!photos"
-              src="/img/images-defauft-logement.jpeg"
-              alt="Image annonce"
-              style="height: 15rem; overflow: hidden; border-radius: 10px"
-            />
-            <b-carousel-slide
-              v-else
-              style="
-                height: 15em;
-                overflow: hidden;
-                border-radius: 10px;
-                background: rgba(128, 128, 128, 0.233);
-              "
-              v-for="(photo, i) in annonce.photos"
-              :key="i"
-              :img-src="photo"
-            />
+        <a class="w-100 d-flex card-img" @click.prevent="showDetails" href="#" style="overflow: hidden; border-radius: 10px;">
+          <b-carousel v-if="annonce.photos.length" :interval="4000" controls indicators background="#ababab" img-width="1024" img-height="15em">
+            <b-carousel-slide style="height: 15em; overflow: hidden; border-radius: 10px" class="responsive border-0" v-for="(photo, i) in annonce.photos" :key="i" :img-src="photo" />
           </b-carousel>
+          <img v-else src="/img/image-defauft-annonce.jpeg" alt="" style="height: 15em;" class="list-thumbnail responsive border-0">
           <b-badge
             pill
             class="position-absolute badge-top-left"
             :variant="annonce.publish ? 'success' : 'danger'"
             >{{
-              annonce.publish ? "Déja publiée" : "Pas encore publiée"
+              annonce.publish ? $t('data.annonce_details_etat_publiee') : $t('data.annonce_details_etat_non_publiee')
             }}</b-badge
           >
           <b-badge
@@ -40,15 +24,6 @@
             {{ $date(annonce.createdAt).format("DD.MM.YYYY") }}
           </b-badge>
         </a>
-        <!-- <div class="w-10 d-flex flex-column justify-content-center align-items-center"> -->
-        <!-- <b-button v-if="!annonce.publish" class="btn-icon my-1" variant="primary" v-b-tooltip.left="'Publier'" @click="publier(annonce)"><i class="fas fa-share"></i></b-button>
-                    <b-button class="btn-icon my-1" variant="warning" v-b-tooltip.left="'Modifier'"><i class="ik ik-edit-2"></i></b-button>
-                    <b-button class="btn-icon my-1" variant="danger" v-b-tooltip.left="'Supprimer'"><i class="ik ik-trash-2"></i></b-button>
-                    <b-button class="btn-icon my-1" variant="info" v-b-tooltip.left="'Faire un commentaire'"><i class="fa fa-comments"></i></b-button>
-                    <b-button class="btn-icon my-1" :variant="annonce.nbrPropostions > 0 ? 'success' : 'secondary'" id="button-nombre-propositions"><i class="fas fa-sticky-note"></i></b-button>               
-                    <b-tooltip target="button-nombre-propositions" placement="left" noninteractive variant="secondary">Vous avez déjà reçu {{ annonce.nbrPropostions }} propositions</b-tooltip>
-                    <b-button class="btn-icon my-1" variant="dark" v-b-tooltip.left="'Accéder au logement'" @click.prevent="accessTo"><i class="fa fa-share-square"></i></b-button> -->
-        <!-- </div> -->
       </div>
       <div class="d-flex flex-grow-1 min-width-zero card-content">
         <div
@@ -93,22 +68,22 @@
             <a
               href="#"
               @click.prevent="$emit('makeUpdate', annonce)"
-              v-if="!isSub"
-              v-b-tooltip.bottom="'Editer'"
+              v-if="!isSub&&canUpdateAnnonce"
+              v-b-tooltip.bottom="$t('data.annonce_editer_tooltip_annonce')"
               ><i class="fas fa-pen"></i
             ></a>
             <a
               href="#"
               @click.prevent="showDetails"
-              v-if="!isSub"
-              v-b-tooltip.bottom="'Détails'"
+              v-if="!isSub&&canSeeDetailsAnnonce"
+              v-b-tooltip.bottom="$t('data.annonce_detail_tooltip_annonce')"
               ><i class="ik ik-eye"></i
             ></a>
             <a
               href="#"
               @click.prevent="showMenu(annonce.idAnnonce)"
               class="show-list"
-              v-b-tooltip.bottom="'Menu'"
+              v-b-tooltip.bottom="$t('data.annonce_menu_tooltip_annonce')"
               ><i class="fa fa-ellipsis-v"></i
             ></a>
           </div>
@@ -127,8 +102,8 @@
             <a
               href="#"
               @click.prevent="accessTo"
-              v-if="!isSub"
-              v-b-tooltip.left="'Acceder au logement'"
+              v-if="!isSub&&canViewLogement"
+              v-b-tooltip.left="$t('data.annonce_details_tooltip_acceder_au_logement')"
               class="d-block"
               ><b-button
                 class="btn-icon my-1 mr-2"
@@ -142,12 +117,12 @@
                     align-items: center;
                   "
                 ></i></b-button
-              >Acceder au logement
+              >{{$t('data.annonce_details_tooltip_acceder_au_logement')}}
             </a>
-            <a
+            <a 
               href="#"
-              v-b-tooltip.left="'Publier'"
-              v-if="!annonce.publish"
+              v-b-tooltip.left="$t('data.annonce_details_tooltip_publier_annonce')"
+              v-if="!annonce.publish&&canPublishAnnonce"
               @click="publier(annonce)"
               class="d-block"
               ><b-button
@@ -162,29 +137,10 @@
                     align-items: center;
                   "
                 ></i></b-button
-              >Publier l'annonce</a
+              >{{$t('data.annonce_details_tooltip_publier_annonce')}}</a
             >
-            <a
-              href="#"
-              @click.prevent="$emit('makeDuplication', annonce)"
-              v-b-tooltip.left="'Dupliquer l\'annonce'"
-              v-if="!isSub"
-              class="d-block"
-              ><b-button
-                class="btn-icon my-1 mr-2"
-                variant="primary"
-                style="width: 25px; height: 25px"
-                ><i
-                  class="ik ik-copy"
-                  style="
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                  "
-                ></i></b-button
-              >Dupliquer l'annonce</a
-            >
-            <a href="#" v-b-tooltip.left="'Propositions'" class="d-block"
+
+            <a href="#" v-b-tooltip.left="$t('data.annonce_details_tooltip_propositions_annonce')" class="d-block"
               ><b-button
                 class="btn-icon my-1 mr-2"
                 :variant="annonce.nbrPropostions > 0 ? 'success' : 'secondary'"
@@ -198,11 +154,11 @@
                     align-items: center;
                   "
                 ></i></b-button
-              >Propositions</a
+              >{{$t('data.annonce_details_tooltip_propositions_annonce')}}</a
             >
-            <a
+            <a v-if="canCommentAnnonce"
               href="#"
-              v-b-tooltip.left="'Faire un commentaire'"
+              v-b-tooltip.left="$t('data.annonce_details_tooltip_commenter_annonce')"
               class="d-block"
               ><b-button
                 class="btn-icon my-1 mr-2"
@@ -216,12 +172,12 @@
                     align-items: center;
                   "
                 ></i></b-button
-              >Faire un commentaire</a
+              >{{$t('data.annonce_details_tooltip_commenter_annonce')}}</a
             >
-            <a
+            <a v-if="canDeleteAnnonce"
               href="#"
               @click.prevent="remouve"
-              v-b-tooltip.left="'Supprimer l\'annonce'"
+              v-b-tooltip.left="$t('data.annonce_details_tooltip_supprimer_annonce')"
               class="d-block"
               ><b-button
                 class="btn-icon my-1 mr-2"
@@ -235,7 +191,7 @@
                     align-items: center;
                   "
                 ></i></b-button
-              >Supprimer l'annonce</a
+              >{{$t('data.annonce_details_tooltip_supprimer_annonce')}}</a
             >
           </div>
 
@@ -255,6 +211,8 @@ import notif from "@/plugins/notif.js";
 export default {
   data: () => ({
     open: true,
+    permissions: storage.get("userPermissions"),
+
   }),
   props: {
     annonce: { type: Object, required: true },
@@ -270,6 +228,43 @@ export default {
     php() {
       return php;
     },
+    canUpdateAnnonce() {
+            if(this.permissions.includes("update_annonce")){
+                return true;
+            }
+            return false;
+                
+    },
+    canDeleteAnnonce() {
+            if(this.permissions.includes("delete_annonce")){
+                return true;
+            }
+            return false;    
+    },
+    canSeeDetailsAnnonce(){
+        if(this.permissions.includes("view_annonce")){
+            return true;
+        }
+        return false;   
+    },
+    canViewLogement(){
+       if(this.permissions.includes("view_logement")){
+                return true;
+        }
+        return false;
+    },
+    canPublishAnnonce(){
+      if(this.permissions.includes("publish_annonce")){
+                return true;
+        }
+        return false;
+    },
+    canCommentAnnonce(){
+      if(this.permissions.includes("comment_annonce")){
+                return true;
+        }
+        return false;
+    }
   },
   methods: {
     /**

@@ -1,16 +1,18 @@
+  
+
 <template>
     <div>
-        <page-description :path="[{label: 'Mes annonces', route: 'annonces'}, {label: 'Mes occupations', route: 'occupations'},]" />
-        <annonces v-if="path == ''" />
+        <page-description :path="[{label: $t('data.gestion_menu_mes_occupations'), route: 'occupations'}, {label: $t('data.gestion_menu_mes_annonces'), route: 'annonces'},]" />
+        <occupations v-if="path == ''" />
         <router-view v-else />
     </div>
 </template>
 
 <script>
-import Annonces from './annonces/Annonces.vue'
+import Occupations from './Occupations.vue'
 export default {
     components : {
-        Annonces
+        Occupations 
     },
     data: () => ({
         path: ""

@@ -3,13 +3,13 @@
         <div class="card d-flex flex-row mb-3">
             <a class="d-flex card-img" @click.prevent="showDetails" href="#">
                 <img src="@/assets/img/article.jpeg" alt="" style="height: 10em" class="list-thumbnail responsive border-0">
-                <span v-if="isNew" class="badge badge-pill badge-primary position-absolute badge-top-left">New</span>
+                <span v-if="isNew" class="badge badge-pill badge-primary position-absolute badge-top-left">{{$t('data.article_nouvel')}}</span>
             </a>
             <div class="d-flex flex-grow-1 min-width-zero card-content">
                 <div class="card-body align-self-center d-flex flex-column flex-md-row justify-content-between min-width-zero align-items-md-center">
                     <div class="text-center">
                         <h5 class="text-red text-small mt-0 truncate">{{ article.titreArticle }}</h5>
-                        <span class="d-inline-block text-muted">Numéro Article: <b>{{ article.numArticle }}</b></span>
+                        <span class="d-inline-block text-muted">{{$t('data.article_numero_article')}}: <b>{{ article.numArticle }}</b></span>
                     </div>
                     <p v-b-tooltip.bottom="dateCreation" class="mt-3 mb-1 text-muted text-small date w-15 w-xs-100">{{ $date(article.createdAt).format("DD.MM.YYYY") }}</p>
                 </div>

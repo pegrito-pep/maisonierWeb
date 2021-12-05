@@ -1,15 +1,15 @@
 <template>
     <div>
         <ul class="nav nav-tabs">
-            <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'rubriques'}" @click.prevent="section = 'rubriques'">Rubriques</a></li>
-            <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'add-rubriques'}" @click.prevent="section = 'add-rubriques'">Ajouter des rubriques</a></li>
+            <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'rubriques'}" @click.prevent="section = 'rubriques'">{{$t('data.article_details_article_rubrique')}}</a></li>
+            <li class="nav-item"><a data-toggle="tab" href="#" class="nav-link" :class="{'active' : section == 'add-rubriques'}" @click.prevent="section = 'add-rubriques'">{{$t('data.article_details_article_ajouter_rubrique')}}</a></li>
         </ul>
         <div class="tab-content mt-3">
             <div class="tab-pane fade show active">
                 <div v-if="section == 'rubriques'">
                     <b-alert variant="info" show v-if="!article.rubriques.length">
                         <i class="fa fa-exclamation-triangle fa-3x float-left"></i> 
-                        <span class="h4 d-inline-flex ml-2">Aucune rubriques enregistré pour le moment</span>
+                        <span class="h4 d-inline-flex ml-2">{{$t('data.article_details_article_pas_de_rubrique')}}</span>
                     </b-alert>   
                     <div v-else style="height: 75vh;">
                         <paginator no-control hr="bottom" :total="article.rubriques.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" />                   
@@ -27,10 +27,10 @@
                         <div class="d-flex flex-column justify-content-between" style="height: 90%; overflow-y: auto; overflow-x: hidden">
                             <div data-repeater-list="group"><b-row data-repeater-item>
                                 <b-col cols="12" md="6" lg="6">
-                                    <b-form-group label="description de la rubrique">
+                                    <b-form-group :label="$t('data.article_details_article_rubrique_description')">
                                         <b-form-textarea
                                         class="mb-2"
-                                        placeholder="Ex: Ils ne pourront être utilisé même temporairement à d'autres usages que celui ainsi arrêté sous peine de résiliation de plein droit de bail, suivi d'un délaissement immédiat à la première demande du bailleur ."
+                                        :placeholder="$t('data.article_details_article_rubrique_description_exemple')"
                                         rows="8"
                                         name="description"
                                         ></b-form-textarea>
@@ -46,13 +46,13 @@
                                                     <div class="radio radio-outline radio-inline">
                                                         <label>
                                                             <input type="radio"  name="valeur" checked="checked">
-                                                            <i class="helper"></i>Oui
+                                                            <i class="helper"></i>{{$t("data.article_details_article_rubrique_avoir_valeur_oui")}}
                                                         </label>
                                                     </div>
                                                     <div class="radio radio-outline radio-inline">
                                                         <label>
                                                             <input type="radio" name="valeur">
-                                                            <i class="helper"></i>Non
+                                                            <i class="helper"></i>{{$t("data.article_details_article_rubrique_avoir_valeur_non")}}
                                                         </label>
                                                     </div>
                                                 </form>
@@ -65,8 +65,8 @@
                             </b-row></div>
                         </div>
                         <div class="d-flex justify-content-end align-items-center mt-5">
-                            <b-button variant="outline-primary" data-repeater-create>Ajouter un élément</b-button>
-                            <b-button variant="danger" @click="addRubriques" class="ml-2" :disabled="submitted">Valider <b-spinner v-if="submitted" small /></b-button>
+                            <b-button variant="outline-primary" data-repeater-create>{{$t('data.article_details_article_ajouter_element')}}</b-button>
+                            <b-button variant="danger" @click="addRubriques" class="ml-2" :disabled="submitted">{{$t('data.cite_valider_cite')}} <b-spinner v-if="submitted" small /></b-button>
                         </div>
                     </div>
                 </div>

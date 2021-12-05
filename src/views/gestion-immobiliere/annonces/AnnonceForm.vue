@@ -5,24 +5,24 @@
           <b-row>
           <b-col>
             <b-form-group
-              label="Titre de l'annonce"
-              description="Donnez un titre intuitif à votre annonce"
+              :label="$t('data.annonce_form_titre_annonce')"
+              :description="$t('data.annonce_form_titre_annonce_description')"
             >
               <b-form-input
                 v-model="annonce.titre"
-                placeholder="Ex: Grande chambre moderne à louer"
+                :placeholder="$t('data.annonce_form_titre_annonce_exemple')"
                 trim
               ></b-form-input>
             </b-form-group>
           </b-col>
           <b-col>
             <b-form-group
-              label="Tags"
-              description="Ajouter des critères de recherche à votre annonce"
+              :label="$t('data.annonce_form_label_tags')"
+              :description="$t('data.annonce_form_label_tags_description')"
             >
               <b-form-input
                 v-model="annonce.tags"
-                placeholder="Ex: Appartement meublé, grande chambre"
+                :placeholder="$t('data.annonce_form_label_tags_exemple')"
                 trim
               ></b-form-input>
             </b-form-group>
@@ -30,17 +30,17 @@
         </b-row>
         <b-row>
           <b-col cols="7">
-            <b-form-group label="description">
+            <b-form-group :label="$t('data.annonce_form_label_description_annonce')">
               <b-form-textarea
                 class="mb-2"
-                placeholder="Caractériser votre annonce afin d'être bien reférencé"
+                :placeholder="$t('data.annonce_form_label_description_annonce_exemple')"
                 rows="8"
                 v-model="annonce.description"
               ></b-form-textarea>
             </b-form-group>
           </b-col>
           <b-col cols="5">
-            <b-form-group label="Veuillez selectionner le logement">
+            <b-form-group :label="$t('data.annonce_form_label_selection_logement')">
               <div style="height: 10.5em">
                 <b-form-select
                   v-model="annonce.idLogement"
@@ -67,8 +67,8 @@
         <b-row>
           <b-col>
             <b-form-checkbox v-model="annonce.publish" switch>
-                <span class="fa-lg" v-if="annonce.publish">Directement publier cette annonce ?</span>
-                <span class="fa-lg" v-else>Spécifier la durée de validité</span>
+                <span class="fa-lg" v-if="annonce.publish">{{$t('data.annonce_form_publier_annonce')}}</span>
+                <span class="fa-lg" v-else>{{$t('data.annonce_form_validite_annonce')}}</span>
             </b-form-checkbox>
           </b-col>
           <b-col>
@@ -81,14 +81,16 @@
           <b-row v-if="!annonce.publish">
             <b-col>
               <b-form-group
-                label="Date de début"
-                description="Quand souhaitez-vous débuter la publication"
+                :label="$t('data.annonce_form_validite_label_date_debut_annonce')"
+                :description="$t('data.annonce_form_validite_label_date_debut_description_annonce')"
               >
                 <b-form-datepicker locale="fr" v-model="duree[0]" :min="$date().format()"></b-form-datepicker>
               </b-form-group>
             </b-col>
             <b-col>
-              <b-form-group label="Date de fin" description="Jusqu'à quand cette annonce est valable">
+              <b-form-group
+              :label="$t('data.annonce_form_validite_label_date_fin_annonce')"
+              :description="$t('data.annonce_form_validite_label_date_fin_description_annonce')">
                 <b-form-datepicker locale="fr" v-model="duree[1]" :min="$date().add(1, 'day').format()"></b-form-datepicker>
               </b-form-group>
             </b-col>
@@ -96,7 +98,7 @@
         </transition>
         <hr>
           <div class="float-right">
-              <b-button variant="danger" @click="submitModal" class="ml-2" :disabled="submitted">Valider <b-spinner v-if="submitted" small /></b-button>   
+              <b-button variant="danger" @click="submitModal" class="ml-2" :disabled="submitted">{{$t('data.annonce_form_valider_annonce')}} <b-spinner v-if="submitted" small /></b-button>   
             <!--<b-button @click.prevent="submitModal" variant="primary">Valider</b-button>-->
             
             </div>
@@ -105,10 +107,10 @@
         <b-row>
           <div class="text-center">
             <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-            <span class="h4 d-inline-flex ml-2">Aucun logement trouvé</span>
+            <span class="h4 d-inline-flex ml-2">{{$t('data.annonce_form_pas_de_logement')}}</span>
             <br>
-            <b-button size="lg" class="my-2" variant="outline-info" @click.prevent="createLogement">créer un logement</b-button>
-            <p>Une annonce concerne un logement du coup avant de pouvoir en créer une, vous devez préalablemenet creér au moins un logement</p>
+            <b-button size="lg" class="my-2" variant="outline-info" @click.prevent="createLogement">h{{$t('data.annonce_form_creer_logement')}}</b-button>
+            <p>{{$t('data.annonce_form_explication')}}</p>
           </div>
         </b-row>
       </div>

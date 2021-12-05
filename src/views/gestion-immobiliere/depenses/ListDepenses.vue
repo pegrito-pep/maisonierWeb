@@ -1,15 +1,15 @@
 <template>
   <div class="container-fluid">
     <!--page header start -->
-    <page-description :path="[{label: 'Mes depenses', route: 'depenses'},]" />
+    <page-description :path="[{label: $t('data.liste_depenses_mes_depenses'), route: 'depenses'},]" />
     <div class="row">
       <div class="col-md-12">
         <div class="mb-2 clearfix">
           <div class="collapse d-md-block display-options" id="displayOptions">
             <div class="d-block d-md-inline-block">
-              <div class="btn-group float-md-left mr-1 mb-1">
+              <!--<div class="btn-group float-md-left mr-1 mb-1">
                 <b-form-select v-model="filtre_categories" style="box-shadow: none; height: 40px; width: 260px;">
-                  <b-form-select-option :value="null">Filtre de catégories</b-form-select-option>
+                  <b-form-select-option :value="null">{{$t("data.Filtre_de_categories")}}</b-form-select-option>
                   <b-form-select-option-group
             
                   >
@@ -18,13 +18,13 @@
                     ></b-form-select-option>
                   </b-form-select-option-group>
                 </b-form-select>
-              </div>
+              </div>-->
               <SearchForm v-model="search" />
             </div>
 
-            <div class="float-md-right">
-              <btnAdd  message="Ajouter une dépense" v-b-modal.depenseForm/>
-
+            <div class="float-md-right d-flex" v-if="canCreateDepense">
+              <paginatorTop :offset="offset" :libelle='$t("data.depenses")' :total="depenses.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" class="mr-2 d-flex justify-content-center align-items-center" />
+              <btnAdd  :message="$t('data.liste_depenses_ajouter_une_depense')" v-b-modal.depenseForm/>
             </div>
           </div>
         </div>
@@ -33,10 +33,10 @@
           <b-alert variant="info" class="text-center" show v-if="!depenses.length">
             <i class="fa fa-exclamation-triangle fa-3x"></i>
             <br />
-            <span class="h4 d-inline-flex ml-2">Aucune dépense enregistrée pour le moment</span>
+            <span class="h4 d-inline-flex ml-2">{{$t('data.liste_depenses_pas_depenses')}}</span>
           </b-alert>
           <b-row v-else class="layout-wrap">
-            <div v-for="(depense, i) in depenses" :key="depense.idDepense || i" class="col-6 list-item list-item-thumb animated flipInX mb-2">
+            <div v-for="(depense, i) in depenses" :key="depense.idDepense || i" class="col-xl-6 col-md-12 list-item list-item-thumb animated flipInX mb-2">
                 <depense
                 @makeUpdate="updateDepense"
                 @deleted="removeDepense"
@@ -73,7 +73,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="editLayoutItemLabel">
-              Détails de la dépense:
+             {{$t('data.liste_depenses_details_depense')}}:
               <b>{{ depense.motif }}</b>.
             </h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -130,6 +130,7 @@ export default {
 
     typesLogements: [],
     filtre_categories: null,
+    permissions: storage.get("userPermissions")
 
   }),
   computed: {
@@ -141,6 +142,12 @@ export default {
     },
     offset() {
       return this.currentPage * this.perPage - this.perPage;
+    },
+    canCreateDepense(){
+      if(this.permissions.includes("create_depense")){
+            return true;
+        }
+        return false;   
     }
   },
   watch: {

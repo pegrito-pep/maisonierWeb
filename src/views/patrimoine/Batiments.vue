@@ -7,8 +7,9 @@
                         <div class="d-block d-md-inline-block">
                             <SearchForm v-model="search" />
                         </div>
-                        <div class="float-md-right">
-                            <btnAdd  message="Ajouter un batiment" @click="() => {action = 'add'; $bvModal.show('modal-batiment')}"/>
+                        <div class="float-md-right d-flex">
+                            <paginatorTop :offset="offset" :libelle='$t("data.batiments")' :total="batiments.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" class="mr-2 d-flex justify-content-center align-items-center" />
+                            <btnAdd  :message="$t('data.batiment_ajouter_batiment')" @click="() => {action = 'add'; $bvModal.show('modal-batiment')}"/>
                         </div>
                     </div>
                 </div>
@@ -16,8 +17,8 @@
                 <b-overlay :show="showOverlay" rounded="sm">
                     <b-alert variant="info" class="text-center" show v-if="!batiments.length">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                        <span class="h4 d-inline-flex ml-2" v-if="source == 1">Aucun batiment enregistré pour le moment</span>
-                        <span class="h4 d-inline-flex ml-2" v-if="source == 2">Aucun batiment trouvé</span>
+                        <span class="h4 d-inline-flex ml-2" v-if="source == 1">{{ $t('data.batiment_pas_de_batiment')}}</span>
+                        <span class="h4 d-inline-flex ml-2" v-if="source == 2"> {{ $t('data.batiment_pas_de_batiment_trouve') }} </span>
                     </b-alert> 
                     <b-row v-else class="layout-wrap">
                         <b-col v-for="(batiment, i) in items" :key="batiment.idBatiment || i" xl="3" lg="4" cols="12" sm="6" class="animated flipInX mb-4">
@@ -34,7 +35,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editLayoutItemLabel">Détails du batiment : <b>{{ batiment.nomBatiment }}</b>.</h5>
+                        <h5 class="modal-title" id="editLayoutItemLabel"> {{ $t('data.batiment_details_batiment')}} : <b>{{ batiment.nomBatiment }}</b>.</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body pt-2">
@@ -47,8 +48,8 @@
         <!-- MODALE POUR AJOUTER/MODIFIER UN BATIMENT -->
         <b-modal id="modal-batiment" size="lg" hide-footer ref="modalBatiment" @hidden="batiment = null">
             <template #modal-title>
-                <span class="ml-4 text-form-batiment" v-if="action == 'add'">Ajouter un batiment</span>
-                <span class="ml-4 text-form-batiment" v-if="action == 'edit'">Edition du batiment</span>
+                <span class="ml-4 text-form-batiment" v-if="action == 'add'">{{$t('data.batiment_ajouter_batiment')}}</span>
+                <span class="ml-4 text-form-batiment" v-if="action == 'edit'">{{ $t('data.batiment_editer_batiment')}}</span>
             </template>
             <form-batiment @batimentAdded="pushBatiment" @batimentUpdated="editBatiment" :action="action" :batiment="batiment" />
         </b-modal>
@@ -80,7 +81,13 @@ export default {
         },
         offset() {
             return (this.currentPage * this.perPage) - this.perPage
-        }
+        },
+        canCreateBatiment() {
+            if(this.permissions.includes("create_batiment")){
+                return true;
+            }
+            return false;      
+        },
     },
     data: () => ({
         batiments: [],
@@ -91,7 +98,9 @@ export default {
         perPage: 10,
         search: null,
         action: 'add',
-        source:1
+        source:1,
+        libelle:'bâtiments',
+        permissions: [] //storage.get("userPermissions"),
     }),
     watch: {
         search(value) {
@@ -198,9 +207,10 @@ export default {
          * Declanché lorsqu'on a ajouté un batiment
          */
         pushBatiment(batiment) {
-            this.batiments = this.addNewBatiment(this.batiments, batiment)
-            this.trueBatiments = this.addNewBatiment(this.trueBatiments, batiment)
+            /* this.batiments = this.addNewBatiment(this.batiments, batiment)
+            this.trueBatiments = this.addNewBatiment(this.trueBatiments, batiment) */
             this.$bvModal.hide('modal-batiment')
+            this.getBatiments()
         },
         /**
          * Declanché lorsqu'on a edité un batiment

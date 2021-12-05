@@ -13,7 +13,7 @@
 export default {
     name: "SearchForm",
     props: {
-        placeholder: { type: String, default: "Rechercher..."},
+        placeholder: { type: String, default: 'Rechercher'},
         value: { required: true, default: ""},
     },
     data: () => ({

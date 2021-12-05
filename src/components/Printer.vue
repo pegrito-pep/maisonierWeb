@@ -5,7 +5,7 @@
                 <img src="/img/logo-m0.png" class="header-brand-img" alt="lavalite" style="height: 5em; width: 5em">
                 <div style="flex: 1;" class="ml-1 text-center">
                     <h2 class="text-danger">Maisonier</h2>   
-                    <p class="text-muted">Application de gestion immobilière</p>
+                    <p class="text-muted">{{$t('data.printer_definition_maisonier')}}</p>
                 </div> 
             </header>
             <div class="my-3">

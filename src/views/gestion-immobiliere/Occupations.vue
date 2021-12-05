@@ -5,17 +5,15 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="mb-2 clearfix">
-                    <div class="collapse d-md-block display-options" id="displayOptions">               
-                        <div class="d-block d-md-inline-block">
-                            <SearchForm v-model="search" />
-                        </div>
+                    <div class="d-flex justify-content-between align-items-center">               
+                        <span class="h5"><b class="text-danger font-weight-bold h3">{{ trueOccupations.length }}</b> occupation{{ trueOccupations.length > 1 ? 's' : '' }} au total</span>
                         <div class="d-flex align-items-center justify-content-end">
                       
-                            <btnAdd  message="Créer un bail" v-b-modal.occupationForm/>
-                            <b-button-group  class="mt-n1">
+                            <btnAdd v-if="canCreateoccupation"  :message="$t('data.occupation_creer_un_bail')" v-b-modal.occupationForm/>
+                            <b-button-group v-if="canviewoccupations"  class="mt-n1">
                                 <b-button variant="outline-light" class="text-danger" @click.prevent="goTo('prev')"><i class="fa fa-2x fa-chevron-left"></i></b-button>
                                 <b-button variant="outline-light" class="text-danger" @click.prevent="goTo('next')"><i class="fa fa-2x fa-chevron-right"></i></b-button>
-                                <b-button variant="outline-light" class="text-danger" @click.prevent="toogleList"><i class="fa fa-2x fa-list-alt" id="toogleList"></i></b-button>
+                                <b-button variant="outline-light" class="text-danger" @click.prevent="toogleList"><i class="fa fa-2x fa-search" id="toogleList"></i></b-button>
                             </b-button-group>
                         </div>
                     </div>
@@ -24,18 +22,18 @@
                 <b-overlay :show="showOverlay" rounded="sm">
                     <b-alert variant="info" class="text-center" show v-if="!occupations.length">
                         <i class="fa fa-exclamation-triangle fa-3x"></i> <br>
-                        <span class="h4 d-inline-flex ml-2">Vous n'avez défini aucune occupation pour le moment</span>
+                        <span class="h4 d-inline-flex ml-2">{{$t('data.occupation_pas_de_occupation')}}</span>
                     </b-alert> 
                     <div v-else>
-                        <occupation :occupation="occupation" @change="getOccupations" @makeUpdate="setUpdateOccupation" @showDetails="showDetails"/>
+                        <occupation v-if="!empty(occupation)" :occupation="occupation" @change="selectLogement" @makeUpdate="setUpdateOccupation" />
                     </div>
                 </b-overlay>
             </div>
 
             <div id="mySidenav" class="occupations-sidenav py-2">
-                <h5 class="text-center text-white border-bottom py-1">Occupations disponibles</h5>
+                <h5 class="text-center text-white border-bottom py-1">{{$t('data.occupation_occupations_disponibles')}}</h5>
                 <form action="" class="container" onSubmit="return false">
-                    <b-form-input placeholder="Recherche..." v-model="search" />
+                    <b-form-input placeholder="Recherche..." v-model="search" ref="inputText1" />
                 </form>
                 <b-container class="my-2" style="height: 76%; overflow-y: auto">
                     <b-list-group>
@@ -46,16 +44,20 @@
                             </dl>
                             <dl class="d-flex m-0">
                                 <dt class="pl-1 col-1"><i class="fa fa-user"></i></dt>
-                                <dd class="col-11 pl-1 truncate">{{ item.locataire.titre + ' ' + item.locataire.nomLocataire + ' ' + item.locataire.prenomLocataire }}</dd>
+                                <dd class="col-11 pl-1 truncate">{{ item.locataire.nomLocataire + ' ' + item.locataire.prenomLocataire }}</dd>
                             </dl>
                             <div class="text-center">
-                                <b-badge variant="success" v-if="item.dateFin == null">Bail en cours</b-badge>
-                                <b-badge variant="danger" v-else>Bail terminé le {{ $date(occupation.dateFin).format('DD MMMM YYYY') }}</b-badge>
+                                <div v-if="item.dateFin == null">
+                                    <!--<b-badge variant="success" >{{$t('data.occupation_bail_en_cours')}}</b-badge>-->
+                                     <b-button variant="danger">Clôturer le bail</b-button>
+                                </div>
+                                
+                                <b-badge variant="danger" v-else>{{$t('data.occupation_bail_termine_le')}} {{ $date(occupation.dateFin).format('DD MMMM YYYY') }}</b-badge>
                             </div>
                         </b-list-group-item>
                     </b-list-group>
                 </b-container>
-                <div class="d-flex justify-content-center w-100">
+                <div class="m-auto w-100 d-flex justify-content-center">
                     <paginator no-control :offset="offset" :total="occupations.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" />
                 </div>
             </div>
@@ -74,50 +76,21 @@
         </b-modal>-->
         
         <!--MODAL POUR AJOUTER OU MODIFIER UNE OCCUPATION-->
-        <b-modal id="occupationForm" ref="occupation-form" size="xl" :title="title" hide-footer no-close-on-backdrop hide-header-close>
+        <!--<b-modal id="occupationForm" ref="occupation-form" size="xl" :title="title" hide-footer no-close-on-backdrop hide-header-close>-->
+            <b-modal id="occupationForm" ref="occupation-form" size="xl" :title="title" hide-footer no-close-on-backdrop @close="resetOccupationFormProps">
             <template #modal-title>
                 <span class="ml-4 text-form-occupation">{{ title }}</span>
             </template>
             <div>
-                <occupation-form  @occupationAdded="addedOccupation" :action="action" :provenance="provenance"   @createLogementSecond="goToLogement" @createLocataire="gotToLocataire" @closeOccupationModal="resetOccupationFormProps"/>
+                <occupation-form  @occupationAdded="addedOccupation" @editOccupation="occupationEdited" :action="action" :provenance="provenance" :editOccupation="occupationToEdit"   @createLogementSecond="goToLogement" @createLocataire="gotToLocataire" @closeOccupationModal="resetOccupationFormProps"/>
             </div>
         </b-modal>
-
-
-        <!--MODAL POUR AFFICHER LE CONTRAT DE BAIL-->
-        <div
-            v-if="occupation"
-            class="modal fade edit-layout-modal"
-            id="editLayoutItem"
-            tabindex="-1"
-            role="dialog"
-            aria-labelledby="editLayoutItemLabel"
-            aria-hidden="true"
-        >
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editLayoutItemLabel">
-                        Contrat de l'occupation :
-                        <b>{{ occupation.idOccupation }}</b>.
-                        </h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body pt-2">
-                        <contrat-occupation :occupation="occupation" />
-                    </div>
-                </div>
-            </div>
-        </div>
   </div>
 </template>
 <script>
   //import OccupationForm from "@/components/_gestion-immobiliere/OccupationForm.vue";
   import OccupationForm from "@/views/gestion-immobiliere/occupations/OccupationForm.vue";
 
-import contratOccupation from './occupations/contratOccupation.vue';
 import Occupation from './occupations/Occupation.vue';
 import SearchForm from "@/components/parts/SearchForm.vue";
 
@@ -130,7 +103,6 @@ export default {
   //  DetailsOccupation,
     Occupation,
     SearchForm,
-    contratOccupation
   },
   data: () => ({
      title:"Ouverture du contrat de bail",
@@ -139,10 +111,12 @@ export default {
      showOverlay: true,
      currentPage: 1,
      perPage: 10,
-     occupation: null,
+     occupation: {},
+     occupationToEdit:null,
      occupations:[],
      trueOccupations:[],
-     provenance:1
+     provenance:1,
+    permissions: storage.get("userPermissions")
 
   }),
     computed: {
@@ -154,6 +128,18 @@ export default {
         },
         offset() {
             return (this.currentPage * this.perPage) - this.perPage
+        },
+        canCreateoccupation(){
+            if(this.permissions.includes("create_occupation")){
+                return true;
+            }
+            return false;  
+        },
+        canviewoccupations(){
+            if(this.permissions.includes("list_occupations")){
+                return true;
+            }
+            return false; 
         }
     },
      watch: {
@@ -174,15 +160,24 @@ export default {
         }, 100);
     },
     methods: {
+        occupationEdited(){
+          this.action='add';
+          this.title="Ouverture du contrat de bail";
+          this.$bvModal.hide('occupationForm');
+          this.occupation=null;
+          this.getOccupations();
+        },
+        empty: (value) => php.empty(value),
         toogleList() {
             const btn = $('#toogleList')
-            if (btn.hasClass('fa-list-alt')) {
-                btn.removeClass('fa-list-alt').addClass('fa-times')
+            if (btn.hasClass('fa-search')) {
+                btn.removeClass('fa-search').addClass('fa-times')
             }
             else {
-                btn.addClass('fa-list-alt').removeClass('fa-times')
+                btn.addClass('fa-search').removeClass('fa-times')
             }
             $('#mySidenav').toggleClass('active')
+            $('#mySidenav input:text').focus()
         },
 
         goTo(step) {
@@ -204,40 +199,26 @@ export default {
             this.selectLogement(this.occupations[index])
         },
         selectLogement(occupation) {
-            this.occupation = occupation
-            let href = window.location.href.split('/'), last = href[href.length - 1]
-            if (last == 'occupations') {
-                href.push(this.occupation.idOccupation)
+            if (php.empty(occupation)) {
+                return
             }
-            else {
-                href[href.length - 1] = this.occupation.idOccupation
-            }
-            window.history.pushState({}, '', href.join('/'));
+            this.showOverlay = true 
+            axios.get('occupations/' + occupation.idOccupation).then(response => {
+                this.occupation = response.result
+                let href = window.location.href.split('/'), last = href[href.length - 1]
+                if (last == 'occupations') {
+                    href.push(this.occupation.idOccupation)
+                }
+                else {
+                    href[href.length - 1] = this.occupation.idOccupation
+                }
+                window.history.pushState({}, '', href.join('/'));
+                
+                this.showOverlay = false
+            })
             $('#mySidenav').removeClass('active')
-            $('#toogleList').addClass('fa-list-alt').removeClass('fa-times')
+            $('#toogleList').addClass('fa-search').removeClass('fa-times')
         },
-        /**
-        * affichage directe de l'occupation demandé
-        * source="detailLogement"
-        */
-    autoDetailsTarget() {
-      const target = this.$route.query.target || null;
-      if (target) {
-          console.log("occupation n", target)
-        /*const logement = this.trueLogements.filter(
-          elt => elt.idLogement == target
-        )[0];
-        if (logement) {
-          this.showDetails(logement);
-          window.history.replaceState(
-            {},
-            "",
-            window.location.href.split("?")[0]
-          );
-        }*/
-        window.history.pushState({}, '', '/'+target);
-      }
-    },
       
         /**ecoute évènement émis;
         * fermetire formulmaire de création d'une occupation
@@ -271,9 +252,8 @@ export default {
                 if (index == -1) {
                     index = 0
                 }
-                this.occupation = occupations[index] || {}
                 this.showOverlay = false
-                this.autoDetailsTarget()
+                this.selectLogement(occupations[index] || {})
             })
      },
 
@@ -281,29 +261,11 @@ export default {
            console.log("occupation",occupation)
       },
 
-
-      /**
-     * Affiche les details d'un logement
-     *
-     * @param {Object} occupation
-     */
-    showDetails(occupation) {
-      this.occupation = occupation;
-      setTimeout(() => {
-        $("#editLayoutItem").modal("show");
-        $("#editLayoutItem").on("hide.bs.modal", e => {
-          this.occupation = null;
-        });
-        $("#editLayoutItem").on("hidden.bs.modal", e => {
-          this.occupation = null;
-        });
-      }, 100);
-    },
      //edit de l'occupation
      setUpdateOccupation(occupation){
         this.action='edit'
         console.log("occupation", occupation);
-        this.occupation=occupation
+        this.occupationToEdit=occupation
         this.$refs['occupation-form'].show();
         this.title="Edition du contrat de bail"
      },
@@ -312,12 +274,13 @@ export default {
           this.action='add'
           this.title="Ouverture du contrat de bail"
           this.$bvModal.hide('occupationForm')
-          this.occupation = {
+          /*this.occupation = {
                 loyer: null, mode: null, energie: "index", eau: "index",
                 puEnergie: null, puEau: null, idLogement: null, idLocataire: null, debut: null, indexEnergie: 0,
                 indexEau: 0, endLastBail: false, avance: 1, contrats: null, dureeBail: 0,
                 caution: 1
-            }
+         }*/
+            this.occupationToEdit=null;
      }
       
     
@@ -387,6 +350,6 @@ html, body {
   .occupations-sidenav a {font-size: 18px;}
 }
 .modal-dialog {
-    max-width: 75%!important;
+    max-width: 70%!important;
 }
 </style>

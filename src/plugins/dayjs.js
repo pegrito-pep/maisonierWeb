@@ -22,3 +22,5 @@ Vue.use({
         })
     }
 })
+
+export default dayjs

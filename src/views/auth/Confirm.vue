@@ -7,37 +7,31 @@
                     <b-carousel-slide class="responsive border-0">
                     <template #img>
                         <div class="titre-overlay">
-                        <h1 class="titre"><blockquote class="">Gérer facilement vos biens immobiliers</blockquote></h1>
-                        <p class="description">
-                            Prenez votre envole et découvrez une nouvelle façon de gerer vos biens. Plus besoin d'une assistance quelconque. Tout se fait en un clic.
-                        </p>
+                        <h1 class="titre"><blockquote class="">{{$t('data.slide_1_titre')}}</blockquote></h1>
+                        <p class="description">{{$t('data.slide_1_description')}}</p>
                         </div>
                         <div class="overlay"></div>
-                        <img class="w-100 image" src="/img/cites.jpeg" />
+                        <img class="w-100 image" src="@/assets/img/cites.jpeg" />
                     </template>
                     </b-carousel-slide>
                     <b-carousel-slide class="responsive border-0">
                     <template #img>
                         <div class="titre-overlay">
-                        <h1 class="titre"><blockquote class="">Ne perdez plus aucune information</blockquote></h1>
-                        <p class="description">
-                            Le Maisonnier rassemble, traite et stocke toutes vos informations et vous permet d'utiliser votre memoire pour autre chose.
-                        </p>
+                        <h1 class="titre"><blockquote class="">{{$t('data.slide_2_titre')}}</blockquote></h1>
+                        <p class="description">{{$t('data.slide_2_description')}}</p>
                         </div>
                         <div class="overlay"></div>
-                        <img class="w-100 image" src="/img/villa1.jpg" />
+                        <img class="w-100 image" src="@/assets/img/villa1.jpg" />
                     </template>
                     </b-carousel-slide>
                     <b-carousel-slide class="responsive border-0">
                     <template #img>
                         <div class="titre-overlay">
-                        <h1 class="titre"><blockquote class="">Optimiser la valeur de vos biens</blockquote></h1>
-                        <p class="description">
-                            Decouvrer la rentabilité de vos biens, observer vos bénéfices en continue, interagisser avec vos locataires et bien plus encore...
-                        </p>
+                        <h1 class="titre"><blockquote class="">{{$t('data.slide_3_titre')}}</blockquote></h1>
+                        <p class="description">{{$t('data.slide_3_description')}}</p>
                         </div>
                         <div class="overlay"></div>
-                        <img class="w-100 image" src="/img/appart-sejour (2).jpg" />
+                        <img class="w-100 image" src="@/assets/img/appart-sejour (2).jpg" />
                     </template>
                     </b-carousel-slide>
                 </b-carousel>
@@ -46,10 +40,10 @@
                     <b-overlay :show="showOverlay" rounded="sm">
                         <div class="authentication-form mx-auto">
                             <div class="mt-n5 mb-4 d-flex justify-content-center align-items-center flex-column">
-                                <b-link :to="{name: 'home'}"><b-img src="/img/logo-m0.png" style="width: 4em; height: 4em"/></b-link>
+                                <b-link :to="{name: 'home'}"><b-img src="@/assets/img/logo-m0.png" style="width: 4em; height: 4em"/></b-link>
                                 <!--<h3 class="text-center mt-2 mb-0">Confirmer votre email</h3>-->
                                 
-                                    <span class="defineFont">Veuillez consulter votre boîte mail pour avoir votre code d'activation à 6 chiffres</span>
+                                    <span class="defineFont">{{$t('data.confirm_consulter_mail')}}</span>
                             
                             </div>
                             
@@ -69,15 +63,21 @@
                                     <div class="sign-btn text-center">
                                         <b-button type="submit" :disabled="submitted" class="btn-theme">Valider <b-spinner class="ml-3" v-if="submitted" small></b-spinner></b-button>
                                     </div>
-                                <!-- <div v-if="submitted" class="d-flex justify-content-center my-3">
-                                    <b-spinner large></b-spinner>
-                                </div> -->
+                                    <div v-if="submitted" class="d-flex justify-content-center my-3">
+                                        <b-spinner large></b-spinner>
+                                    </div>
                             </form>
                             <div class="register">
-                                <p>Pas de compte? <b-link :to="{name: 'register'}"><span class="signup">Créer un compte maintenant</span></b-link></p>
+                                <p>{{$t("data.confirm_pas_compte")}} <b-link :to="{name: 'register'}"><span class="signup">{{$t('data.confirm_creer_compte')}}</span></b-link></p>
                             </div>
                             <div class="register">
-                                <p>Je n'ai pas reçu de code ?</p> <b-button  @click="reSendMail" :disabled="submittedmail" class="btn-theme">Ré-envoyer<b-spinner v-if="submittedmail" class="ml-3" small></b-spinner></b-button>
+                                <p>{{$t('data.confirm_pas_recu_de_code')}}<!--<a href="#"><span class="signup">{{$t('data.confirm_creer_compte')}}</span></a>--><a @click.prevent="seeEmail" href="#"><span class="signup ml-1">{{ adresse }}</span></a></p>
+                                <transition enter-active-class="animated zoomIn">
+                                    <b-form-group v-if="seeAdresse" label="email" description="">
+                                        <b-form-input  type="email"  v-model="email" ></b-form-input>
+                                    </b-form-group> 
+                                </transition>
+                                <b-button  @click="reSendMail" :disabled="submittedmail" class="btn-theme">{{$t('data.confirm_reenvoyer_code')}}<b-spinner v-if="submittedmail" class="ml-3" small></b-spinner></b-button>
                             </div>
                         </div>
                     </b-overlay>
@@ -101,6 +101,9 @@ export default {
         number6: null,
         code: null,
         showOverlay: false,
+        seeAdresse:false,
+        adresse:"Voir l'adresse renseingée",
+        email:""
     }),
 
     watch: {
@@ -113,10 +116,20 @@ export default {
     },
     mounted() {
         this.OTPInput();
+        this.email=storage.get('user-email');
     },
     
 
     methods: {
+        seeEmail(){
+            
+            this.seeAdresse=!this.seeAdresse;
+            if(this.seeAdresse){
+                this.adresse="masquer l'adresse"
+            }else{
+                this.adresse="voir l'adresse renseignée"
+            }
+        },
         sendForm() {
             this.showOverlay = true;
             this.code = this.number1 + this.number2 + this.number3 + this.number4 + this.number5 + this.number6;
@@ -134,7 +147,7 @@ export default {
         reSendMail(){
             this.submittedmail = true
             axios
-                .post("resend-otp", { login: storage.get("user-email"), type: 'otp'})
+                .post("resend-otp", { login: this.email, type: 'otp'})
                 .then((response) => {
                 App.notifySuccess(response.message);
                 this.submittedmail = false;
@@ -148,6 +161,11 @@ export default {
             const inputs = document.querySelectorAll('#otp > *[id]');
             for (let i = 0; i < inputs.length; i++) { 
                 inputs[i].addEventListener('keydown', function(event) { 
+
+                    console.log("===========================================");
+                    console.log("Bonjour tout le monde je veux tester les évènements écoutés sur le clavier de ma machine !!!");
+                    console.log("Touche : ", event.keyCode);
+                    console.log("===========================================");
                     if (event.key==="Backspace" ) { 
                         inputs[i].value='' ;
                         if (i !==0) inputs[i - 1].focus(); 

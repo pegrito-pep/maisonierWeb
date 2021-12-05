@@ -1,26 +1,26 @@
 <template>
     <b-overlay :show="showOverlay" rounded="sm">
-        <form-wizard  title='' subtitle='' nextButtonText='suivant' backButtonText='Précedent' finishButtonText='Enregistrer' aria-labelledby="demoModalLabel"  @on-complete="onComplete"
+        <form-wizard  title='' subtitle='' :nextButtonText='$t("data.batiment_form_wizard_suivant")' :backButtonText='$t("data.batiment_form_wizard_precedent")' :finishButtonText='$t("data.batiment_form_wizard_bouton_enregistrer")' aria-labelledby="demoModalLabel"  @on-complete="onComplete"
             @on-loading="setLoading"
             shape="circle"
             color="#e74c3c">
-            <tab-content title="Données personnelles"
+            <tab-content :title="$t('data.habitant_form_tab_content_titre_1')"
                 icon="fa fa-user" 
                 :before-change="validateAsync">
                 <b-row>
                     <b-col v-show="!alreadyset"> 
-                        <b-form-group label="Veuillez choisir le mode de création">
+                        <b-form-group :label="$t('data.habitant_form_choix_mode_creation')">
                                 <b-form-select v-model="selected" :options="modeCreations" v-on:change="changeForm"></b-form-select>
                         </b-form-group>
                     </b-col>
                     <b-col v-show="isCodeUtilisateur"> 
                         <b-row class="mt-20">
                             <b-col cols="11" sm="10"> 
-                                <b-form-input v-model="habitant.code"  id="input-large" size="lg" placeholder="Ex: Veuillez entrer le code de l'utilisateur" class="hightPadding" trim></b-form-input>
+                                <b-form-input v-model="habitant.code"  id="input-large" size="lg" :placeholder="$t('data.habitant_form_choix_mode_creation_exemple')" class="hightPadding" trim></b-form-input>
                             </b-col>
                             <b-col cols="1"> 
                                 <b-button  class="btn btn-icon btn-success mt-2" @click.prevent="getHabitantData" id="button-submit-habitant"><i class="fa fa-paper-plane"></i></b-button>
-                                <b-tooltip target="button-submit-habitant" noninteractive variant="success"><span> Envoyer</span></b-tooltip>
+                                <b-tooltip target="button-submit-habitant" noninteractive variant="success"><span> {{$t("data.habitant_form_envoyer")}}</span></b-tooltip>
                             </b-col>
                         </b-row>
                     </b-col>
@@ -29,53 +29,53 @@
                         <div v-if="step == 1">
                             <b-row>
                                 <b-col> 
-                                    <b-form-group label="Nom(s) *">
-                                        <b-form-input v-model="habitant.nom" placeholder="Ex: TAGNE SIPEUWO" trim :disabled="validated == 1" type="text"></b-form-input>
-                                        <span v-if="!requiredNom" style="color:red;">Nom Obligatoire</span>
+                                    <b-form-group :label='$t("data.profile_nom") + "*"'>
+                                        <b-form-input v-model="habitant.nom" :placeholder="$t('data.profile_nom_exemple')" trim :disabled="validated == 1" type="text"></b-form-input>
+                                        <span v-if="!requiredNom" style="color:red;">{{$t("data.habitant_form_nom_obligatoire")}}</span>
                                     </b-form-group>
                                 </b-col>
                                 <b-col> 
-                                    <b-form-group label="Prénoms(s)">
-                                        <b-form-input v-model="habitant.prenom" placeholder="Ex: Miguel Pedro" trim :disabled="validated == 1"></b-form-input>
+                                    <b-form-group :label='$t("data.profile_prenom")'>
+                                        <b-form-input v-model="habitant.prenom" :placeholder="$t('data.profile_prenom_exemple')" trim :disabled="validated == 1"></b-form-input>
                                     </b-form-group>
                                 </b-col>
                             </b-row>
                             <b-row>
                                 <b-col> 
-                                    <b-form-group label="Date de Naissance">
-                                        <date-picker v-model="habitant.dateNaiss" placeholder="Selectionnez une date" format="dddd, DD MMMM YYYY" valueType="YYYY-MM-DD" class="w-100" :clearable="false" />
+                                    <b-form-group :label="$t('data.profile_date_naissance')">
+                                        <date-picker v-model="habitant.dateNaiss" :placeholder="$t('data.profile_selectionner_date')" format="dddd, DD MMMM YYYY" valueType="YYYY-MM-DD" class="w-100" :clearable="false" />
                                     </b-form-group>
                                 </b-col>
                                 <b-col> 
-                                    <b-form-group label="Lieu de Naissance">
+                                    <b-form-group :label="$t('data.habitant_form_lieu_naissance')">
                                         <b-form-input v-model="habitant.lieuNaiss" trim></b-form-input>
                                     </b-form-group>
                                 </b-col>
                             </b-row>
                             <b-row>
                                 <b-col> 
-                                    <b-form-group label="Numéro de Téléphone *">
-                                        <b-form-input v-model="habitant.tel" placeholder="Ex: 699716645" trim :disabled="validated == 1" type="number"></b-form-input>
-                                        <span v-if="!requiredTel" style="color:red;">Numéro de Téléphone obligatoire</span>
+                                    <b-form-group :label="$t('data.occupation_numero_telephone') +'*'">
+                                        <b-form-input v-model="habitant.tel" :placeholder="$t('data.habitant_form_numero_telephone_exemple')" trim :disabled="validated == 1" type="number"></b-form-input>
+                                        <span v-if="!requiredTel" style="color:red;">{{$t('data.habitant_form_numero_telephone_obligatoire')}}</span>
                                     </b-form-group>
                                 </b-col>
                                 <b-col> 
-                                    <b-form-group label="Email">
-                                        <b-form-input v-model="habitant.email" placeholder="Ex: tagnemiguel@gmail.com" trim :disabled="validated == 1" type="email"></b-form-input>
+                                    <b-form-group :label="$t('data.occupation_email')">
+                                        <b-form-input v-model="habitant.email" :placeholder="$t('data.habitant_form_email')" trim :disabled="validated == 1" type="email"></b-form-input>
                                     </b-form-group>
                                 </b-col>
                             </b-row>
                         </div>
                     </transition>
             </tab-content>
-            <tab-content title="Photo de profil"
+            <tab-content :title="$t('data.habitant_form_tab_content_titre_2')"
                         icon="fas fa-image"
                         :before-change="validateSecond">
                     <div class="text-center"> 
                         <img :src="habitant.avatar" class="rounded-circle" width="150">
-                        <h4 class="card-title mt-10">{{ habitant.nom }}</h4>
+                        <h4 class="card-title mt-10">{{ name }}</h4>
                         <div class="imagesAnnonce border-dotted borderRadius">
-                            <label for="imagesAnnonce" class="mr-2"><b>Photo de profil </b></label>                                           
+                            <label for="imagesAnnonce" class="mr-2"><b>{{$t('data.habitant_form_tab_content_titre_2')}} </b></label>                                           
                             <label>
                                 
                                 <b-img src="/img/camera.png" style="width: 3em; height: 3em"/>
@@ -86,12 +86,12 @@
                         </div>
                     </div>
             </tab-content>
-            <tab-content title="Autres informations"
+            <tab-content :title="$t('data.habitant_form_tab_content_titre_3')"
                         icon="fas fa-info-circle"  
                 >
                     <b-row>
                         <b-col> 
-                            <b-form-group label="Titre honorifique" v-slot="{ ariaDescribedby }">
+                            <b-form-group :label="$t('data.habitant_form_titre_honorifique')" v-slot="{ ariaDescribedby }">
                                 <b-form-radio-group
                                     id="radio-slots"
                                     v-model="habitant.titre"
@@ -103,32 +103,32 @@
                             </b-form-group>
                         </b-col>
                         <b-col> 
-                        <b-form-group label="Proféssion">
-                                <b-form-input v-model="habitant.profession" placeholder="Ex: Développeur Informatique" trim></b-form-input>
+                        <b-form-group :label="$t('data.profile_profession')">
+                                <b-form-input v-model="habitant.profession" :placeholder="$t('data.profile_profession_exemple')" trim></b-form-input>
                             </b-form-group>
                         </b-col>
                     </b-row>
                     <b-row>
                         <b-col> 
-                            <b-form-group label="Autre numéro de télephone">
-                                <b-form-input v-model="habitant.tel2" placeholder="Ex: 670142547" trim type="number"></b-form-input>
+                            <b-form-group :label="$t('data.habitant_form_autre_telephone')">
+                                <b-form-input v-model="habitant.tel2" :placeholder="$t('data.habitant_form_numero_telephone_exemple')" trim type="number"></b-form-input>
                             </b-form-group>
                         </b-col>
                         <b-col> 
-                            <b-form-group label="Autre adresse mail">
-                                <b-form-input v-model="habitant.email2" placeholder="Ex: pedrospi@yahoo.com" trim type="email"></b-form-input>
+                            <b-form-group :label="$t('data.habitant_form_autre_mail')">
+                                <b-form-input v-model="habitant.email2" :placeholder="$t('data.habitant_form_email')" trim type="email"></b-form-input>
                             </b-form-group>
                         </b-col>
                     </b-row>
                     <b-row>
                         <b-col> 
-                            <b-form-group label="Numéro Pièce D'identité">
-                                <b-form-input v-model="habitant.cni" placeholder="Ex: 114989895" trim type="number"></b-form-input>
+                            <b-form-group :label="$t('data.habitant_form_autre_numero_cni')">
+                                <b-form-input v-model="habitant.cni" :placeholder="$t('data.habitant_form_autre_numero_cni_exemple')" trim type="number"></b-form-input>
                             </b-form-group>
                         </b-col>
                         <b-col> 
-                            <b-form-group label="Autre numéro de télephone">
-                                <b-form-input v-model="habitant.tel3" placeholder="Ex: 671202344" trim type="number"></b-form-input>
+                            <b-form-group :label="$t('data.habitant_form_autre_telephone')">
+                                <b-form-input v-model="habitant.tel3" :placeholder="$t('data.habitant_form_autre_telephone_exemple')" trim type="number"></b-form-input>
                             </b-form-group>
                         </b-col>
                     </b-row>
@@ -195,6 +195,11 @@ export default {
         DatePicker
     },
     props:["action"],
+    computed:{
+        name(){
+            return this.habitant.nom.toUpperCase()
+        }
+    },
     methods: {
         photo_upload: function(e, file){
             console.log(e,file)

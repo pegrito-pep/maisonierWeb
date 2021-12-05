@@ -1,12 +1,12 @@
 <template>
     <b-overlay :show="showOverlay" rounded="sm">
-        <form-wizard ref="logementForm"  title='' subtitle='' nextButtonText='suivant' backButtonText='Précedent' finishButtonText='Enregistrer' aria-labelledby="demoModalLabel"  @on-complete="onComplete"
+        <form-wizard ref="logementForm"  title='' subtitle='' :nextButtonText='$t("data.batiment_form_wizard_suivant")' :backButtonText='$t("data.batiment_form_wizard_precedent")' :finishButtonText='$t("data.batiment_form_wizard_bouton_enregistrer")' aria-labelledby="demoModalLabel"  @on-complete="onComplete"
                         @on-loading="setLoading"
                         @on-validate="handleValidation"
                         shape="circle"
                         color="#e74c3c">
 
-            <tab-content title="Informations sur le logement"
+            <tab-content :title="$t('data.logement_wizard_tab_content_1_titre')"
                         icon="ik ik-home" 
                         :before-change="validateAsync">
 
@@ -19,26 +19,26 @@
                         content-cols-sm
                         content-cols-lg="9"
                         :description="reference"
-                        label="Reférence du logement"
+                        :label="$t('data.logement_reference_du_logement')"
                         label-for="input-horizontal"
                         >
                         <b-form-input :class="!requiredRef ? 'is-red' : ''" id="input-horizontal" v-model="logement.ref"></b-form-input>
-                        <span v-if="!requiredRef" style="color:red;">Ce champ est obligatoire</span>
+                        <span v-if="!requiredRef" style="color:red;">{{$t('data.logement_reference_du_logement_obligatoire')}}</span>
                         </b-form-group>
                     </div>
                 <!--</b-row>-->
                 <b-row>
                     <b-col> 
                         <div class="form-group">
-                            <label>Type de logement</label>
+                            <label>{{$t('data.logement_type_logement')}}</label>
                             <v-select label="libelleType" :options="typesLogement" v-model="type" :class="!requiredSousType ? 'is-red' : ''" @input="changeType"></v-select>
                         </div>
                     </b-col>
                     <b-col> 
                         <div class="form-group">
-                            <label>Catégorie associée </label>
+                            <label>{{$t('data.logement_categorie_associee')}} </label>
                             <v-select label="libelleSousType" :options="sousTypes" v-model="sousType" :class="!requiredSousType ? 'is-red' : ''"></v-select>
-                            <span v-if="!requiredSousType" style="color:red;">Ce champ est obligatoire</span>
+                            <span v-if="!requiredSousType" style="color:red;">{{$t('data.logement_reference_du_logement_obligatoire')}}</span>
                         </div>
                     </b-col>
                 </b-row>
@@ -48,7 +48,7 @@
                             <b-form-textarea
                             id="textarea"
                             v-model="logement.description"
-                            placeholder="Ajouter une description à votre logement"
+                            :placeholder="$t('data.logement_description_logement')"
                             size="sm"
                             rows="6"
                             ></b-form-textarea>
@@ -56,21 +56,24 @@
                     </b-col>
                      <b-col> 
                         <b-row>
-                            <label for="exampleInputUsername1">Prix Minimal</label>
-                            <input type="number" step="1000" min="1000" class="form-control" id="prixMin" required placeholder="Prix Minimal Ex:18500" v-model="logement.prixMin">
-                            <span v-if="!requiredPrixMin" style="color:red;">Le prix minimal est obligatoire</span>
+                            <label for="exampleInputUsername1">{{$t('data.logement_detail_prix_min_logement')}}</label>
+                            <!--<input type="number" step="1000" min="1000" class="form-control" id="prixMin" required :placeholder="$t('data.logement_detail_prix_min_logement_exemple')" v-model="logement.prixMin">-->
+                            <vue-numeric class="form-control" required separator="," v-model="logement.prixMin"></vue-numeric>
+
+                            <span v-if="!requiredPrixMin" style="color:red;">{{$t('data.logement_detail_prix_min_logement_obligatoire')}}</span>
                         </b-row>
                         <b-row class="pt-2">
-                            <label for="exampleInputUsername1">Prix Maximal</label>
-                            <input type="number" step="1000" min="1000" class="form-control" id="prixMax" required placeholder="Prix Maximal Ex:21000" v-model="logement.prixMax">
-                            <span v-if="!requiredPrixMax" style="color:red;">Le prix maximal est obligatoire</span>
+                            <label for="exampleInputUsername1">{{$t('data.logement_detail_prix_max_logement')}}</label>
+                            <!--<input type="number" step="1000" min="1000" class="form-control" id="prixMax" required :placeholder="$t('data.logement_detail_prix_max_logement_exemple')" v-model="logement.prixMax">-->
+                            <vue-numeric class="form-control" required separator="," v-model="logement.prixMax"></vue-numeric>
+                            <span v-if="!requiredPrixMax" style="color:red;">{{$t('data.logement_detail_prix_max_logement_obligatoire')}}</span>
                         </b-row>
                     </b-col>
                 </b-row>
-                <b-form-checkbox :disabled="batiment != null" v-model="showSelectBatiment" switch class="mb-2">
+                <b-form-checkbox :disabled="batiment != null" v-model="showSelectBatiment"  @input="setIdBatiment" switch class="mb-2">
                     <!--<span class="fa-lg">Votre logement est-il associé à un batiment ?</span>-->
-                    <span class="fa-lg" v-if="!showSelectBatiment">Votre logement est-il associé à un batiment ?</span>
-                    <span class="fa-lg" v-if="showSelectBatiment">Bien vouloir choisir le batiment concerné</span>
+                    <span class="fa-lg" v-if="!showSelectBatiment">{{$t('data.logement_logement_associe_au_batiment')}}</span>
+                    <span class="fa-lg" v-if="showSelectBatiment">{{$t('data.logement_choisir_batiment_concerne')}}</span>
                 </b-form-checkbox>
                 <transition enter-active-class="animated zoomIn">
                     <b-row v-if="showSelectBatiment">
@@ -79,8 +82,8 @@
                                 <template #option="{ nomBatiment, refBatiment, cite }">
                                     {{ nomBatiment }}
                                     <br />
-                                    <span class="text-muted">Reference: {{ refBatiment }}</span><br />
-                                    <small class="text-muted" v-if="cite != null">Cité: {{ cite.nomCite }}</small>
+                                    <span class="text-muted">{{$t('data.batiment_form_label_batiment_cite_reference')}}: {{ refBatiment }}</span><br />
+                                    <small class="text-muted" v-if="cite != null">{{$t('data.batiment_form_label_batiment_cite')}}: {{ cite.nomCite }}</small>
                                     <hr class="m-0">
                                 </template>
                             </v-select>
@@ -88,7 +91,7 @@
                     </b-row>
                 </transition>
             </tab-content>
-            <tab-content title="Photos du logement" icon="fas fa-image" :before-change="validateThird">
+            <tab-content :title="$t('data.logement_wizard_tab_content_2_titre')" icon="fas fa-image" :before-change="validateThird">
                 <div
                     id="my-strictly-unique-vue-upload-multiple-image"
                     style="display: flex; justify-content: center;"
@@ -98,50 +101,51 @@
                     @before-remove="beforeRemove"
                     @edit-image="editImage"
                     :data-images="images"
-                    dragText="cliquer pour choisir des images"
-                    browseText="Vous pouvez choisir jusqu'à 5 images"
+                    :dragText="$t('data.logement_dragText')"
+                    :browseText="$t('data.logement_browseText')"
                     idUpload="myIdUpload"
                     editUpload="myIdEdit"
                     ></vue-upload-multiple-image>
                 </div>
             </tab-content>
-            <tab-content title="Localisation du logement" icon="fa fa-map-marker" :before-change="validateFour">
+            <tab-content v-if="idBatiment==null" :title="$t('data.logement_wizard_tab_content_3_titre')" icon="fa fa-map-marker" :before-change="validateFour">
                 <b-row>
                     <b-col>
                         <b-row>
-                            <div class="form-group">
-                                <label>Pays </label>
-                                 <b-form-select
+                            <b-col class="col-6">
+                                <label>{{$t('data.logement_detail_localisation_pays')}} </label>
+                                 <!--<b-form-select
                                     v-model="logement.pays"
                                     :options="tousLesPays"
                                     class="mb-3"
                                     value-field="name"
                                     text-field="name"
                                     :disabled="idBatiment!=null&&showSelectBatiment==true"
-                                ></b-form-select>
-                                <span v-if="!requiredPays" style="color:red;">Vous devez selectionner un pays</span>
-                            </div>
+                                ></b-form-select>-->
+                                 <v-select label="libellePays" style="min-width:2em" :options="tousLesPays"  v-model="logement.pays" :reduce="pays => pays.libellePays" :class="{ disabled: disabled == true }"></v-select>
+                                <span v-if="!requiredPays" style="color:red;">{{$t('data.batiment_form_label_pays_obligatoire')}}</span>
+                            </b-col>
                         </b-row>
                         <b-row>
                             <b-col>
-                                <label>Ville </label>
-                                <input type="text" class="form-control" id="ville" required placeholder="Ville Ex:Yaoundé" v-model="logement.ville" :disabled="idBatiment!=null&&showSelectBatiment==true">
-                                <span v-if="!requiredVille" style="color:red;">Ville obligatoire</span>
+                                <label>{{$t('data.logement_detail_localisation_ville')}} </label>
+                                <input type="text" class="form-control" id="ville" required :placeholder="$t('data.batiment_form_label_ville_placeholder')" v-model="logement.ville" :disabled="idBatiment!=null&&showSelectBatiment==true">
+                                <span v-if="!requiredVille" style="color:red;">{{$t('data.batiment_form_label_ville_obligatoire')}}</span>
                             </b-col>
                             <b-col>
-                                <label>Quartier </label>
-                                <input type="text" class="form-control" id="quartier" required placeholder="Quartier Ex:Nsam" v-model="logement.quartier">
-                                <span v-if="!requiredQuartier" style="color:red;">Quartier obligatoire</span>
+                                <label>{{$t('data.logement_detail_localisation_quartier')}} </label>
+                                <input type="text" class="form-control" id="quartier" required :placeholder="$t('data.batiment_form_label_quartier_placeholder')" v-model="logement.quartier">
+                                <span v-if="!requiredQuartier" style="color:red;">{{$t('data.batiment_form_label_quartier_obligatoire')}}</span>
                             </b-col>
                         </b-row>
                     </b-col>
                     <b-col>
                         <b-row class="ml-4 mt-2">
-                            <label>Latitude </label>
+                            <label>{{$t('data.batiment_form_latitude')}} </label>
                             <input type="text" class="form-control" id="lat" v-model="mapCoordinates.lat">
                         </b-row>
                         <b-row class="ml-4  mt-4">
-                            <label>Longitude </label>
+                            <label>{{$t('data.batiment_form_longitude')}} </label>
                             <input type="text" class="form-control" id="longitude" v-model="mapCoordinates.lng">
                         </b-row>
                     </b-col>
@@ -165,10 +169,10 @@
                     </GmapMap>
                 </div>
             </tab-content>
-            <tab-content title="Caractéristiques approfondies du logement" icon="fa fa-list">
+            <tab-content :title="$t('data.logement_wizard_tab_content_4_titre')" icon="fa fa-list">
                 <b-row>
                     <b-col> 
-                        <label>Nombre de chambre<span v-if="logement.nbchambre >1">(s)</span></label>
+                        <label>{{$t('data.logement_nombre_de_chambre')}}<span v-if="logement.nbchambre >1">(s)</span></label>
                         <b-input-group>
                             <b-input-group-prepend>
                                 <b-btn variant="outline-info" @click="logement.nbchambre--">-</b-btn>
@@ -180,7 +184,7 @@
                         </b-input-group>
                     </b-col>
                     <b-col> 
-                        <label>Nombre de cuisine<span v-if="logement.nbcuisine >1">(s)</span></label>
+                        <label>{{$t('data.logement_nombre_de_cuisine')}}<span v-if="logement.nbcuisine >1">(s)</span></label>
                         <b-input-group>
                             <b-input-group-prepend>
                                 <b-btn variant="outline-info" @click="logement.nbcuisine--">-</b-btn>
@@ -192,7 +196,7 @@
                         </b-input-group>
                     </b-col>
                     <b-col> 
-                        <label>Nombre de Salon<span v-if="logement.nbsalon >1">(s)</span></label>
+                        <label>{{$t('data.logement_nombre_de_salon')}}<span v-if="logement.nbsalon >1">(s)</span></label>
                         <b-input-group>
                             <b-input-group-prepend>
                                 <b-btn variant="outline-info" @click="logement.nbsalon--">-</b-btn>
@@ -204,7 +208,7 @@
                         </b-input-group>
                     </b-col>
                     <b-col> 
-                        <label>Nombre de douche<span v-if="logement.nbdouche >1">(s)</span></label>
+                        <label>{{$t('data.logement_nombre_de_douche')}}<span v-if="logement.nbdouche >1">(s)</span></label>
                         <b-input-group>
                             <b-input-group-prepend>
                                 <b-btn variant="outline-info" @click="logement.nbdouche--">-</b-btn>
@@ -216,7 +220,7 @@
                         </b-input-group>
                     </b-col>
                     <b-col> 
-                        <label>Nombre de parking<span v-if="logement.nbparking >1">(s)</span></label>
+                        <label>{{$t('data.logement_nombre_de_parking')}}<span v-if="logement.nbparking >1">(s)</span></label>
                         <b-input-group>
                             <b-input-group-prepend>
                                 <b-btn variant="outline-info" @click="logement.nbparking--">-</b-btn>
@@ -230,20 +234,20 @@
                 </b-row>
                 <b-card bg-variant="light">
                       <div style="text-align:center">
-                          <h6 class="text-capitalize font-weight-bold fs-3 mt-2"> Autre(s) caractéristique(s)</h6>
+                          <h6 class="text-capitalize font-weight-bold fs-3 mt-2"> {{$t('data.logement_autres_caracteristiques')}}</h6>
                         <div :id="repeaterId">
                             <!--<div class="d-flex flex-column justify-content-between" style="height: 95%; overflow-y: auto; overflow-x: hidden">-->
                                 <div data-repeater-list="group">
                                     <b-row data-repeater-item class="mb-1 justify-content-center">
                                        
                                         <b-col cols="3"  class="p-0">
-                                            <b-form-input list="my-list-id" placeholder=" Ex: Sona" name="libelle" v-model="libelle"></b-form-input>
+                                            <b-form-input list="my-list-id" :placeholder="$t('data.logement_autres_caracteristiques_placeholder')" name="libelle" v-model="libelle"></b-form-input>
                                             <datalist id="my-list-id">
                                             <option v-for="(caract,i) in caracteristiques" :key="i">{{ caract }}</option>
                                             </datalist>
                                         </b-col> 
                                         <b-col cols="3" class="p-0 ml-2">
-                                            <b-form-input name="valeur" v-model="valeur" placeholder="Quantité Ex: 1" trim></b-form-input>
+                                            <b-form-input name="valeur" v-model="valeur" :placeholder="$t('data.logement_autres_caracteristiques_quantite')" trim></b-form-input>
                                         </b-col> 
                                         <b-col cols="1" class="m-0 p-0 ">
                                             <b-form-group label="">
@@ -260,12 +264,12 @@
             </tab-content>
             <div v-if="action == 'edit'&& indexForm!=5">
                 <hr>
-                <div class="center"><b-button @click.prevent="onComplete" variant="primary">Valider</b-button></div>
+                <div class="center"><b-button @click.prevent="onComplete" variant="primary">{{$t('data.annonce_form_valider_annonce')}}</b-button></div>
             </div>
             <div class="leloader" v-if="loadingWizard"></div>
         </form-wizard>
            <div class="float-right">
-                <b-button @click.prevent="resetModal" variant="secondary">Fermer</b-button>
+                <b-button @click.prevent="resetModal" variant="secondary">{{$t('data.logement_form_fermer')}}</b-button>
             </div>
     </b-overlay> 
 </template>
@@ -275,7 +279,10 @@ import VueUploadMultipleImage from "vue-upload-multiple-image";
 import {FormWizard, TabContent} from 'vue-form-wizard'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 const php = require('phpjs')
+import Vue from 'vue'
+import VueNumeric from 'vue-numeric'
 
+Vue.use(VueNumeric)
 
 //const home={lat:3.865974061463822, lng:  }
 
@@ -295,8 +302,8 @@ export default {
         logement:{
             ref:"",
             description:"",
-            prixMin:"",
-            prixMax:"",
+            prixMin:0,
+            prixMax:0,
             pays:"Cameroun",
             ville:"",
             quartier:"",
@@ -345,7 +352,781 @@ export default {
         images: [],
         photos:[],
         markers:[],
-        tousLesPays:{
+        valeurPays:'Cameroun',
+        tousLesPays:[
+        {
+          libellePays: 'Afghanistan'
+        },
+        {
+          libellePays: 'Afrique du Sud'
+        },
+        {
+          libellePays: 'Albanie'
+        },
+        {
+          libellePays: 'Algérie'
+        },
+        {
+          libellePays: 'Allemagne'
+        },
+        {
+          libellePays: 'Andorre'
+        },
+        {
+          libellePays: 'Angola'
+        },
+        {
+          libellePays: 'Anguilla'
+        },
+        {
+          libellePays: 'Antarctique'
+        },
+        {
+          libellePays: 'Antigua-et-Barbuda'
+        },
+        {
+          libellePays: 'Antilles néerlandaises'
+        },
+        {
+          libellePays: 'Arabie saoudite'
+        },
+        {
+          libellePays: 'Argentine'
+        },
+        {
+          libellePays: 'Arménie'
+        },
+        {
+          libellePays: 'Aruba'
+        },
+        {
+          libellePays: 'Australie'
+        },
+        {
+          libellePays: 'Autriche'
+        },
+        {
+          libellePays: 'Azerbaïdjan'
+        },
+        {
+          libellePays: 'Bahamas'
+        },
+        {
+          libellePays: 'Bahreïn'
+        },
+        {
+          libellePays: 'Bangladesh'
+        },
+        {
+          libellePays: 'Barbade'
+        },
+        {
+          libellePays: 'Bélarus'
+        },
+        {
+          libellePays: 'Belgique'
+        },
+        {
+          libellePays: 'Belize'
+        },
+        {
+          libellePays: 'Bénin'
+        },
+        {
+          libellePays: 'Bermudes'
+        },
+        {
+          libellePays: 'Bhoutan'
+        },
+        {
+          libellePays: 'Bolivie'
+        },
+        {
+          libellePays: 'Bosnie-Herzégovine'
+        },
+        {
+          libellePays: 'Botswana'
+        },
+        {
+          libellePays: 'Brésil'
+        },
+        {
+          libellePays: 'Brunéi Darussalam'
+        },
+        {
+          libellePays: 'Bulgarie'
+        },
+        {
+          libellePays: 'Burkina Faso'
+        },
+        {
+          libellePays: 'Burundi'
+        },
+        {
+          libellePays: 'Cambodge'
+        },
+        {
+          libellePays: 'Cameroun'
+        },{
+          libellePays: 'Canada'
+        },
+        {
+          libellePays: 'Cap-Vert'
+        },
+        {
+          libellePays: 'Ceuta et Melilla'
+        },
+
+        {
+          libellePays: 'Chili'
+        },
+        {
+          libellePays: 'Chine'
+        },
+        {
+          libellePays: 'Chypre'
+        },
+        {
+          libellePays: 'Colombie'
+        },
+        {
+          libellePays: 'Comores'
+        },
+        {
+          libellePays: 'Congo-Brazzaville'
+        },
+        {
+          libellePays: 'Corée du Nord'
+        },
+        {
+          libellePays: '"Corée du Sud'
+        },
+        {
+          libellePays: 'Costa Rica'
+        },
+        {
+          libellePays: 'Côte d’Ivoire'
+        },
+        {
+          libellePays: 'Croatie'
+        },
+        {
+          libellePays: 'Cuba'
+        },
+        {
+          libellePays: 'Danemark'
+        },
+        {
+          libellePays: 'Diego Garcia'
+        },
+        {
+          libellePays: 'Djibouti'
+        },
+        {
+          libellePays: 'Dominique'
+        },
+        {
+          libellePays: 'Égypte'
+        },
+        {
+          libellePays: 'El Salvador'
+        },
+        {
+          libellePays: 'Émirats arabes unis'
+        },
+        {
+          libellePays: 'Équateur'
+        },
+        {
+          libellePays: 'Érythrée'
+        },
+        {
+          libellePays: 'Espagne'
+        },
+        {
+          libellePays: 'Estonie'
+        },
+        {
+          libellePays: 'État de la Cité du Vatican'
+        },
+
+        {
+          libellePays: 'États fédérés de Micronésie'
+        },
+
+        {
+          libellePays: 'États-Unis'
+        },
+        {
+          libellePays: 'Éthiopie'
+        },
+        {
+          libellePays: 'Fidji'
+        },
+        {
+          libellePays: 'Finlande'
+        },{
+          libellePays: 'France'
+        },
+        {
+          libellePays: 'Gabon'
+        },
+        {
+          libellePays: 'Gambie'
+        },
+        {
+          libellePays: 'Géorgie'
+        },
+        {
+          libellePays: 'Géorgie du Sud et les îles Sandwich du Sud'
+        },
+        {
+          libellePays: 'Ghana'
+        },
+        {
+          libellePays: 'Gibraltar'
+        },
+        {
+          libellePays: 'Grèce'
+        },
+        {
+          libellePays: 'Grenade'
+        },
+        {
+          libellePays: 'Groenland'
+        },
+        {
+          libellePays: 'Guadeloupe'
+        },
+        {
+          libellePays: 'Guam'
+        },
+        {
+          libellePays: 'Guatemala'
+        },
+        {
+          libellePays: 'Guernesey'
+        },
+        {
+          libellePays: 'Guinée'
+        },
+        {
+          libellePays: 'Guinée équatoriale'
+        },
+        {
+          libellePays: 'Guinée-Bissau'
+        },
+        {
+          libellePays: 'Guyana'
+        },
+         {
+          libellePays: 'Guyane française'
+        },
+         {
+          libellePays: 'Haïti'
+        },
+         {
+          libellePays: 'Honduras'
+        },
+         {
+          libellePays: 'Hongrie'
+        },
+
+         {
+          libellePays: 'Île Bouvet'
+        },
+         {
+          libellePays: 'Île Christmas'
+        },
+         {
+          libellePays: 'Île Clipperton'
+        },
+         {
+          libellePays: 'Île de l\'Ascension'
+        },
+         {
+          libellePays: 'Île de Man'
+        },
+         {
+          libellePays: 'Île Norfolk'
+        },
+         {
+          libellePays: 'Îles Åland'
+        },
+         {
+          libellePays: 'Îles Caïmans'
+        },
+         {
+          libellePays: 'Îles Canaries'
+        },
+         {
+          libellePays: 'Îles Cocos - Keeling'
+        },
+         {
+          libellePays: 'Îles Cook'
+        },
+         {
+          libellePays: 'Îles Féroé'
+        },
+         {
+          libellePays: 'Îles Heard et MacDonald'
+        },
+         {
+          libellePays: 'Îles Malouines'
+        },
+         {
+          libellePays: 'Îles Mariannes du Nord'
+        },
+         {
+          libellePays: 'Îles Marshall'
+        },
+         {
+          libellePays: 'Îles Mineures Éloignées des États-Unis'
+        },
+         {
+          libellePays: 'Îles Salomon'
+        },
+         {
+          libellePays: 'Îles Turks et Caïques'
+        },
+         {
+          libellePays: 'Îles Vierges britanniques'
+        },
+         {
+          libellePays: 'Îles Vierges des États-Unis'
+        },
+         {
+          libellePays: 'Inde'
+        },
+         {
+          libellePays: 'Indonésie'
+        },
+         {
+          libellePays: 'Irak'
+        },
+         {
+          libellePays: 'Iran'
+        },
+         {
+          libellePays: 'Irlande'
+        },
+         {
+          libellePays: 'Islande'
+        },
+         {
+          libellePays: 'Israël'
+        },
+         {
+          libellePays: 'Italie'
+        },
+         {
+          libellePays: 'Jamaïque'
+        },
+         {
+          libellePays: 'Japon'
+        },
+         {
+          libellePays: 'Jersey'
+        },
+         {
+          libellePays: 'Jordanie'
+        },
+         {
+          libellePays: 'Kazakhstan'
+        },
+         {
+          libellePays: 'Kenya'
+        },
+         {
+          libellePays: 'Kirghizistan'
+        },
+         {
+          libellePays: 'Kiribati'
+        },
+         {
+          libellePays: 'Koweït'
+        },
+         {
+          libellePays: 'Laos'
+        },
+         {
+          libellePays: 'Lesotho'
+        },
+         {
+          libellePays: 'Lettonie'
+        },
+         {
+          libellePays: 'Liban'
+        }, 
+	{
+          libellePays: 'Libéria'
+        },
+	{
+          libellePays: 'Libye'
+        },
+        {
+          libellePays: 'Liechtenstein'
+        },
+        {
+          libellePays: 'Lituanie'
+        },
+        {
+          libellePays: 'Luxembourg'
+        },
+        {
+          libellePays: 'Macédoine'
+        },
+	{
+          libellePays: 'Madagascar'
+        },
+	{
+          libellePays: 'Malaisie'
+        },
+	{
+          libellePays: 'Malawi'
+        },
+	{
+          libellePays: 'Maldives'
+        },
+	{
+          libellePays: 'Mali'
+        },
+	{
+          libellePays: 'Malte'
+        },
+	{
+          libellePays: 'Maroc'
+        },
+	{
+          libellePays: 'Martinique'
+        },
+	{
+          libellePays: 'Maurice'
+        },
+	{
+          libellePays: 'Mauritanie'
+        },
+	{
+          libellePays: 'Mayotte'
+        },
+	{
+          libellePays: 'Mexique'
+        },
+
+	{
+          libellePays: 'Moldavie'
+        },
+	{
+          libellePays: 'Monaco'
+        },
+
+	{
+          libellePays: 'Mongolie'
+        },
+
+	{
+          libellePays: 'Monténégro'
+        },
+	{
+          libellePays: 'Montserrat'
+        },
+	{
+          libellePays: 'Mozambique'
+        },
+	{
+          libellePays: 'Myanmar'
+        },
+	{
+          libellePays: 'Namibie'
+        },
+	{
+          libellePays: 'Nauru'
+        },
+	{
+          libellePays: 'Népal'
+        },
+	{
+          libellePays: 'Nicaragua'
+        },
+	{
+          libellePays: 'Niger'
+        },
+	{
+          libellePays: 'Nigéria'
+        },
+	{
+          libellePays: 'Niue'
+        },
+	{
+          libellePays: 'Norvège'
+        },
+	{
+          libellePays: 'Nouvelle-Calédonie'
+        },
+	{
+          libellePays: 'Nouvelle-Zélande'
+        },
+	{
+          libellePays: 'Oman'
+        },
+	{
+          libellePays: 'Ouganda'
+        },
+	{
+          libellePays: 'Ouzbékistan'
+        },
+	{
+          libellePays: 'Pakistan'
+        },
+	{
+          libellePays: 'Palaos'
+        },
+	{
+          libellePays: 'Panama'
+        },
+	{
+          libellePays: 'Papouasie-Nouvelle-Guinée'
+        },
+	{
+          libellePays: 'Paraguay'
+        },
+	{
+          libellePays: 'Pays-Bas'
+        },
+	{
+          libellePays: 'Pérou'
+        },
+	{
+          libellePays: 'Philippines'
+        },
+	{
+          libellePays: 'Pitcairn'
+        },
+	{
+          libellePays: 'Pologne'
+        },
+	{
+          libellePays: 'Polynésie française'
+        },
+	{
+          libellePays: 'Porto Rico'
+        },
+	{
+          libellePays: 'Portugal'
+        },
+	{
+          libellePays: 'Qatar'
+        },
+	{
+          libellePays: 'R.A.S. chinoise de Hong Kong'
+        },
+	{
+          libellePays: 'R.A.S. chinoise de Macao'
+        },
+	{
+          libellePays: 'régions éloignées de l’Océanie'
+        },
+	{
+          libellePays: 'République centrafricaine'
+        },
+	{
+          libellePays: 'République démocratique du Congo'
+        },
+	{
+          libellePays: 'République dominicaine'
+        },
+	{
+          libellePays: 'République tchèque'
+        },
+	{
+          libellePays: 'Réunion'
+        },
+	{
+          libellePays: 'Roumanie'
+        },
+	{
+          libellePays: 'Royaume-Uni'
+        },
+	{
+          libellePays: 'Russie'
+        },
+	{
+          libellePays: 'Rwanda'
+        },
+	{
+          libellePays: 'Sahara occidental'
+        },
+	{
+          libellePays: 'Saint-Barthélémy'
+        },
+	{
+          libellePays: 'Saint-Kitts-et-Nevis'
+        },
+	{
+          libellePays: 'SM Saint-Marin'
+        },
+	{
+          libellePays: 'MF Saint-Martin'
+        },
+	{
+          libellePays: 'Saint-Pierre-et-Miquelon'
+        },
+	{
+          libellePays: 'Saint-Vincent-et-les Grenadines'
+        },
+	{
+          libellePays: 'Sainte-Hélène'
+        },
+	{
+          libellePays: 'Sainte-Lucie'
+        },
+	{
+          libellePays: 'Samoa'
+        },
+	{
+          libellePays: 'Samoa américaines'
+        },
+	{
+          libellePays: 'Sao Tomé-et-Principe'
+        },
+	{
+          libellePays: 'Sénégal'
+        },
+	{
+          libellePays: 'Serbie'
+        },
+	{
+          libellePays: 'Serbie-et-Monténégro'
+        },
+	{
+          libellePays: 'Seychelles'
+        },
+	{
+          libellePays: 'Sierra Leone'
+        },
+	{
+          libellePays: 'Singapour'
+        },
+	{
+          libellePays: 'Slovaquie'
+        },
+	{
+          libellePays: 'Slovénie'
+        },
+	{
+          libellePays: 'Somalie'
+        },
+	{
+          libellePays: 'Soudan'
+        },
+	{
+          libellePays: 'Sri Lanka'
+        },
+	{
+          libellePays: 'Suède'
+        },
+	{
+          libellePays: 'Suisse'
+        },
+	{
+          libellePays: 'Suriname'
+        },
+	{
+          libellePays: 'Svalbard et Île Jan Mayen'
+        },
+	{
+          libellePays: 'Swaziland'
+        },
+	{
+          libellePays: 'Syrie'
+        },
+	{
+          libellePays: 'Tadjikistan'
+        },
+	{
+          libellePays: 'Taïwan'
+        },
+	{
+          libellePays: 'Tanzanie'
+        },
+	{
+          libellePays: 'Tchad'
+        },
+	{
+          libellePays: 'Terres australes françaises'
+        },
+	{
+          libellePays: 'Territoire britannique de l\'océan Indien'
+        },
+	{
+          libellePays: 'Territoire palestinien'
+        },
+	{
+          libellePays: 'Thaïlande'
+        },
+	{
+          libellePays: 'Timor oriental'
+        },
+	{
+          libellePays: 'Togo'
+        },
+	{
+          libellePays: 'Tokelau'
+        },
+	{
+          libellePays: 'Tonga'
+        },
+	{
+          libellePays: 'Trinité-et-Tobago'
+        },
+	{
+          libellePays: 'Tristan da Cunha'
+        },
+	{
+          libellePays: 'Tunisie'
+        },
+	{
+          libellePays: 'Turkménistan'
+        },
+	{
+          libellePays: 'Turquie'
+        },
+	{
+          libellePays: 'Tuvalu'
+        },
+	{
+          libellePays: 'Ukraine'
+        },
+	{
+          libellePays: 'Union européenne'
+        },
+	{
+          libellePays: 'Uruguay'
+        },
+	{
+          libellePays: 'Vanuatu'
+        },
+	{
+          libellePays: 'Venezuela'
+        },
+	{
+          libellePays: 'Viêt Nam'
+        },
+	{
+          libellePays: 'Wallis-et-Futuna'
+        },
+	{
+          libellePays: 'Yémen'
+        },
+	{
+          libellePays: 'Zambie'
+        },
+	{
+          libellePays: 'Zimbabwe'
+        },
+    ],
+        disabled:false,
+        /*tousLesPays:{
   "AF": "Afghanistan",
   "ZA": "Afrique du Sud",
   "AL": "Albanie",
@@ -601,7 +1382,7 @@ export default {
   "YE": "Yémen",
   "ZM": "Zambie",
   "ZW": "Zimbabwe"
-},
+},*/
         //tousLesPays:[],
         showSelectBatiment:false,
         //cette propriété est utilisée pour controler la bouton de vaidatation lors de l'edit
@@ -634,6 +1415,9 @@ export default {
             },
     },
     methods:{
+        setIdBatiment(){
+          if(!this.showSelectBatiment){this.idBatiment=null}
+        },
         /**methode pour placer un marker */
         drawMarker(){
             this.markers= [
@@ -680,20 +1464,28 @@ export default {
             console.log('indexFom: ',this.indexForm)
         },
         validateAsync:function() {
+          
             return new Promise((resolve, reject) => {
-                
-                if(!this.logement.ref || !this.sousType || !this.logement.prixMin || !this.logement.prixMax){
+                if(this.idBatiment!=null){
+                  this.disabled=true;
+                }
+                if(!this.logement.ref || !this.sousType || !this.logement.prixMin || !this.logement.prixMax || parseFloat(this.logement.prixMin)> parseFloat(this.logement.prixMax)){
                     this.check=false
+                    
                     if(!this.logement.ref){
                         this.reference=""
                         this.requiredRef=false;}
                     else{this.requiredRef=true;}
                     if(!this.sousType){this.requiredSousType=false;}
                     else{this.requiredSousType=true;}
-                    if(!this.logement.prixMin){this.requiredPrixMin=false;}
+                    if(!this.logement.prixMin|| this.logement.prixMin==0){this.requiredPrixMin=false;}
                     else {this.requiredPrixMin=true;}
-                    if(!this.logement.prixMax){this.requiredPrixMax=false;}
+                    if(!this.logement.prixMax|| this.logement.prixMax==0){this.requiredPrixMax=false;}
                     else{this.requiredPrixMax=true;}
+                     if (parseFloat(this.logement.prixMin)> parseFloat(this.logement.prixMax)) {
+                       //console.log('prix min',this.logement.prixMin,' prix Max',this.logement.prixMax)
+                        App.error('Le prix Min doit être inférieur ou égal au prix max');
+                    }
                 }else{
                     this.check=true
                 }
@@ -961,14 +1753,21 @@ export default {
            console.log("provenance = édition")
            this.logement.ref= this.editLogement.refLogement;  this.logement.description= this.editLogement.descLogement; 
            this.logement.prixMin= this.editLogement.prixMin;  this.logement.prixMax= this.editLogement.prixMax; 
-           this.logement.pays= this.editLogement.adresse.pays;  this.logement.ville= this.editLogement.adresse.ville; 
-           this.logement.quartier= this.editLogement.adresse.quartier;  this.logement.lat= this.editLogement.adresse.lat; 
-           this.logement.lon= this.editLogement.adresse.lon;  this.photos=this.editLogement.photos; 
+           if(this.editLogement.adresse !=null){
+              this.logement.pays= this.editLogement.adresse.pays;  this.logement.ville= this.editLogement.adresse.ville; 
+              this.logement.quartier= this.editLogement.adresse.quartier;  this.logement.lat= this.editLogement.adresse.lat; 
+              this.logement.lon= this.editLogement.adresse.lon;  
+           }else
+           if(this.editLogement.batiment.adresse !=null){
+              this.logement.pays= this.editLogement.batiment.adresse.pays;  this.logement.ville= this.editLogement.batiment.adresse.ville; 
+              this.logement.quartier= this.editLogement.batiment.adresse.quartier;  this.logement.lat= this.editLogement.batiment.adresse.lat; 
+              this.logement.lon= this.editLogement.batiment.adresse.lon;  
+           }
+                         this.photos=this.editLogement.photos; 
             //this.typesLogement.push(this.editLogement.sousTypeLogement.typeLogement); 
             this.type = this.editLogement.sousTypeLogement.typeLogement;
             //this.sousTypes.push(this.editLogement.sousTypeLogement); 
             this.sousType=this.editLogement.sousTypeLogement
-           this.logement.nbchambre= this.editLogement.adresse.lat; 
            if(this.editLogement.batiment!= null){
                this.showSelectBatiment=true
                this.idBatiment=this.editLogement.batiment.idBatiment

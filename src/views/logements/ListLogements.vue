@@ -8,7 +8,7 @@
             <div class="d-block d-md-inline-block">
               <div class="btn-group d-inline-block float-md-left mr-1 mb-1 ">
                 <b-form-select v-model="filtre_categories"  style="height: 40px; width: 260px; border-radius: 5px; box-shadow: none">
-                  <b-form-select-option :value="null">Filtre de catégories</b-form-select-option>
+                  <b-form-select-option :value="null"> {{ $t('data.Filtre_de_categories') }} </b-form-select-option>
                   <b-form-select-option-group
                     v-for="(tl, i) in typesLogements"
                     :key="i"
@@ -26,10 +26,11 @@
               <SearchForm v-model="search" />
             </div>
 
-            <div class="float-md-right">
-              <btnAdd  message="Ajouter un logement" v-b-modal.logementForm/>
+            <div class="float-md-right d-flex" v-if="canCreateLogement">
+              <paginatorTop :offset="offset" :libelle='$t("data.logements")' :total="logements.length" :limit="perPage" :page="currentPage" @pageChanged="(page) => {currentPage = page}" @limitChanged="(limit) => {perPage = limit}" class="mr-2 d-flex justify-content-center align-items-center" />
+              <btnAdd  :message="$t('data.logement_ajouter_logement')" v-b-modal.logementForm/>
 
-              <b-button
+              <!--<b-button
                 v-b-tooltip.top="'Télécharger un fichier modèle pour l\'import de logements en masse'"
                 v-b-modal.modal-prevent-closing
                 @click.prevent="loadCsv"
@@ -37,26 +38,27 @@
                 style="height:45px;"
               >
                 <i class="fa fa-download"></i>
-              </b-button>
+              </b-button>-->
 
               <!--traitement import liste de logements-->
-              <flatfile-button
+              <!--<flatfile-button
                 class="mt-2"
                 :licenseKey="licenseKey"
                 :customer="customer"
                 :settings="settings"
                 :onData="onData"
                 type="logement"
-              >Ajout de logements en masse</flatfile-button>
+              >Ajout de logements en masse</flatfile-button>-->
             </div>
           </div>
         </div>
+          <p class="font-weight-bold" style="font-size: 22px">Vous possédez actuellement <span style="color: #f5365c;">{{ trueLogements.length }} logements.</span> </p>
         <div class="separator mb-20"></div>
         <b-overlay :show="showOverlay" rounded="sm">
           <b-alert variant="info" class="text-center" show v-if="!logements.length">
             <i class="fa fa-exclamation-triangle fa-3x"></i>
             <br />
-            <span class="h4 d-inline-flex ml-2">Aucun logement enregistré pour le moment</span>
+            <span class="h4 d-inline-flex ml-2"> {{ $t('data.logement_pas_de_logement') }} </span>
           </b-alert>
           <b-row v-else class="layout-wrap">
             <b-col
@@ -103,7 +105,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="editLayoutItemLabel">
-              Détails du logement :
+              {{ $t('data.logement_details_logement')}} :
               <b>{{ logement.refLogement }}</b>.
             </h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -120,20 +122,20 @@
     <div v-if="logement">
       <b-modal
         v-model="clone.enabled"
-        :title="'Clonner le logement ' + logement.refLogement"
+        :title="$t('data.logement_cloner_logement') + ' ' + logement.refLogement"
         @ok="validateClone"
         @hidden="resetCloneForm"
       >
         <template #modal-footer="{ ok }">
           <b-button size="sm" variant="danger" @click="ok()" :disabled="clone.submitted">
-            Valider
+            {{ $t('data.logement_valider_logement')}}
             <b-spinner v-if="clone.submitted" small />
           </b-button>
         </template>
         <div class="jumbotron pt-10 pb-10">
-          <p>Le clonnage de logement vous permet d'ajouter une multitude de logement en se servant d'un logement pré-existant pour générer de nouveaux.</p>
+          <p> {{ $t('data.logement_description_clonage') }} </p>
         </div>
-        <b-form-group description="Entrez le nombre de logement à générer" label="Nombre de clone">
+        <b-form-group :description="$t('data.logement_nombre_de_clones')" :label="$t('data.logement_nombre_de_clones_label')">
           <b-form-input
             v-model="clone.nbr"
             type="number"
@@ -142,11 +144,11 @@
           />
         </b-form-group>
         <b-form-group
-          description="Selectionnez le batiment auquel sera rataché les logements générés"
-          label="Batiment"
+          :description="$t('data.logement_batiment_lie_au_clonage')"
+          :label="$t('data.logement_batiment_lie_au_clonage_label')"
         >
           <b-form-select v-model="clone.idBatiment">
-            <b-form-select-option :value="null">Pas de batiment</b-form-select-option>
+            <b-form-select-option :value="null"> {{ $t('data.logement_pas_de_batiment') }} </b-form-select-option>
             <b-form-select-option-group v-for="(c, i) in cites" :key="i" :label="c.nomCite">
               <b-form-select-option
                 v-for="(b, j) in c.batiments"
@@ -287,7 +289,8 @@ export default {
       idBatiment: null
     },
 
-    housingToUpload: []
+    housingToUpload: [],
+    permissions: storage.get("userPermissions")
   }),
   computed: {
     /**
@@ -298,6 +301,12 @@ export default {
     },
     offset() {
       return this.currentPage * this.perPage - this.perPage;
+    },
+    canCreateLogement() {
+        if(this.permissions.includes("create_logement")){
+            return true;
+        }
+        return false;      
     }
   },
   watch: {
@@ -328,6 +337,11 @@ export default {
           this.logements = this.renameLogements(this.logements, logement);
           this.trueLogements = this.renameLogements(this.trueLogements, logement);
      }) */
+     console.log("=============================");
+     let div =document.querySelector('.router-link-active');
+     div.style.backgroundColor = 'blue !important'
+     console.log(div);
+     console.log("=============================");
   },
   methods: {
         /**
